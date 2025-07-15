@@ -9,16 +9,28 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-
+    outputs:
+      build_artifact_path: ${{ steps.build.outputs.build_path }}
     steps:
     - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
+      id: build
       run: dotnet build --no-restore --configuration Release
+
+  test:
+    runs-on: windows-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    - name: Restore dependencies
+      run: dotnet restore
     - name: Test
       run: dotnet test --no-build --configuration Release
