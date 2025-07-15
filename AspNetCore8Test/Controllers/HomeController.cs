@@ -15,6 +15,7 @@ namespace AspNetCore8Test.Controllers
 
         public IActionResult Index()
         {
+
             return View();
         }
 
