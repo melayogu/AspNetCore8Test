@@ -9,8 +9,6 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    outputs:
-      build_artifact_path: ${{ steps.build.outputs.build_path }}
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-dotnet@v4
@@ -19,25 +17,27 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore --configuration Release -o ./output
-    - name: Upload build artifacts
+      run: dotnet build --no-restore --configuration Release
+    - name: Upload source code for test
       uses: actions/upload-artifact@v4
       with:
-        name: build-artifacts
-        path: ./output
+        name: source-code
+        path: . # 上傳整個 repo，包括 .sln、.csproj、src、tests 等
 
   test:
     runs-on: windows-latest
     needs: build
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Download build artifacts
+    - name: Download source code
       uses: actions/download-artifact@v4
       with:
-        name: build-artifacts
-        path: ./output
-    - name: Test
-      run: dotnet test ./output --no-build --configuration Release
+        name: source-code
+        path: ./repo
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Run tests
+      run: |
+        cd ./repo
+        dotnet test --configuration Release
