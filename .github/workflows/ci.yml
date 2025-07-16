@@ -67,6 +67,7 @@ jobs:
           - Status: Success
 
     - name: Send LINE Messaging API Notification
+      continue-on-error: true  # << 這一行確保這一步就算失敗也不會影響整體
       run: |
         MESSAGE=$(jq -n \
           --arg to "${{ secrets.LINE_USER_ID }}" \
