@@ -68,15 +68,22 @@ jobs:
 
     - name: Send LINE Messaging API Notification
       run: |
+        MESSAGE=$(jq -n \
+          --arg to "${{ secrets.LINE_USER_ID }}" \
+          --arg commit "${{ github.sha }}" \
+          --arg branch "${{ github.ref_name }}" \
+          --arg workflow "${{ github.workflow }}" \
+          '{
+            to: $to,
+            messages: [
+              {
+                type: "text",
+                text: "✅ .NET CI Pipeline Completed\n- Commit: \($commit)\n- Branch: \($branch)\n- Workflow: \($workflow)\n- Status: Success"
+              }
+            ]
+          }')
+
         curl -X POST https://api.line.me/v2/bot/message/push \
-        -H "Content-Type: application/json" \
-        -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}" \
-        -d '{
-          "to": "'${{ secrets.LINE_USER_ID }}'",
-          "messages": [
-            {
-              "type": "text",
-              "text": "✅ .NET CI Pipeline Completed\n- Commit: '${{ github.sha }}'\n- Branch: '${{ github.ref_name }}'\n- Workflow: '${{ github.workflow }}'\n- Status: Success"
-            }
-          ]
-        }'
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}" \
+          -d "$MESSAGE"
