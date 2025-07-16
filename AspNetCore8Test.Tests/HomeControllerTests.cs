@@ -38,11 +38,11 @@ namespace AspNetCore8Test.Tests
             var logger = new Mock<ILogger<HomeController>>();
             var controller = new HomeController(logger.Object);
 
-            // 加這一行，避免 NullReferenceException
+            // 設定 HttpContext，避免 NullReferenceException
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             var result = controller.Error() as ViewResult;
-            
+
             Assert.NotNull(result);
             Assert.IsType<ErrorViewModel>(result.Model);
             var model = result.Model as ErrorViewModel;
