@@ -29,7 +29,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: source-code
-        path: . # 上傳整個 repo，包括 .sln、.csproj、src、tests 等
+        path: .
 
   test:
     runs-on: windows-latest
@@ -54,19 +54,6 @@ jobs:
     needs: test
     continue-on-error: true
     steps:
-    - name: Send Telegram Notification
-      continue-on-error: true
-      uses: appleboy/telegram-action@v1.0.0
-      with:
-        to: ${{ secrets.TELEGRAM_CHAT_ID }}
-        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        message: |
-          ✅ .NET CI Pipeline Completed
-          - Commit: ${{ github.sha }}
-          - Branch: ${{ github.ref_name }}
-          - Workflow: ${{ github.workflow }}
-          - Status: Success
-
     - name: Send LINE Messaging API Notification
       continue-on-error: true
       run: |
@@ -92,3 +79,13 @@ jobs:
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}" \
           -d "$MESSAGE" || true
+
+    - name: Send Telegram Notification
+      continue-on-error: true
+      run: |
+        echo "⏳ Waiting 10 seconds before sending Telegram message..."
+        sleep 10
+
+        curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+          -d text="✅ .NET CI Pipeline Completed%0A- Commit: ${{ github.sha }}%0A- Branch: ${{ github.ref_name }}%0A- Workflow: ${{ github.workflow }}%0A- Status: Success" || true
