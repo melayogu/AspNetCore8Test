@@ -44,8 +44,10 @@ namespace AspNetCore8Test.Tests
             var result = controller.Error() as ViewResult;
 
             Assert.NotNull(result);
+            Assert.NotNull(result.Model); // 確保 Model 不為 null
             Assert.IsType<ErrorViewModel>(result.Model);
             var model = result.Model as ErrorViewModel;
+            Assert.NotNull(model); // 確保 model 不為 null
             Assert.False(string.IsNullOrEmpty(model.RequestId));
         }
     }
