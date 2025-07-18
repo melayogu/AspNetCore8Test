@@ -7,7 +7,7 @@ on:
     branches: [ master ]
   schedule:
     # 每天台灣時間 14:00（UTC+8），CRON 要設 06:00（UTC）
-    - cron: '0 6 * * *'
+    - cron: '10 6 * * *'
   workflow_dispatch:  # 👉 新增這行，可手動觸發
 
 
