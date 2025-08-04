@@ -4,6 +4,12 @@ namespace AspNetCore8Test.Tests;
 
 public class UnitTest1
 {
+    [Fact]
+    public void Test1()
+    {
+        Assert.True(1 + 1 == 2);
+    }
+
     [Theory]
     [InlineData(1, 1, 2)]
     [InlineData(2, 3, 5)]

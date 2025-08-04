@@ -11,6 +11,48 @@ namespace AspNetCore8Test.Tests
 {
     public class HomeControllerTests
     {
+        // 原本的 Fact 測試方式
+        [Fact]
+        public void Index_ReturnsViewResult()
+        {
+            var logger = new Mock<ILogger<HomeController>>();
+            var controller = new HomeController(logger.Object);
+
+            var result = controller.Index();
+
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public void Privacy_ReturnsViewResult()
+        {
+            var logger = new Mock<ILogger<HomeController>>();
+            var controller = new HomeController(logger.Object);
+
+            var result = controller.Privacy();
+
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public void Error_ReturnsViewResultWithErrorViewModel()
+        {
+            var logger = new Mock<ILogger<HomeController>>();
+            var controller = new HomeController(logger.Object);
+
+            // 加上這一行，避免 NullReferenceException
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+            var result = controller.Error() as ViewResult;
+            
+            Assert.NotNull(result);
+            Assert.IsType<ErrorViewModel>(result.Model);
+            var model = result.Model as ErrorViewModel;
+            Assert.NotNull(model);
+            Assert.False(string.IsNullOrEmpty(model.RequestId));
+        }
+
+        // 新的 Theory 測試方式
         [Theory]
         [InlineData("Index")]
         [InlineData("Privacy")]
@@ -35,7 +77,7 @@ namespace AspNetCore8Test.Tests
         [Theory]
         [InlineData(true)]  // 當有 Activity.Current 時
         [InlineData(false)] // 當沒有 Activity.Current 時
-        public void Error_ReturnsViewResultWithErrorViewModel(bool hasActivity)
+        public void Error_ReturnsViewResultWithErrorViewModel_Theory(bool hasActivity)
         {
             // Arrange
             var logger = new Mock<ILogger<HomeController>>();
