@@ -90,10 +90,19 @@ jobs:
           FOOTER="\n(本月已使用 ${USED} 則訊息，上限為 ${TOTAL} 則訊息)"
           FINAL_MSG="${MAIN_MSG}${FOOTER}"
 
-          MESSAGE=$(jq -n \
-            --arg to "${{ secrets.LINE_USER_ID }}" \
-            --arg text "$FINAL_MSG" \
-            '{ to: $to, messages: [ { type: "text", text: $text } ] }')
+          MESSAGE=$(cat <<EOF
+            {
+                "to": "${{ secrets.LINE_USER_ID }}",
+                "messages": [
+                    {
+                        "type": "text",
+                        "text": "$FINAL_MSG"
+                    }
+                ]
+            }
+            EOF
+            )
+
 
           curl -X POST https://api.line.me/v2/bot/message/push \
             -H "Content-Type: application/json" \
