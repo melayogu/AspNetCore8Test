@@ -61,6 +61,39 @@ namespace AspNetCore8Test.Tests.Validators
                   .WithErrorMessage("商品名稱長度必須在 2 到 100 個字元之間");
         }
 
+        [Fact]
+        public void Should_Have_Error_When_Name_With_Chinese_Characters_Is_Too_Long()
+        {
+            // 101 個中文字元
+            var longChineseName = new string('中', 101);
+            var model = new CreateProductDto 
+            { 
+                Name = longChineseName,
+                Description = "Valid description",
+                Price = 100,
+                Category = "電子產品"
+            };
+            var result = _validator.TestValidate(model);
+            result.ShouldHaveValidationErrorFor(x => x.Name)
+                  .WithErrorMessage("商品名稱長度必須在 2 到 100 個字元之間");
+        }
+
+        [Fact]
+        public void Should_Not_Have_Error_When_Name_With_Chinese_Characters_Is_Valid_Length()
+        {
+            // 100 個中文字元（邊界值測試）
+            var validChineseName = new string('商', 100);
+            var model = new CreateProductDto 
+            { 
+                Name = validChineseName,
+                Description = "Valid description",
+                Price = 100,
+                Category = "電子產品"
+            };
+            var result = _validator.TestValidate(model);
+            result.ShouldNotHaveValidationErrorFor(x => x.Name);
+        }
+
         [Theory]
         [InlineData("Test@Product")] // 包含特殊字符
         [InlineData("Product#123")] // 包含特殊字符
@@ -125,6 +158,68 @@ namespace AspNetCore8Test.Tests.Validators
             var result = _validator.TestValidate(model);
             result.ShouldHaveValidationErrorFor(x => x.Description)
                   .WithErrorMessage("商品描述不能超過 500 個字元");
+        }
+
+        [Fact]
+        public void Should_Have_Error_When_Description_With_Chinese_Characters_Is_Too_Long()
+        {
+            var model = new CreateProductDto 
+            { 
+                Name = "Valid Product",
+                Description = new string('描', 501), // 501 個中文字元
+                Price = 100,
+                Category = "電子產品"
+            };
+            var result = _validator.TestValidate(model);
+            result.ShouldHaveValidationErrorFor(x => x.Description)
+                  .WithErrorMessage("商品描述不能超過 500 個字元");
+        }
+
+        [Fact]
+        public void Should_Not_Have_Error_When_Description_With_Chinese_Characters_Is_Valid_Length()
+        {
+            var model = new CreateProductDto 
+            { 
+                Name = "Valid Product",
+                Description = new string('述', 500), // 500 個中文字元（邊界值）
+                Price = 100,
+                Category = "電子產品"
+            };
+            var result = _validator.TestValidate(model);
+            result.ShouldNotHaveValidationErrorFor(x => x.Description);
+        }
+
+        [Fact]
+        public void Should_Have_Error_When_Mixed_Language_Name_Is_Too_Long()
+        {
+            // 混合中英文測試：50個中文 + 51個英文 = 101個字元
+            var mixedName = new string('中', 50) + new string('A', 51);
+            var model = new CreateProductDto 
+            { 
+                Name = mixedName,
+                Description = "Valid description",
+                Price = 100,
+                Category = "電子產品"
+            };
+            var result = _validator.TestValidate(model);
+            result.ShouldHaveValidationErrorFor(x => x.Name)
+                  .WithErrorMessage("商品名稱長度必須在 2 到 100 個字元之間");
+        }
+
+        [Fact]
+        public void Should_Not_Have_Error_When_Mixed_Language_Name_Is_Valid_Length()
+        {
+            // 混合中英文測試：50個中文 + 50個英文 = 100個字元
+            var mixedName = new string('商', 50) + new string('A', 50);
+            var model = new CreateProductDto 
+            { 
+                Name = mixedName,
+                Description = "Valid description",
+                Price = 100,
+                Category = "電子產品"
+            };
+            var result = _validator.TestValidate(model);
+            result.ShouldNotHaveValidationErrorFor(x => x.Name);
         }
 
         [Theory]
