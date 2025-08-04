@@ -10,7 +10,6 @@ on:
     - cron: '10 6 * * *'
   workflow_dispatch:  # 👉 新增這行，可手動觸發
 
-
 jobs:
   check-dotnet-version:
     if: github.event_name == 'schedule'
@@ -23,46 +22,46 @@ jobs:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: wagoid/commitlint-github-action@v5
+      - uses: actions/checkout@v4
+      - uses: wagoid/commitlint-github-action@v5
 
   build:
     if: github.event_name != 'schedule'
     runs-on: windows-latest
     needs: commitlint
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
-    - name: Upload source code for test
-      uses: actions/upload-artifact@v4
-      with:
-        name: source-code
-        path: .
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+      - name: Upload source code for test
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-code
+          path: .
 
   test:
     if: github.event_name != 'schedule'
     runs-on: windows-latest
     needs: build
     steps:
-    - name: Download source code
-      uses: actions/download-artifact@v4
-      with:
-        name: source-code
-        path: ./repo
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Run tests
-      run: |
-        cd ./repo
-        dotnet test --configuration Release
+      - name: Download source code
+        uses: actions/download-artifact@v4
+        with:
+          name: source-code
+          path: ./repo
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Run tests
+        run: |
+          cd ./repo
+          dotnet test --configuration Release
 
   notify:
     if: github.event_name != 'schedule'
@@ -70,51 +69,56 @@ jobs:
     needs: test
     continue-on-error: true
     steps:
-    - name: Send LINE Messaging API Notification
-      continue-on-error: true
-      run: |
-        echo "⏳ Waiting 5 seconds before sending LINE message..."
-        sleep 5
+      - name: Install jq
+        run: sudo apt-get install -y jq
 
-        MESSAGE=$(jq -n \
-          --arg to "${{ secrets.LINE_USER_ID }}" \
-          --arg commit "${{ github.sha }}" \
-          --arg branch "${{ github.ref_name }}" \
-          --arg workflow "${{ github.workflow }}" \
-          '{
-            to: $to,
-            messages: [
-              {
-                type: "text",
-                text: "✅ .NET CI Pipeline Completed\n- Commit: \($commit)\n- Branch: \($branch)\n- Workflow: \($workflow)\n- Status: Success"
-              }
-            ]
-          }')
+      - name: Send LINE Messaging API Notification
+        continue-on-error: true
+        run: |
+          echo "⏳ Waiting 5 seconds before sending LINE message..."
+          sleep 5
 
-        curl -X POST https://api.line.me/v2/bot/message/push \
-          -H "Content-Type: application/json" \
-          -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}" \
-          -d "$MESSAGE" || true
+          USAGE_JSON=$(curl -s -X GET https://api.line.me/v2/bot/message/quota/consumption \
+            -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}")
+          USED=$(echo "$USAGE_JSON" | jq '.totalUsage')
 
-    - name: Send Telegram Notification
-      continue-on-error: true
-      run: |
-        echo "⏳ Waiting 10 seconds before sending Telegram message..."
-        sleep 10
+          QUOTA_JSON=$(curl -s -X GET https://api.line.me/v2/bot/message/quota \
+            -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}")
+          TOTAL=$(echo "$QUOTA_JSON" | jq '.value')
 
-        curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
-          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="✅ .NET CI Pipeline Completed%0A- Commit: ${{ github.sha }}%0A- Branch: ${{ github.ref_name }}%0A- Workflow: ${{ github.workflow }}%0A- Status: Success" || true
+          FOOTER="(本月已使用 ${USED} 則訊息，上限為 ${TOTAL} 則訊息)"
+          MAIN_MSG="✅ .NET CI Pipeline Completed\n- Commit: ${{ github.sha }}\n- Branch: ${{ github.ref_name }}\n- Workflow: ${{ github.workflow }}\n- Status: Success"
+          FINAL_MSG="${MAIN_MSG}\n\n${FOOTER}"
 
-    - name: Send Discord Notification
-      continue-on-error: true
-      run: |
-        echo "⏳ Waiting 3 seconds before sending Discord message..."
-        sleep 3
+          MESSAGE=$(jq -n \
+            --arg to "${{ secrets.LINE_USER_ID }}" \
+            --arg text "$FINAL_MSG" \
+            '{ to: $to, messages: [ { type: "text", text: $text } ] }')
 
-        DISCORD_MESSAGE="✅ .NET CI Pipeline Completed\n- Commit: ${{ github.sha }}\n- Branch: ${{ github.ref_name }}\n- Workflow: ${{ github.workflow }}\n- Status: Success"
+          curl -X POST https://api.line.me/v2/bot/message/push \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}" \
+            -d "$MESSAGE" || true
 
-        curl -H "Content-Type: application/json" \
-          -X POST \
-          -d "{\"content\": \"$DISCORD_MESSAGE\"}" \
-          ${{ secrets.DISCORD_WEBHOOK_URL }} || true
+      - name: Send Telegram Notification
+        continue-on-error: true
+        run: |
+          echo "⏳ Waiting 10 seconds before sending Telegram message..."
+          sleep 10
+
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d text="✅ .NET CI Pipeline Completed%0A- Commit: ${{ github.sha }}%0A- Branch: ${{ github.ref_name }}%0A- Workflow: ${{ github.workflow }}%0A- Status: Success" || true
+
+      - name: Send Discord Notification
+        continue-on-error: true
+        run: |
+          echo "⏳ Waiting 3 seconds before sending Discord message..."
+          sleep 3
+
+          DISCORD_MESSAGE="✅ .NET CI Pipeline Completed\n- Commit: ${{ github.sha }}\n- Branch: ${{ github.ref_name }}\n- Workflow: ${{ github.workflow }}\n- Status: Success"
+
+          curl -H "Content-Type: application/json" \
+            -X POST \
+            -d "{\"content\": \"$DISCORD_MESSAGE\"}" \
+            ${{ secrets.DISCORD_WEBHOOK_URL }} || true
