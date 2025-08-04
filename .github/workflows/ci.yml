@@ -8,7 +8,7 @@ on:
   schedule:
     # 每天台灣時間 14:00（UTC+8），CRON 要設 06:00（UTC）
     - cron: '10 6 * * *'
-  workflow_dispatch:  # 👉 新增這行，可手動觸發
+  workflow_dispatch:
 
 jobs:
   check-dotnet-version:
@@ -86,9 +86,16 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}")
           TOTAL=$(echo "$QUOTA_JSON" | jq '.value')
 
-          FOOTER="(本月已使用 ${USED} 則訊息，上限為 ${TOTAL} 則訊息)"
-          MAIN_MSG="✅ .NET CI Pipeline Completed\n- Commit: ${{ github.sha }}\n- Branch: ${{ github.ref_name }}\n- Workflow: ${{ github.workflow }}\n- Status: Success"
-          FINAL_MSG="${MAIN_MSG}\n\n${FOOTER}"
+          FINAL_MSG=$(cat <<EOF
+✅ .NET CI Pipeline Completed
+- Commit: ${{ github.sha }}
+- Branch: ${{ github.ref_name }}
+- Workflow: ${{ github.workflow }}
+- Status: Success
+
+(本月已使用 ${USED} 則訊息，上限為 ${TOTAL} 則訊息)
+EOF
+)
 
           MESSAGE=$(jq -n \
             --arg to "${{ secrets.LINE_USER_ID }}" \
