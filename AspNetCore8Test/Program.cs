@@ -1,7 +1,22 @@
+using FluentValidation;
+using AspNetCore8Test.Models.DTOs;
+using AspNetCore8Test.Validators;
+using AspNetCore8Test.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// 註冊 API 控制器
+builder.Services.AddControllers();
+
+// 註冊服務
+builder.Services.AddScoped<IProductService, ProductService>();
+
+// 註冊 FluentValidation 驗證器
+builder.Services.AddScoped<IValidator<CreateProductDto>, CreateProductDtoValidator>();
+builder.Services.AddScoped<IValidator<UpdateProductDto>, UpdateProductDtoValidator>();
 
 var app = builder.Build();
 
@@ -24,4 +39,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
+// 新增 API 路由
+app.MapControllers();
+
+await app.RunAsync();
