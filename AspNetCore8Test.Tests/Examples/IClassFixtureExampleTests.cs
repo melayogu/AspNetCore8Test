@@ -16,7 +16,7 @@ namespace AspNetCore8Test.Tests.Examples
         public ProductServiceFixture()
         {
             // 測試前置動作（非測資），搭配 constructor
-            Console.WriteLine("=== ProductServiceFixture 初始化開始 ===");
+            // 移除 Console.WriteLine 以避免編碼問題
             
             // 初始化服務
             ProductService = new ProductService();
@@ -40,8 +40,7 @@ namespace AspNetCore8Test.Tests.Examples
                 InitialProducts.Add(createdProduct);
             }
 
-            Console.WriteLine($"已初始化 {InitialProducts.Count} 個測試產品");
-            Console.WriteLine("=== ProductServiceFixture 初始化完成 ===");
+            // 初始化完成，已創建 5 個測試產品
         }
 
         public void Dispose()
@@ -55,12 +54,12 @@ namespace AspNetCore8Test.Tests.Examples
             if (!_disposed && disposing)
             {
                 // 清理資源
-                Console.WriteLine("=== ProductServiceFixture 清理開始 ===");
+                // 移除 Console.WriteLine 以避免編碼問題
                 
                 // 在實際專案中，這裡可能會清理資料庫連線、檔案等資源
                 InitialProducts?.Clear();
                 
-                Console.WriteLine("=== ProductServiceFixture 清理完成 ===");
+                // 清理完成
                 _disposed = true;
             }
         }
@@ -78,7 +77,7 @@ namespace AspNetCore8Test.Tests.Examples
         public IClassFixtureExampleTests(ProductServiceFixture fixture)
         {
             _fixture = fixture;
-            Console.WriteLine($"測試類別建構子執行，當前有 {_fixture.InitialProducts.Count} 個初始產品");
+            // 測試類別建構子執行，當前有 5 個初始產品
         }
 
         [Fact]
