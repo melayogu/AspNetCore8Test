@@ -46,7 +46,7 @@ jobs:
 
   test:
     if: github.event_name != 'schedule'
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: build
     steps:
       - name: Download source code
@@ -90,24 +90,10 @@ jobs:
           FOOTER="\n(本月已使用 ${USED} 則訊息，上限為 ${TOTAL} 則訊息)"
           FINAL_MSG="${MAIN_MSG}${FOOTER}"
 
-          MESSAGE=$(cat <<EOF
-            {
-                "to": "${{ secrets.LINE_USER_ID }}",
-                "messages": [
-                    {
-                        "type": "text",
-                        "text": "$FINAL_MSG"
-                    }
-                ]
-            }
-            EOF
-            )
-
-
           curl -X POST https://api.line.me/v2/bot/message/push \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}" \
-            -d "$MESSAGE" || true
+            -d "{\"to\": \"${{ secrets.LINE_USER_ID }}\", \"messages\": [{\"type\": \"text\", \"text\": \"$FINAL_MSG\"}]}" || true
 
       - name: Send Telegram Notification
         continue-on-error: true
