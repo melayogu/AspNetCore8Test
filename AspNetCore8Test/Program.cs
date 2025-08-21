@@ -11,6 +11,10 @@ builder.Services.AddControllersWithViews();
 // 註冊 API 控制器
 builder.Services.AddControllers();
 
+// 配置 Swagger/OpenAPI
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 // 註冊服務
 builder.Services.AddScoped<IProductService, ProductService>();
 
@@ -26,6 +30,12 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
+else
+{
+    // 在開發環境中啟用 Swagger
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
