@@ -309,6 +309,90 @@ namespace AspNetCore8Test.Services
                     CreatedDate = DateTime.Now.AddDays(-5),
                     CompletedDate = DateTime.Now.AddDays(-2),
                     Remarks = "缺少相關憑證"
+                },
+                new Approval
+                {
+                    Id = GetNextApprovalId(),
+                    Title = "軟體授權採購",
+                    Description = "購買Visual Studio Professional授權5套",
+                    RequestUser = "陳大勇",
+                    CurrentApprover = "技術部主管",
+                    Status = ApprovalStatus.Approved,
+                    ApprovalType = "軟體採購",
+                    Amount = 35000,
+                    Priority = "High",
+                    CreatedDate = DateTime.Now.AddDays(-10),
+                    CompletedDate = DateTime.Now.AddDays(-3)
+                },
+                new Approval
+                {
+                    Id = GetNextApprovalId(),
+                    Title = "教育訓練申請",
+                    Description = "參加Azure雲端架構師認證課程",
+                    RequestUser = "李大華",
+                    CurrentApprover = "人力資源部",
+                    Status = ApprovalStatus.Approved,
+                    ApprovalType = "訓練申請",
+                    Amount = 15000,
+                    Priority = "Normal",
+                    CreatedDate = DateTime.Now.AddDays(-8),
+                    CompletedDate = DateTime.Now.AddDays(-4)
+                },
+                new Approval
+                {
+                    Id = GetNextApprovalId(),
+                    Title = "辦公用品採購",
+                    Description = "採購影印紙、文具用品等辦公耗材",
+                    RequestUser = "總務小王",
+                    CurrentApprover = "行政主管",
+                    Status = ApprovalStatus.Rejected,
+                    ApprovalType = "用品採購",
+                    Amount = 3500,
+                    Priority = "Low",
+                    CreatedDate = DateTime.Now.AddDays(-6),
+                    CompletedDate = DateTime.Now.AddDays(-3),
+                    Remarks = "預算不足，請下個月再申請"
+                },
+                new Approval
+                {
+                    Id = GetNextApprovalId(),
+                    Title = "專案獎金申請",
+                    Description = "ERP系統開發專案完成獎金申請",
+                    RequestUser = "專案經理張三",
+                    CurrentApprover = "總經理",
+                    Status = ApprovalStatus.InProgress,
+                    ApprovalType = "獎金申請",
+                    Amount = 100000,
+                    Priority = "High",
+                    CreatedDate = DateTime.Now.AddDays(-3),
+                    DueDate = DateTime.Now.AddDays(1)
+                },
+                new Approval
+                {
+                    Id = GetNextApprovalId(),
+                    Title = "病假申請",
+                    Description = "因感冒需請病假3天",
+                    RequestUser = "研發部小李",
+                    CurrentApprover = "研發主管",
+                    Status = ApprovalStatus.Approved,
+                    ApprovalType = "請假申請",
+                    Priority = "Normal",
+                    CreatedDate = DateTime.Now.AddDays(-12),
+                    CompletedDate = DateTime.Now.AddDays(-11)
+                },
+                new Approval
+                {
+                    Id = GetNextApprovalId(),
+                    Title = "設備維修申請",
+                    Description = "辦公室空調系統維修",
+                    RequestUser = "設施管理員",
+                    CurrentApprover = "總務部",
+                    Status = ApprovalStatus.Approved,
+                    ApprovalType = "維修申請",
+                    Amount = 8500,
+                    Priority = "High",
+                    CreatedDate = DateTime.Now.AddDays(-15),
+                    CompletedDate = DateTime.Now.AddDays(-13)
                 }
             };
 
@@ -317,6 +401,7 @@ namespace AspNetCore8Test.Services
             // 新增一些歷史記錄
             var testHistories = new[]
             {
+                // ID 2 (年假申請) 的歷史記錄
                 new ApprovalHistory
                 {
                     Id = GetNextHistoryId(),
@@ -326,14 +411,36 @@ namespace AspNetCore8Test.Services
                     Comments = "轉給經理審核",
                     ActionDate = DateTime.Now.AddHours(-6)
                 },
+                
+                // ID 3 (加班費申請) 的歷史記錄
                 new ApprovalHistory
                 {
                     Id = GetNextHistoryId(),
                     ApprovalId = 3,
-                    ApproverName = "陳經理",
+                    ApproverName = "直屬主管",
                     Action = "Approve",
-                    Comments = "同意申請",
+                    Comments = "同意申請，加班確實辛苦",
+                    ActionDate = DateTime.Now.AddDays(-2)
+                },
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 3,
+                    ApproverName = "人事部主管",
+                    Action = "Approve",
+                    Comments = "核准發放",
                     ActionDate = DateTime.Now.AddDays(-1)
+                },
+                
+                // ID 4 (差旅費申請) 的歷史記錄
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 4,
+                    ApproverName = "直屬主管",
+                    Action = "Approve",
+                    Comments = "出差必要，同意申請",
+                    ActionDate = DateTime.Now.AddDays(-4)
                 },
                 new ApprovalHistory
                 {
@@ -341,8 +448,119 @@ namespace AspNetCore8Test.Services
                     ApprovalId = 4,
                     ApproverName = "財務主管",
                     Action = "Reject",
-                    Comments = "請補齊相關憑證後重新申請",
+                    Comments = "請補齊相關憑證後重新申請，收據不清楚",
                     ActionDate = DateTime.Now.AddDays(-2)
+                },
+                
+                // ID 5 (軟體授權採購) 的歷史記錄
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 5,
+                    ApproverName = "技術部主管",
+                    Action = "Approve",
+                    Comments = "開發需要，同意採購",
+                    ActionDate = DateTime.Now.AddDays(-8)
+                },
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 5,
+                    ApproverName = "採購部主管",
+                    Action = "Approve",
+                    Comments = "已比較價格，此廠商最優惠",
+                    ActionDate = DateTime.Now.AddDays(-6)
+                },
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 5,
+                    ApproverName = "財務總監",
+                    Action = "Approve",
+                    Comments = "預算充足，核准採購",
+                    ActionDate = DateTime.Now.AddDays(-3)
+                },
+                
+                // ID 6 (教育訓練申請) 的歷史記錄
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 6,
+                    ApproverName = "直屬主管",
+                    Action = "Approve",
+                    Comments = "有助於技能提升，支持參加",
+                    ActionDate = DateTime.Now.AddDays(-7)
+                },
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 6,
+                    ApproverName = "人力資源部主管",
+                    Action = "Approve",
+                    Comments = "符合年度教育訓練計畫，核准",
+                    ActionDate = DateTime.Now.AddDays(-4)
+                },
+                
+                // ID 7 (辦公用品採購) 的歷史記錄
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 7,
+                    ApproverName = "行政主管",
+                    Action = "Reject",
+                    Comments = "本月預算已用完，請下個月再申請",
+                    ActionDate = DateTime.Now.AddDays(-3)
+                },
+                
+                // ID 8 (專案獎金申請) 的歷史記錄
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 8,
+                    ApproverName = "專案部門主管",
+                    Action = "Approve",
+                    Comments = "專案完成度優秀，值得獎勵",
+                    ActionDate = DateTime.Now.AddDays(-2)
+                },
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 8,
+                    ApproverName = "人力資源總監",
+                    Action = "Forward",
+                    Comments = "轉送總經理最終核定",
+                    ActionDate = DateTime.Now.AddDays(-1)
+                },
+                
+                // ID 9 (病假申請) 的歷史記錄
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 9,
+                    ApproverName = "研發主管",
+                    Action = "Approve",
+                    Comments = "已提供醫生診斷書，核准請假",
+                    ActionDate = DateTime.Now.AddDays(-11)
+                },
+                
+                // ID 10 (設備維修申請) 的歷史記錄
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 10,
+                    ApproverName = "設施主管",
+                    Action = "Approve",
+                    Comments = "空調確實需要維修，影響辦公環境",
+                    ActionDate = DateTime.Now.AddDays(-14)
+                },
+                new ApprovalHistory
+                {
+                    Id = GetNextHistoryId(),
+                    ApprovalId = 10,
+                    ApproverName = "總務部經理",
+                    Action = "Approve",
+                    Comments = "已聯繫廠商，明日進行維修",
+                    ActionDate = DateTime.Now.AddDays(-13)
                 }
             };
 
