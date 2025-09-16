@@ -311,3 +311,70 @@ body {
     font-weight: 600;
     color: #495057;
 }
+
+/* 簽核歷史時間軸樣式 */
+.approval-timeline {
+    position: relative;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 40px;
+    padding-bottom: 20px;
+    border-left: 2px solid #dee2e6;
+    margin-left: 10px;
+}
+
+.timeline-item-last {
+    border-left: none;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -11px;
+    top: 5px;
+    width: 20px;
+    height: 20px;
+    background: #007bff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 8px;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px #dee2e6;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 10px;
+}
+
+.timeline-comment {
+    font-style: italic;
+    padding: 8px 12px;
+    background: #fff;
+    border-radius: 6px;
+    border-left: 3px solid #007bff;
+}
+
+.approval-history-summary {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.no-history {
+    color: #6c757d;
+}
+
+/* 動作標籤顏色調整 */
+.timeline-item .badge {
+    font-size: 0.7rem;
+    margin-left: 8px;
+}

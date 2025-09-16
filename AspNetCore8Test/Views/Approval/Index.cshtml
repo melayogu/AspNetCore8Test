@@ -180,6 +180,27 @@
     </div>
 </div>
 
+<!-- 簽核歷史模態框 -->
+<div class="modal fade" id="approvalHistoryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-history me-2"></i>
+                    簽核歷史記錄
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="approvalHistoryContent">
+                <!-- 歷史記錄內容將由 JavaScript 動態載入 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="~/js/approval.js" asp-append-version="true"></script>
 }

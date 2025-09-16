@@ -140,10 +140,13 @@ function renderPendingApprovalsTable(data) {
                 <td>${priorityBadge}</td>
                 <td>${dueDate}</td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="viewApprovalDetail(${item.id})">
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="viewApprovalDetail(${item.id})" title="詳情">
                         <i class="fas fa-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-success" onclick="showApprovalActionModal(${item.id})">
+                    <button class="btn btn-sm btn-outline-info me-1" onclick="viewApprovalHistory(${item.id})" title="歷史記錄">
+                        <i class="fas fa-history"></i>
+                    </button>
+                    <button class="btn btn-sm btn-success" onclick="showApprovalActionModal(${item.id})" title="處理">
                         <i class="fas fa-check"></i>
                     </button>
                 </td>
@@ -199,8 +202,11 @@ function renderInProgressApprovalsTable(data) {
                     <small class="text-muted">${lastActionDate}</small>
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary" onclick="viewApprovalDetail(${item.id})">
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="viewApprovalDetail(${item.id})" title="詳情">
                         <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-info" onclick="viewApprovalHistory(${item.id})" title="歷史記錄">
+                        <i class="fas fa-history"></i>
                     </button>
                 </td>
             </tr>
@@ -248,8 +254,11 @@ function renderApprovalHistoryTable(data) {
                 <td>${completedDate}</td>
                 <td>${escapeHtml(item.finalApprover)}</td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary" onclick="viewApprovalDetail(${item.id})">
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="viewApprovalDetail(${item.id})" title="詳情">
                         <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-info" onclick="viewApprovalHistory(${item.id})" title="歷史記錄">
+                        <i class="fas fa-history"></i>
                     </button>
                 </td>
             </tr>
@@ -313,6 +322,22 @@ function viewApprovalDetail(approvalId) {
         })
         .fail(function() {
             showAlert('錯誤', '載入簽核詳情失敗', 'error');
+        });
+}
+
+// 顯示簽核歷史記錄
+function viewApprovalHistory(approvalId) {
+    $.get('/Approval/GetApprovalDetail', { id: approvalId })
+        .done(function(response) {
+            if (response.success) {
+                renderApprovalHistoryModal(response.data);
+                $('#approvalHistoryModal').modal('show');
+            } else {
+                showAlert('錯誤', response.message, 'error');
+            }
+        })
+        .fail(function() {
+            showAlert('錯誤', '載入簽核歷史失敗', 'error');
         });
 }
 
@@ -418,6 +443,106 @@ function renderApprovalDetail(data) {
 
     html += '</div>';
     $('#approvalDetailContent').html(html);
+}
+
+// 渲染簽核歷史模態框
+function renderApprovalHistoryModal(data) {
+    let html = `
+        <div class="approval-history-summary mb-4">
+            <div class="row">
+                <div class="col-md-8">
+                    <h6 class="fw-bold mb-2">${escapeHtml(data.title)}</h6>
+                    <div class="text-muted">
+                        <span class="me-3"><i class="fas fa-user"></i> 申請人：${escapeHtml(data.requestUser)}</span>
+                        <span class="me-3"><i class="fas fa-tag"></i> 類型：${escapeHtml(data.approvalType)}</span>
+                        ${data.amount ? `<span class="me-3"><i class="fas fa-dollar-sign"></i> 金額：$${data.amount.toLocaleString()}</span>` : ''}
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    ${getStatusBadge(data.status)}
+                    <div class="text-muted small mt-1">
+                        ${new Date(data.createdDate).toLocaleDateString()}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    if (data.histories && data.histories.length > 0) {
+        html += `
+            <div class="approval-timeline">
+                <h6 class="mb-3">
+                    <i class="fas fa-route me-2"></i>
+                    處理流程
+                </h6>
+        `;
+
+        // 按時間順序排列歷史記錄
+        const sortedHistories = [...data.histories].sort((a, b) => new Date(a.actionDate) - new Date(b.actionDate));
+        
+        sortedHistories.forEach((history, index) => {
+            const actionDate = new Date(history.actionDate).toLocaleString();
+            const actionBadge = getActionBadge(history.action);
+            const isLast = index === sortedHistories.length - 1;
+            
+            html += `
+                <div class="timeline-item ${isLast ? 'timeline-item-last' : ''}">
+                    <div class="timeline-marker">
+                        <i class="fas fa-circle"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <div>
+                                <strong>${escapeHtml(history.approverName)}</strong>
+                                ${actionBadge}
+                            </div>
+                            <small class="text-muted">${actionDate}</small>
+                        </div>
+                        ${history.comments ? `
+                            <div class="timeline-comment mt-2">
+                                <i class="fas fa-quote-left text-muted me-1"></i>
+                                <span class="text-muted">${escapeHtml(history.comments)}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+    } else {
+        html += `
+            <div class="no-history text-center py-4">
+                <i class="fas fa-history text-muted mb-2" style="font-size: 2rem;"></i>
+                <div class="text-muted">尚無處理記錄</div>
+            </div>
+        `;
+    }
+
+    // 如果有描述或備註，顯示額外資訊
+    if (data.description || data.remarks) {
+        html += '<hr class="my-4">';
+        
+        if (data.description) {
+            html += `
+                <div class="mb-3">
+                    <strong><i class="fas fa-info-circle me-1"></i>申請描述：</strong>
+                    <div class="mt-1 p-2 bg-light rounded">${escapeHtml(data.description)}</div>
+                </div>
+            `;
+        }
+        
+        if (data.remarks) {
+            html += `
+                <div class="mb-3">
+                    <strong><i class="fas fa-sticky-note me-1"></i>備註：</strong>
+                    <div class="mt-1 p-2 bg-light rounded">${escapeHtml(data.remarks)}</div>
+                </div>
+            `;
+        }
+    }
+
+    $('#approvalHistoryContent').html(html);
 }
 
 // 顯示簽核動作模態框
