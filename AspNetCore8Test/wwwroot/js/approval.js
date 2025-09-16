@@ -49,6 +49,7 @@ function loadPendingApprovals() {
         .done(function(response) {
             if (response.success) {
                 renderPendingApprovalsTable(response.data);
+                updatePendingBadge(response.data.length);
                 updateStatistics();
             } else {
                 showError('#pendingApprovalsTable', response.message);
@@ -56,6 +57,7 @@ function loadPendingApprovals() {
         })
         .fail(function() {
             showError('#pendingApprovalsTable', '載入簽核待辦列表失敗');
+            updatePendingBadge(0);
         });
 }
 
@@ -67,6 +69,7 @@ function loadInProgressApprovals() {
         .done(function(response) {
             if (response.success) {
                 renderInProgressApprovalsTable(response.data);
+                updateProgressBadge(response.data.length);
                 updateStatistics();
             } else {
                 showError('#inProgressApprovalsTable', response.message);
@@ -74,6 +77,7 @@ function loadInProgressApprovals() {
         })
         .fail(function() {
             showError('#inProgressApprovalsTable', '載入即時流程列表失敗');
+            updateProgressBadge(0);
         });
 }
 
@@ -86,6 +90,7 @@ function loadApprovalHistory(page = 1, pageSize = 10) {
             if (response.success) {
                 renderApprovalHistoryTable(response.data);
                 renderPagination(response.currentPage, response.pageSize, response.totalCount);
+                updateHistoryBadge(response.totalCount);
                 currentHistoryPage = response.currentPage;
                 updateStatistics();
             } else {
@@ -94,6 +99,7 @@ function loadApprovalHistory(page = 1, pageSize = 10) {
         })
         .fail(function() {
             showError('#approvalHistoryTable', '載入簽核歷史列表失敗');
+            updateHistoryBadge(0);
         });
 }
 
@@ -101,6 +107,7 @@ function loadApprovalHistory(page = 1, pageSize = 10) {
 function renderPendingApprovalsTable(data) {
     if (!data || data.length === 0) {
         $('#pendingApprovalsTable').html('<div class="no-data">目前沒有待簽核項目</div>');
+        updatePendingBadge(0);
         return;
     }
 
@@ -162,6 +169,7 @@ function renderPendingApprovalsTable(data) {
 function renderInProgressApprovalsTable(data) {
     if (!data || data.length === 0) {
         $('#inProgressApprovalsTable').html('<div class="no-data">目前沒有進行中的流程</div>');
+        updateProgressBadge(0);
         return;
     }
 
@@ -221,6 +229,7 @@ function renderInProgressApprovalsTable(data) {
 function renderApprovalHistoryTable(data) {
     if (!data || data.length === 0) {
         $('#approvalHistoryTable').html('<div class="no-data">目前沒有歷史記錄</div>');
+        updateHistoryBadge(0);
         return;
     }
 
@@ -616,6 +625,63 @@ function updateStatistics() {
         $('#progressCount').text(progressCount);
         $('#completedCount').text(completedCount);
     }, 100);
+}
+
+// 更新待簽核 badge
+function updatePendingBadge(count) {
+    const badge = $('#pendingBadge');
+    
+    // 添加動畫效果
+    badge.addClass('animate-update');
+    setTimeout(() => badge.removeClass('animate-update'), 300);
+    
+    badge.text(count);
+    
+    // 根據數量改變 badge 顏色
+    badge.removeClass('bg-warning bg-danger bg-success');
+    if (count === 0) {
+        badge.addClass('bg-success');
+    } else if (count <= 5) {
+        badge.addClass('bg-warning');
+    } else {
+        badge.addClass('bg-danger');
+    }
+}
+
+// 更新進行中 badge
+function updateProgressBadge(count) {
+    const badge = $('#progressBadge');
+    
+    // 添加動畫效果
+    badge.addClass('animate-update');
+    setTimeout(() => badge.removeClass('animate-update'), 300);
+    
+    badge.text(count);
+    
+    // 根據數量改變 badge 顏色
+    badge.removeClass('bg-info bg-primary bg-secondary');
+    if (count === 0) {
+        badge.addClass('bg-secondary');
+    } else if (count <= 3) {
+        badge.addClass('bg-info');
+    } else {
+        badge.addClass('bg-primary');
+    }
+}
+
+// 更新歷史記錄 badge
+function updateHistoryBadge(count) {
+    const badge = $('#historyBadge');
+    
+    // 添加動畫效果
+    badge.addClass('animate-update');
+    setTimeout(() => badge.removeClass('animate-update'), 300);
+    
+    badge.text(count);
+    
+    // 歷史記錄保持灰色
+    badge.removeClass('bg-secondary bg-dark');
+    badge.addClass(count > 0 ? 'bg-secondary' : 'bg-dark');
 }
 
 // 輔助函數
