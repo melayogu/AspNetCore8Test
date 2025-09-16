@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen();
 
 // 註冊服務
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ApprovalService>();
 
 // 註冊 FluentValidation 驗證器
 builder.Services.AddScoped<IValidator<CreateProductDto>, CreateProductDtoValidator>();

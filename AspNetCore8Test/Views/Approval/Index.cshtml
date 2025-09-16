@@ -1,0 +1,185 @@
+@{
+    ViewData["Title"] = "簽核管理";
+}
+
+<div class="approval-container">
+    <div class="page-header mb-4">
+        <h1 class="page-title">
+            <i class="fas fa-clipboard-check me-2"></i>
+            簽核管理
+        </h1>
+        <p class="page-description text-muted">管理簽核待辦、流程追蹤及歷史記錄</p>
+    </div>
+
+    <!-- 統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="stat-card text-center">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="pendingCount">0</h3>
+                    <span>待簽核</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card text-center">
+                <div class="stat-icon progress">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="progressCount">0</h3>
+                    <span>進行中</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card text-center">
+                <div class="stat-icon completed">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="completedCount">0</h3>
+                    <span>已完成</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 簽核待辦區塊 -->
+    <div class="approval-section mb-4">
+        <div class="section-header">
+            <h3>
+                <i class="fas fa-tasks me-2"></i>
+                簽核待辦列表
+            </h3>
+            <div class="section-actions">
+                <button class="btn btn-outline-primary btn-sm" onclick="refreshPendingApprovals()">
+                    <i class="fas fa-sync-alt"></i> 重新整理
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <div id="pendingApprovalsTable">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    載入中...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 即時流程區塊 -->
+    <div class="approval-section mb-4">
+        <div class="section-header">
+            <h3>
+                <i class="fas fa-route me-2"></i>
+                即時流程列表
+            </h3>
+            <div class="section-actions">
+                <button class="btn btn-outline-primary btn-sm" onclick="refreshInProgressApprovals()">
+                    <i class="fas fa-sync-alt"></i> 重新整理
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <div id="inProgressApprovalsTable">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    載入中...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 簽核歷史區塊 -->
+    <div class="approval-section">
+        <div class="section-header">
+            <h3>
+                <i class="fas fa-history me-2"></i>
+                簽核歷史列表
+            </h3>
+            <div class="section-actions">
+                <select id="historyPageSize" class="form-select form-select-sm me-2" style="width: auto;">
+                    <option value="5">5 筆/頁</option>
+                    <option value="10" selected>10 筆/頁</option>
+                    <option value="20">20 筆/頁</option>
+                </select>
+                <button class="btn btn-outline-primary btn-sm" onclick="refreshApprovalHistory()">
+                    <i class="fas fa-sync-alt"></i> 重新整理
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            <div id="approvalHistoryTable">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    載入中...
+                </div>
+            </div>
+            <div id="historyPagination" class="d-flex justify-content-center mt-3"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 簽核詳情模態框 -->
+<div class="modal fade" id="approvalDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">簽核詳情</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="approvalDetailContent">
+                <!-- 詳情內容將由 JavaScript 動態載入 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 簽核動作模態框 -->
+<div class="modal fade" id="approvalActionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">簽核處理</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="approvalActionForm">
+                    <input type="hidden" id="actionApprovalId" />
+                    <div class="mb-3">
+                        <label for="actionType" class="form-label">處理動作</label>
+                        <select class="form-select" id="actionType" required>
+                            <option value="">請選擇動作</option>
+                            <option value="approve">同意</option>
+                            <option value="reject">拒絕</option>
+                            <option value="forward">轉送</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="nextApproverGroup" style="display: none;">
+                        <label for="nextApprover" class="form-label">轉送給</label>
+                        <input type="text" class="form-control" id="nextApprover" placeholder="請輸入轉送對象">
+                    </div>
+                    <div class="mb-3">
+                        <label for="actionComments" class="form-label">意見</label>
+                        <textarea class="form-control" id="actionComments" rows="3" placeholder="請輸入處理意見"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="submitApprovalAction()">確認提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/approval.js" asp-append-version="true"></script>
+}
