@@ -31,12 +31,22 @@ body {
 .page-header {
     border-bottom: 1px solid #dee2e6;
     padding-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.page-header:hover {
+    border-bottom-color: #007bff;
+}
+
+.page-header:hover .page-title {
+    color: #007bff;
 }
 
 .page-title {
     color: #495057;
     font-weight: 600;
     margin-bottom: 5px;
+    transition: color 0.3s ease;
 }
 
 .page-description {
@@ -52,11 +62,23 @@ body {
     padding: 20px;
     transition: all 0.3s ease;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    animation: fadeIn 0.6s ease-out;
 }
 
 .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    border-color: #007bff;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.stat-card:hover .stat-info h3 {
+    color: #007bff;
+    transform: scale(1.05);
 }
 
 .stat-icon {
@@ -69,6 +91,7 @@ body {
     margin: 0 auto 15px;
     font-size: 24px;
     color: #fff;
+    transition: all 0.3s ease;
 }
 
 .stat-icon.pending {
@@ -88,6 +111,7 @@ body {
     font-weight: 700;
     margin-bottom: 5px;
     color: #495057;
+    transition: all 0.3s ease;
 }
 
 .stat-info span {
@@ -103,6 +127,14 @@ body {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.approval-section:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    border-color: #007bff;
 }
 
 .section-header {
@@ -112,6 +144,11 @@ body {
     display: flex;
     justify-content: between;
     align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.approval-section:hover .section-header {
+    background: #e9ecef;
 }
 
 .section-header h3 {
@@ -148,6 +185,11 @@ body {
     font-size: 0.9rem;
     color: #495057;
     padding: 12px 8px;
+    transition: background-color 0.3s ease;
+}
+
+.approval-section:hover .table thead th {
+    background-color: #e9ecef;
 }
 
 .table tbody tr {
@@ -156,6 +198,10 @@ body {
 
 .table tbody tr:hover {
     background-color: #f8f9fa;
+}
+
+.approval-section:hover .table tbody tr:hover {
+    background-color: #e3f2fd;
 }
 
 .table tbody td {
@@ -224,17 +270,22 @@ body {
     color: #007bff;
     border-color: #dee2e6;
     padding: 8px 12px;
+    transition: all 0.2s ease;
 }
 
 .pagination .page-item.active .page-link {
     background-color: #007bff;
     border-color: #007bff;
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0,123,255,0.3);
 }
 
 .pagination .page-link:hover {
     color: #0056b3;
     background-color: #e9ecef;
     border-color: #dee2e6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* 響應式設計 */
@@ -292,6 +343,29 @@ body {
 .btn-sm {
     padding: 4px 8px;
     font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+
+.btn-outline-info:hover {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: #fff;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
 }
 
 /* 模態框調整 */
@@ -377,4 +451,48 @@ body {
 .timeline-item .badge {
     font-size: 0.7rem;
     margin-left: 8px;
+}
+
+/* 載入動畫 */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner i.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* 淡入動畫 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 延遲動畫效果 */
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+
+.approval-section:nth-child(1) { animation-delay: 0.2s; }
+.approval-section:nth-child(2) { animation-delay: 0.4s; }
+.approval-section:nth-child(3) { animation-delay: 0.6s; }
+
+/* 脈衝效果 */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.stat-card:hover .stat-icon.pending {
+    animation: pulse 1.5s infinite;
+}
+
+.stat-card:hover .stat-icon.progress {
+    animation: pulse 1.5s infinite;
+}
+
+.stat-card:hover .stat-icon.completed {
+    animation: pulse 1.5s infinite;
 }
