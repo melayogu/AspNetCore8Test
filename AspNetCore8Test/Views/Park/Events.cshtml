@@ -1,0 +1,836 @@
+@{
+    ViewData["Title"] = "事件管理";
+    Layout = "_Layout02";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-calendar-alt me-2"></i>事件管理</h2>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#parkEventModal">
+                <i class="fas fa-plus me-1"></i>新增公園事件
+            </button>
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#maintenanceEventModal">
+                <i class="fas fa-tools me-1"></i>新增維護事件
+            </button>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#emergencyEventModal">
+                <i class="fas fa-exclamation-triangle me-1"></i>回報緊急事件
+            </button>
+        </div>
+    </div>
+
+    <!-- 統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">即將到來</h5>
+                            <h3 id="upcomingEventsCount">0</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">進行中</h5>
+                            <h3 id="activeEventsCount">0</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-play fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">待處理維護</h5>
+                            <h3 id="pendingMaintenanceCount">0</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-wrench fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">緊急事件</h5>
+                            <h3 id="activeEmergenciesCount">0</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要內容 -->
+    <ul class="nav nav-tabs" id="eventTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="park-events-tab" data-bs-toggle="tab" data-bs-target="#park-events" type="button" role="tab">
+                <i class="fas fa-tree me-1"></i>公園事件
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="maintenance-tab" data-bs-toggle="tab" data-bs-target="#maintenance" type="button" role="tab">
+                <i class="fas fa-tools me-1"></i>維護事件
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="emergency-tab" data-bs-toggle="tab" data-bs-target="#emergency" type="button" role="tab">
+                <i class="fas fa-exclamation-triangle me-1"></i>緊急事件
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="eventTabContent">
+        <!-- 公園事件 -->
+        <div class="tab-pane fade show active" id="park-events" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="card-title mb-0">公園事件列表</h5>
+                        </div>
+                        <div class="col-auto">
+                            <input type="text" class="form-control" id="parkEventSearch" placeholder="搜尋事件...">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>事件名稱</th>
+                                    <th>類型</th>
+                                    <th>開始時間</th>
+                                    <th>結束時間</th>
+                                    <th>地點</th>
+                                    <th>參與人數</th>
+                                    <th>狀態</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="parkEventsTable">
+                                <!-- 動態載入內容 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 維護事件 -->
+        <div class="tab-pane fade" id="maintenance" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="card-title mb-0">維護事件列表</h5>
+                        </div>
+                        <div class="col-auto">
+                            <select class="form-select" id="maintenanceStatusFilter">
+                                <option value="">所有狀態</option>
+                                <option value="Scheduled">已排程</option>
+                                <option value="Assigned">已指派</option>
+                                <option value="InProgress">進行中</option>
+                                <option value="Completed">已完成</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>維護項目</th>
+                                    <th>類型</th>
+                                    <th>設施</th>
+                                    <th>排程時間</th>
+                                    <th>預估時長</th>
+                                    <th>優先級</th>
+                                    <th>負責人</th>
+                                    <th>狀態</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="maintenanceEventsTable">
+                                <!-- 動態載入內容 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 緊急事件 -->
+        <div class="tab-pane fade" id="emergency" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="card-title mb-0">緊急事件列表</h5>
+                        </div>
+                        <div class="col-auto">
+                            <select class="form-select" id="emergencySeverityFilter">
+                                <option value="">所有嚴重程度</option>
+                                <option value="Low">低</option>
+                                <option value="Medium">中</option>
+                                <option value="High">高</option>
+                                <option value="Critical">緊急</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>類型</th>
+                                    <th>描述</th>
+                                    <th>地點</th>
+                                    <th>嚴重程度</th>
+                                    <th>回報人</th>
+                                    <th>發生時間</th>
+                                    <th>狀態</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="emergencyEventsTable">
+                                <!-- 動態載入內容 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 公園事件模態框 -->
+<div class="modal fade" id="parkEventModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增/編輯公園事件</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="parkEventForm">
+                    <input type="hidden" id="parkEventId">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="eventName" class="form-label">事件名稱 *</label>
+                            <input type="text" class="form-control" id="eventName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="eventType" class="form-label">事件類型 *</label>
+                            <select class="form-select" id="eventType" required>
+                                <option value="">請選擇</option>
+                                <option value="1">節慶活動</option>
+                                <option value="2">展覽</option>
+                                <option value="3">體育活動</option>
+                                <option value="4">教育活動</option>
+                                <option value="5">社區活動</option>
+                                <option value="6">其他</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventDescription" class="form-label">事件描述</label>
+                        <textarea class="form-control" id="eventDescription" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="startDate" class="form-label">開始時間 *</label>
+                            <input type="datetime-local" class="form-control" id="startDate" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="endDate" class="form-label">結束時間 *</label>
+                            <input type="datetime-local" class="form-control" id="endDate" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="eventLocation" class="form-label">地點 *</label>
+                            <input type="text" class="form-control" id="eventLocation" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="maxParticipants" class="form-label">最大參與人數</label>
+                            <input type="number" class="form-control" id="maxParticipants" min="1">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="organizer" class="form-label">主辦單位</label>
+                            <input type="text" class="form-control" id="organizer">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="contactInfo" class="form-label">聯絡資訊</label>
+                            <input type="text" class="form-control" id="contactInfo">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="requireRegistration">
+                            <label class="form-check-label" for="requireRegistration">需要報名</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventNotes" class="form-label">備註</label>
+                        <textarea class="form-control" id="eventNotes" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="saveParkEvent()">儲存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 維護事件模態框 -->
+<div class="modal fade" id="maintenanceEventModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增/編輯維護事件</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="maintenanceEventForm">
+                    <input type="hidden" id="maintenanceEventId">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="maintenanceName" class="form-label">維護項目 *</label>
+                            <input type="text" class="form-control" id="maintenanceName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="maintenanceType" class="form-label">維護類型 *</label>
+                            <select class="form-select" id="maintenanceType" required>
+                                <option value="">請選擇</option>
+                                <option value="1">清潔維護</option>
+                                <option value="2">設施維修</option>
+                                <option value="3">景觀維護</option>
+                                <option value="4">設備保養</option>
+                                <option value="5">安全檢查</option>
+                                <option value="6">其他</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="maintenanceDescription" class="form-label">維護描述</label>
+                        <textarea class="form-control" id="maintenanceDescription" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="facilityId" class="form-label">設施ID</label>
+                            <input type="number" class="form-control" id="facilityId" min="1">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="scheduledDate" class="form-label">排程時間 *</label>
+                            <input type="datetime-local" class="form-control" id="scheduledDate" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="estimatedDuration" class="form-label">預估時長 (小時)</label>
+                            <input type="number" class="form-control" id="estimatedDuration" min="0.5" step="0.5">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="priority" class="form-label">優先級 *</label>
+                            <select class="form-select" id="priority" required>
+                                <option value="">請選擇</option>
+                                <option value="1">低</option>
+                                <option value="2">中</option>
+                                <option value="3">高</option>
+                                <option value="4">緊急</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignedTo" class="form-label">負責人</label>
+                        <input type="text" class="form-control" id="assignedTo">
+                    </div>
+                    <div class="mb-3">
+                        <label for="maintenanceNotes" class="form-label">備註</label>
+                        <textarea class="form-control" id="maintenanceNotes" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="saveMaintenanceEvent()">儲存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 緊急事件模態框 -->
+<div class="modal fade" id="emergencyEventModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">回報緊急事件</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="emergencyEventForm">
+                    <input type="hidden" id="emergencyEventId">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="emergencyType" class="form-label">緊急事件類型 *</label>
+                            <select class="form-select" id="emergencyType" required>
+                                <option value="">請選擇</option>
+                                <option value="1">意外事故</option>
+                                <option value="2">安全問題</option>
+                                <option value="3">天氣災害</option>
+                                <option value="4">火災</option>
+                                <option value="5">醫療緊急</option>
+                                <option value="6">其他</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="severity" class="form-label">嚴重程度 *</label>
+                            <select class="form-select" id="severity" required>
+                                <option value="">請選擇</option>
+                                <option value="1">低</option>
+                                <option value="2">中</option>
+                                <option value="3">高</option>
+                                <option value="4">緊急</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="emergencyDescription" class="form-label">事件描述 *</label>
+                        <textarea class="form-control" id="emergencyDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="emergencyLocation" class="form-label">發生地點 *</label>
+                            <input type="text" class="form-control" id="emergencyLocation" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="occurredAt" class="form-label">發生時間 *</label>
+                            <input type="datetime-local" class="form-control" id="occurredAt" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="reportedBy" class="form-label">回報人 *</label>
+                            <input type="text" class="form-control" id="reportedBy" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="emergencyContactInfo" class="form-label">聯絡資訊 *</label>
+                            <input type="text" class="form-control" id="emergencyContactInfo" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="impactArea" class="form-label">影響範圍</label>
+                            <input type="text" class="form-control" id="impactArea">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="estimatedAffectedPeople" class="form-label">預估影響人數</label>
+                            <input type="number" class="form-control" id="estimatedAffectedPeople" min="0">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="emergencyNotes" class="form-label">備註</label>
+                        <textarea class="form-control" id="emergencyNotes" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-danger" onclick="saveEmergencyEvent()">回報事件</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 頁面載入完成後執行
+document.addEventListener('DOMContentLoaded', function() {
+    loadEventStats();
+    loadParkEvents();
+    loadMaintenanceEvents();
+    loadEmergencyEvents();
+    
+    // 搜尋功能
+    document.getElementById('parkEventSearch').addEventListener('input', debounce(searchParkEvents, 300));
+    document.getElementById('maintenanceStatusFilter').addEventListener('change', filterMaintenanceEvents);
+    document.getElementById('emergencySeverityFilter').addEventListener('change', filterEmergencyEvents);
+});
+
+// 載入統計數據
+async function loadEventStats() {
+    try {
+        const response = await fetch('/api/ParkEvents/stats');
+        const stats = await response.json();
+        
+        document.getElementById('upcomingEventsCount').textContent = stats.upcomingEvents;
+        document.getElementById('activeEventsCount').textContent = stats.activeEvents;
+        document.getElementById('pendingMaintenanceCount').textContent = stats.pendingMaintenance;
+        document.getElementById('activeEmergenciesCount').textContent = stats.activeEmergencies;
+    } catch (error) {
+        console.error('載入統計數據失敗:', error);
+    }
+}
+
+// 載入公園事件
+async function loadParkEvents() {
+    try {
+        const response = await fetch('/api/ParkEvents');
+        const events = await response.json();
+        
+        const tableBody = document.getElementById('parkEventsTable');
+        tableBody.innerHTML = events.map(event => `
+            <tr>
+                <td>
+                    <strong>${event.eventName}</strong><br>
+                    <small class="text-muted">${event.description}</small>
+                </td>
+                <td><span class="badge bg-info">${event.eventType}</span></td>
+                <td>${formatDateTime(event.startDate)}</td>
+                <td>${formatDateTime(event.endDate)}</td>
+                <td>${event.location}</td>
+                <td>${event.currentParticipants}/${event.maxParticipants || '無限制'}</td>
+                <td>${getEventStatusBadge(event.status)}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="editParkEvent(${event.id})" title="編輯">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-success" onclick="completeParkEvent(${event.id})" title="完成">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="cancelParkEvent(${event.id})" title="取消">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="deleteParkEvent(${event.id})" title="刪除">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('載入公園事件失敗:', error);
+    }
+}
+
+// 載入維護事件
+async function loadMaintenanceEvents() {
+    try {
+        const response = await fetch('/api/MaintenanceEvents');
+        const events = await response.json();
+        
+        const tableBody = document.getElementById('maintenanceEventsTable');
+        tableBody.innerHTML = events.map(event => `
+            <tr ${event.isOverdue ? 'class="table-warning"' : ''}>
+                <td>
+                    <strong>${event.maintenanceName}</strong><br>
+                    <small class="text-muted">${event.description}</small>
+                </td>
+                <td><span class="badge bg-secondary">${event.maintenanceType}</span></td>
+                <td>${event.facilityName}</td>
+                <td>${formatDateTime(event.scheduledDate)}</td>
+                <td>${event.estimatedDuration}小時</td>
+                <td>${getPriorityBadge(event.priority)}</td>
+                <td>${event.assignedTo || '未指派'}</td>
+                <td>${getMaintenanceStatusBadge(event.status)}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="editMaintenanceEvent(${event.id})" title="編輯">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-info" onclick="assignMaintenanceEvent(${event.id})" title="指派">
+                            <i class="fas fa-user-plus"></i>
+                        </button>
+                        <button class="btn btn-outline-success" onclick="completeMaintenanceEvent(${event.id})" title="完成">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="deleteMaintenanceEvent(${event.id})" title="刪除">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('載入維護事件失敗:', error);
+    }
+}
+
+// 載入緊急事件
+async function loadEmergencyEvents() {
+    try {
+        const response = await fetch('/api/EmergencyEvents');
+        const events = await response.json();
+        
+        const tableBody = document.getElementById('emergencyEventsTable');
+        tableBody.innerHTML = events.map(event => `
+            <tr ${event.isActive ? 'class="table-danger"' : ''}>
+                <td><span class="badge bg-warning">${event.emergencyType}</span></td>
+                <td>
+                    ${event.description}<br>
+                    <small class="text-muted">回報人: ${event.reportedBy}</small>
+                </td>
+                <td>${event.location}</td>
+                <td>${getSeverityBadge(event.severity)}</td>
+                <td>${event.reportedBy}</td>
+                <td>${formatDateTime(event.occurredAt)}</td>
+                <td>${getEmergencyStatusBadge(event.status)}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="editEmergencyEvent(${event.id})" title="編輯">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="respondToEmergency(${event.id})" title="回應">
+                            <i class="fas fa-reply"></i>
+                        </button>
+                        <button class="btn btn-outline-success" onclick="resolveEmergency(${event.id})" title="解決">
+                            <i class="fas fa-check-circle"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="deleteEmergencyEvent(${event.id})" title="刪除">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('載入緊急事件失敗:', error);
+    }
+}
+
+// 搜尋公園事件
+async function searchParkEvents() {
+    const searchTerm = document.getElementById('parkEventSearch').value;
+    try {
+        const response = await fetch(`/api/ParkEvents/search?searchTerm=${encodeURIComponent(searchTerm)}`);
+        const events = await response.json();
+        // 重新渲染表格內容（同loadParkEvents的表格渲染部分）
+    } catch (error) {
+        console.error('搜尋失敗:', error);
+    }
+}
+
+// 儲存公園事件
+async function saveParkEvent() {
+    const form = document.getElementById('parkEventForm');
+    const formData = new FormData(form);
+    const eventId = document.getElementById('parkEventId').value;
+    
+    const eventData = {
+        eventName: document.getElementById('eventName').value,
+        description: document.getElementById('eventDescription').value,
+        eventType: parseInt(document.getElementById('eventType').value),
+        startDate: document.getElementById('startDate').value,
+        endDate: document.getElementById('endDate').value,
+        location: document.getElementById('eventLocation').value,
+        maxParticipants: parseInt(document.getElementById('maxParticipants').value) || null,
+        organizer: document.getElementById('organizer').value,
+        contactInfo: document.getElementById('contactInfo').value,
+        requireRegistration: document.getElementById('requireRegistration').checked,
+        notes: document.getElementById('eventNotes').value
+    };
+    
+    try {
+        const url = eventId ? `/api/ParkEvents/${eventId}` : '/api/ParkEvents';
+        const method = eventId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(eventData)
+        });
+        
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('parkEventModal')).hide();
+            loadParkEvents();
+            loadEventStats();
+            alert('公園事件儲存成功！');
+        } else {
+            alert('儲存失敗');
+        }
+    } catch (error) {
+        console.error('儲存失敗:', error);
+        alert('儲存失敗');
+    }
+}
+
+// 儲存維護事件
+async function saveMaintenanceEvent() {
+    const eventData = {
+        maintenanceName: document.getElementById('maintenanceName').value,
+        description: document.getElementById('maintenanceDescription').value,
+        maintenanceType: parseInt(document.getElementById('maintenanceType').value),
+        facilityId: parseInt(document.getElementById('facilityId').value) || null,
+        scheduledDate: document.getElementById('scheduledDate').value,
+        estimatedDuration: parseFloat(document.getElementById('estimatedDuration').value) || null,
+        priority: parseInt(document.getElementById('priority').value),
+        assignedTo: document.getElementById('assignedTo').value,
+        notes: document.getElementById('maintenanceNotes').value
+    };
+    
+    try {
+        const response = await fetch('/api/MaintenanceEvents', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(eventData)
+        });
+        
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('maintenanceEventModal')).hide();
+            loadMaintenanceEvents();
+            loadEventStats();
+            alert('維護事件建立成功！');
+        } else {
+            alert('建立失敗');
+        }
+    } catch (error) {
+        console.error('建立失敗:', error);
+        alert('建立失敗');
+    }
+}
+
+// 儲存緊急事件
+async function saveEmergencyEvent() {
+    const eventData = {
+        emergencyType: parseInt(document.getElementById('emergencyType').value),
+        description: document.getElementById('emergencyDescription').value,
+        location: document.getElementById('emergencyLocation').value,
+        severity: parseInt(document.getElementById('severity').value),
+        reportedBy: document.getElementById('reportedBy').value,
+        contactInfo: document.getElementById('emergencyContactInfo').value,
+        occurredAt: document.getElementById('occurredAt').value,
+        impactArea: document.getElementById('impactArea').value,
+        estimatedAffectedPeople: parseInt(document.getElementById('estimatedAffectedPeople').value) || null,
+        notes: document.getElementById('emergencyNotes').value
+    };
+    
+    try {
+        const response = await fetch('/api/EmergencyEvents', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(eventData)
+        });
+        
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('emergencyEventModal')).hide();
+            loadEmergencyEvents();
+            loadEventStats();
+            alert('緊急事件回報成功！');
+        } else {
+            alert('回報失敗');
+        }
+    } catch (error) {
+        console.error('回報失敗:', error);
+        alert('回報失敗');
+    }
+}
+
+// 狀態徽章函數
+function getEventStatusBadge(status) {
+    const badges = {
+        'Scheduled': '<span class="badge bg-primary">已排程</span>',
+        'InProgress': '<span class="badge bg-success">進行中</span>',
+        'Completed': '<span class="badge bg-secondary">已完成</span>',
+        'Cancelled': '<span class="badge bg-danger">已取消</span>'
+    };
+    return badges[status] || `<span class="badge bg-light text-dark">${status}</span>`;
+}
+
+function getMaintenanceStatusBadge(status) {
+    const badges = {
+        'Scheduled': '<span class="badge bg-primary">已排程</span>',
+        'Assigned': '<span class="badge bg-info">已指派</span>',
+        'InProgress': '<span class="badge bg-warning">進行中</span>',
+        'Completed': '<span class="badge bg-success">已完成</span>'
+    };
+    return badges[status] || `<span class="badge bg-light text-dark">${status}</span>`;
+}
+
+function getEmergencyStatusBadge(status) {
+    const badges = {
+        'Reported': '<span class="badge bg-danger">已回報</span>',
+        'Responding': '<span class="badge bg-warning">回應中</span>',
+        'Resolved': '<span class="badge bg-success">已解決</span>'
+    };
+    return badges[status] || `<span class="badge bg-light text-dark">${status}</span>`;
+}
+
+function getPriorityBadge(priority) {
+    const badges = {
+        'Low': '<span class="badge bg-secondary">低</span>',
+        'Medium': '<span class="badge bg-info">中</span>',
+        'High': '<span class="badge bg-warning">高</span>',
+        'Critical': '<span class="badge bg-danger">緊急</span>'
+    };
+    return badges[priority] || `<span class="badge bg-light text-dark">${priority}</span>`;
+}
+
+function getSeverityBadge(severity) {
+    const badges = {
+        'Low': '<span class="badge bg-secondary">低</span>',
+        'Medium': '<span class="badge bg-warning">中</span>',
+        'High': '<span class="badge bg-danger">高</span>',
+        'Critical': '<span class="badge bg-dark">緊急</span>'
+    };
+    return badges[severity] || `<span class="badge bg-light text-dark">${severity}</span>`;
+}
+
+// 工具函數
+function formatDateTime(dateString) {
+    return new Date(dateString).toLocaleString('zh-TW');
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// 設定當前時間為預設值
+function setCurrentDateTime() {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('occurredAt').value = now.toISOString().slice(0, 16);
+}
+
+// 當模態框顯示時設定預設值
+document.getElementById('emergencyEventModal').addEventListener('show.bs.modal', function () {
+    setCurrentDateTime();
+});
+</script>

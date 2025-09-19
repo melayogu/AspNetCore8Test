@@ -24,6 +24,8 @@ builder.Services.AddScoped<ApprovalService>();
 builder.Services.AddScoped<IFacilityService, FacilityService>();
 builder.Services.AddScoped<IPlantService, PlantService>();
 builder.Services.AddScoped<IEnvironmentalService, EnvironmentalService>();
+builder.Services.AddScoped<IVisitorService, VisitorService>();
+builder.Services.AddScoped<IEventService, EventService>();
 
 // 註冊 FluentValidation 驗證器
 builder.Services.AddScoped<IValidator<CreateProductDto>, CreateProductDtoValidator>();

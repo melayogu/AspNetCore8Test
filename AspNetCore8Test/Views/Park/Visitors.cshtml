@@ -1,0 +1,913 @@
+@{
+    ViewData["Title"] = "遊客服務管理";
+}
+
+<div class="container-fluid">
+    <!-- 頁面標題 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="fas fa-users text-primary me-2"></i>遊客服務管理</h2>
+                    <p class="text-muted mb-0">管理遊客活動、預約與回饋系統</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-success" onclick="showCreateActivityModal()">
+                        <i class="fas fa-plus me-1"></i>新增活動
+                    </button>
+                    <button class="btn btn-info" onclick="showCreateFeedbackModal()">
+                        <i class="fas fa-comment me-1"></i>新增回饋
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 統計卡片 -->
+    <div class="row mb-4" id="statsCards">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">總活動數</h6>
+                            <h3 class="mb-0" id="totalActivities">-</h3>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-calendar-alt text-primary fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">今日預約</h6>
+                            <h3 class="mb-0" id="todayReservations">-</h3>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-bookmark text-success fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">待處理回饋</h6>
+                            <h3 class="mb-0" id="unprocessedFeedbacks">-</h3>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-comment-dots text-warning fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">平均評分</h6>
+                            <h3 class="mb-0" id="averageRating">-</h3>
+                        </div>
+                        <div class="bg-info bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-star text-info fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要內容區域 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#activities-tab" role="tab">
+                                <i class="fas fa-calendar-alt me-1"></i>活動管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#reservations-tab" role="tab">
+                                <i class="fas fa-bookmark me-1"></i>預約管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#feedback-tab" role="tab">
+                                <i class="fas fa-comments me-1"></i>回饋管理
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <!-- 活動管理分頁 -->
+                        <div class="tab-pane fade show active" id="activities-tab" role="tabpanel">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        <input type="text" class="form-control" id="activitySearchInput" placeholder="搜尋活動名稱、地點或導覽員...">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="btn-group w-100" aria-label="活動篩選">
+                                        <button type="button" class="btn btn-outline-primary active" onclick="filterActivities('all')">全部</button>
+                                        <button type="button" class="btn btn-outline-success" onclick="filterActivities('upcoming')">即將開始</button>
+                                        <button type="button" class="btn btn-outline-info" onclick="filterActivities('active')">進行中</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>活動名稱</th>
+                                            <th>類型</th>
+                                            <th>時間</th>
+                                            <th>地點</th>
+                                            <th>參與人數</th>
+                                            <th>費用</th>
+                                            <th>狀態</th>
+                                            <th style="width: 200px;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="activitiesTableBody">
+                                        <!-- 動態載入內容 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 預約管理分頁 -->
+                        <div class="tab-pane fade" id="reservations-tab" role="tabpanel">
+                            <div class="row mb-3">
+                                <div class="col-md-8">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        <input type="text" class="form-control" id="reservationSearchInput" placeholder="搜尋參與者姓名或聯絡方式...">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select" id="reservationStatusFilter">
+                                        <option value="">所有狀態</option>
+                                        <option value="Pending">待確認</option>
+                                        <option value="Confirmed">已確認</option>
+                                        <option value="Cancelled">已取消</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>活動名稱</th>
+                                            <th>參與者</th>
+                                            <th>聯絡方式</th>
+                                            <th>人數</th>
+                                            <th>預約時間</th>
+                                            <th>狀態</th>
+                                            <th style="width: 150px;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reservationsTableBody">
+                                        <!-- 動態載入內容 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 回饋管理分頁 -->
+                        <div class="tab-pane fade" id="feedback-tab" role="tabpanel">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        <input type="text" class="form-control" id="feedbackSearchInput" placeholder="搜尋訪客姓名或回饋內容...">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select" id="feedbackRatingFilter">
+                                        <option value="">所有評分</option>
+                                        <option value="5">5星 ★★★★★</option>
+                                        <option value="4">4星 ★★★★☆</option>
+                                        <option value="3">3星 ★★★☆☆</option>
+                                        <option value="2">2星 ★★☆☆☆</option>
+                                        <option value="1">1星 ★☆☆☆☆</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" id="unprocessedOnlyFilter">
+                                        <label class="form-check-label" for="unprocessedOnlyFilter">
+                                            僅顯示未處理
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>訪客姓名</th>
+                                            <th>回饋類型</th>
+                                            <th>評分</th>
+                                            <th>內容</th>
+                                            <th>訪問時間</th>
+                                            <th>狀態</th>
+                                            <th style="width: 150px;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="feedbackTableBody">
+                                        <!-- 動態載入內容 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 新增活動模態框 -->
+<div class="modal fade" id="createActivityModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增活動</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createActivityForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="activityName" class="form-label">活動名稱 *</label>
+                                <input type="text" class="form-control" id="activityName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="activityType" class="form-label">活動類型 *</label>
+                                <select class="form-select" id="activityType" required>
+                                    <option value="1">導覽解說</option>
+                                    <option value="2">自然教育</option>
+                                    <option value="3">運動健身</option>
+                                    <option value="4">攝影活動</option>
+                                    <option value="5">志工服務</option>
+                                    <option value="6">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="activityDescription" class="form-label">活動描述</label>
+                        <textarea class="form-control" id="activityDescription" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="startTime" class="form-label">開始時間 *</label>
+                                <input type="datetime-local" class="form-control" id="startTime" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="endTime" class="form-label">結束時間 *</label>
+                                <input type="datetime-local" class="form-control" id="endTime" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="location" class="form-label">活動地點</label>
+                                <input type="text" class="form-control" id="location">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="guide" class="form-label">導覽員</label>
+                                <input type="text" class="form-control" id="guide">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="maxParticipants" class="form-label">最大參與人數 *</label>
+                                <input type="number" class="form-control" id="maxParticipants" min="1" max="1000" value="30" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="fee" class="form-label">費用 (元)</label>
+                                <input type="number" class="form-control" id="fee" min="0" step="0.01" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">備註</label>
+                        <textarea class="form-control" id="notes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">新增活動</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 新增回饋模態框 -->
+<div class="modal fade" id="createFeedbackModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增遊客回饋</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createFeedbackForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="visitorName" class="form-label">訪客姓名 *</label>
+                        <input type="text" class="form-control" id="visitorName" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="contactPhone" class="form-label">聯絡電話</label>
+                                <input type="tel" class="form-control" id="contactPhone">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">電子郵件</label>
+                                <input type="email" class="form-control" id="email">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="feedbackType" class="form-label">回饋類型 *</label>
+                                <select class="form-select" id="feedbackType" required>
+                                    <option value="1">讚美</option>
+                                    <option value="2">建議</option>
+                                    <option value="3">抱怨</option>
+                                    <option value="4">設施</option>
+                                    <option value="5">服務</option>
+                                    <option value="6">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="rating" class="form-label">評分 *</label>
+                                <select class="form-select" id="rating" required>
+                                    <option value="5">5星 - 非常滿意</option>
+                                    <option value="4">4星 - 滿意</option>
+                                    <option value="3">3星 - 普通</option>
+                                    <option value="2">2星 - 不滿意</option>
+                                    <option value="1">1星 - 非常不滿意</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="content" class="form-label">回饋內容 *</label>
+                        <textarea class="form-control" id="content" rows="4" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="feedbackLocation" class="form-label">回饋位置</label>
+                                <input type="text" class="form-control" id="feedbackLocation">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="visitDate" class="form-label">訪問時間 *</label>
+                                <input type="datetime-local" class="form-control" id="visitDate" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">提交回饋</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+$(document).ready(function() {
+    loadStats();
+    loadActivities();
+    
+    // 搜尋功能
+    $('#activitySearchInput').on('keyup', debounce(function() {
+        searchActivities();
+    }, 300));
+    
+    $('#reservationSearchInput').on('keyup', debounce(function() {
+        loadReservations();
+    }, 300));
+    
+    $('#feedbackSearchInput').on('keyup', debounce(function() {
+        loadFeedbacks();
+    }, 300));
+    
+    // 篩選功能
+    $('#reservationStatusFilter').change(function() {
+        loadReservations();
+    });
+    
+    $('#feedbackRatingFilter').change(function() {
+        loadFeedbacks();
+    });
+    
+    $('#unprocessedOnlyFilter').change(function() {
+        loadFeedbacks();
+    });
+    
+    // 分頁切換時載入資料
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var target = $(e.target).attr("href");
+        if (target === '#reservations-tab') {
+            loadReservations();
+        } else if (target === '#feedback-tab') {
+            loadFeedbacks();
+        }
+    });
+    
+    // 表單提交
+    $('#createActivityForm').submit(function(e) {
+        e.preventDefault();
+        createActivity();
+    });
+    
+    $('#createFeedbackForm').submit(function(e) {
+        e.preventDefault();
+        createFeedback();
+    });
+});
+
+// 載入統計數據
+function loadStats() {
+    $.get('/api/visitor-feedback/stats')
+        .done(function(data) {
+            $('#totalActivities').text(data.totalActivities);
+            $('#todayReservations').text(data.todayReservations);
+            $('#unprocessedFeedbacks').text(data.unprocessedFeedbacks);
+            $('#averageRating').text(data.averageRating.toFixed(1));
+        })
+        .fail(function() {
+            console.error('載入統計數據失敗');
+        });
+}
+
+// 載入活動列表
+function loadActivities() {
+    $.get('/api/visitor-activities')
+        .done(function(data) {
+            renderActivitiesTable(data);
+        })
+        .fail(function() {
+            showAlert('載入活動列表失敗', 'danger');
+        });
+}
+
+// 渲染活動表格
+function renderActivitiesTable(activities) {
+    const tbody = $('#activitiesTableBody');
+    tbody.empty();
+    
+    if (activities.length === 0) {
+        tbody.append('<tr><td colspan="8" class="text-center text-muted">尚無活動資料</td></tr>');
+        return;
+    }
+    
+    activities.forEach(function(activity) {
+        const startTime = new Date(activity.startTime).toLocaleString('zh-TW');
+        const endTime = new Date(activity.endTime).toLocaleString('zh-TW');
+        const statusBadge = getActivityStatusBadge(activity.status);
+        const participantsInfo = `${activity.currentParticipants}/${activity.maxParticipants}`;
+        const fee = activity.fee > 0 ? `NT$ ${activity.fee}` : '免費';
+        
+        const row = `
+            <tr>
+                <td>
+                    <strong>${activity.activityName}</strong>
+                    <br><small class="text-muted">${activity.description}</small>
+                </td>
+                <td>${getActivityTypeText(activity.activityType)}</td>
+                <td>
+                    <small>${startTime}</small>
+                    <br><small>至 ${endTime}</small>
+                </td>
+                <td>${activity.location}</td>
+                <td>
+                    <span class="badge ${activity.isFull ? 'bg-danger' : 'bg-success'}">${participantsInfo}</span>
+                </td>
+                <td>${fee}</td>
+                <td>${statusBadge}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="viewActivity(${activity.id})" title="檢視">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="editActivity(${activity.id})" title="編輯">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="cancelActivity(${activity.id})" title="取消">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+        tbody.append(row);
+    });
+}
+
+// 載入預約列表
+function loadReservations() {
+    const searchTerm = $('#reservationSearchInput').val();
+    const statusFilter = $('#reservationStatusFilter').val();
+    
+    $.get('/api/activity-reservations')
+        .done(function(data) {
+            let filteredData = data;
+            
+            if (searchTerm) {
+                filteredData = data.filter(r => 
+                    r.participantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    r.contactPhone.includes(searchTerm) ||
+                    r.email.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+            
+            if (statusFilter) {
+                filteredData = filteredData.filter(r => r.status === statusFilter);
+            }
+            
+            renderReservationsTable(filteredData);
+        })
+        .fail(function() {
+            showAlert('載入預約列表失敗', 'danger');
+        });
+}
+
+// 載入回饋列表
+function loadFeedbacks() {
+    const searchTerm = $('#feedbackSearchInput').val();
+    const ratingFilter = $('#feedbackRatingFilter').val();
+    const unprocessedOnly = $('#unprocessedOnlyFilter').is(':checked');
+    
+    let url = '/api/visitor-feedback';
+    if (unprocessedOnly) {
+        url += '/unprocessed';
+    }
+    
+    $.get(url)
+        .done(function(data) {
+            let filteredData = data;
+            
+            if (searchTerm) {
+                filteredData = data.filter(f => 
+                    f.visitorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    f.content.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+            
+            if (ratingFilter) {
+                filteredData = filteredData.filter(f => f.rating == ratingFilter);
+            }
+            
+            renderFeedbackTable(filteredData);
+        })
+        .fail(function() {
+            showAlert('載入回饋列表失敗', 'danger');
+        });
+}
+
+// 搜尋活動
+function searchActivities() {
+    const searchTerm = $('#activitySearchInput').val();
+    const url = searchTerm ? `/api/visitor-activities/search?searchTerm=${encodeURIComponent(searchTerm)}` : '/api/visitor-activities';
+    
+    $.get(url)
+        .done(function(data) {
+            renderActivitiesTable(data);
+        })
+        .fail(function() {
+            showAlert('搜尋活動失敗', 'danger');
+        });
+}
+
+// 篩選活動
+function filterActivities(type) {
+    // 更新按鈕狀態
+    $('.btn-group button').removeClass('active');
+    $(`button[onclick="filterActivities('${type}')"]`).addClass('active');
+    
+    let url = '/api/visitor-activities';
+    if (type === 'upcoming') {
+        url = '/api/visitor-activities/upcoming';
+    } else if (type === 'active') {
+        url = '/api/visitor-activities/active';
+    }
+    
+    $.get(url)
+        .done(function(data) {
+            renderActivitiesTable(data);
+        })
+        .fail(function() {
+            showAlert('載入活動列表失敗', 'danger');
+        });
+}
+
+// 顯示新增活動模態框
+function showCreateActivityModal() {
+    $('#createActivityForm')[0].reset();
+    const now = new Date();
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    $('#startTime').val(formatDateTimeLocal(tomorrow));
+    $('#endTime').val(formatDateTimeLocal(new Date(tomorrow.getTime() + 2 * 60 * 60 * 1000)));
+    $('#createActivityModal').modal('show');
+}
+
+// 顯示新增回饋模態框
+function showCreateFeedbackModal() {
+    $('#createFeedbackForm')[0].reset();
+    $('#visitDate').val(formatDateTimeLocal(new Date()));
+    $('#createFeedbackModal').modal('show');
+}
+
+// 創建活動
+function createActivity() {
+    const formData = {
+        activityName: $('#activityName').val(),
+        description: $('#activityDescription').val(),
+        activityType: parseInt($('#activityType').val()),
+        startTime: $('#startTime').val(),
+        endTime: $('#endTime').val(),
+        location: $('#location').val(),
+        maxParticipants: parseInt($('#maxParticipants').val()),
+        fee: parseFloat($('#fee').val()) || 0,
+        guide: $('#guide').val(),
+        notes: $('#notes').val(),
+        isActive: true
+    };
+    
+    $.ajax({
+        url: '/api/visitor-activities',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(formData)
+    })
+    .done(function() {
+        $('#createActivityModal').modal('hide');
+        showAlert('活動新增成功', 'success');
+        loadActivities();
+        loadStats();
+    })
+    .fail(function(xhr) {
+        const error = xhr.responseJSON?.title || '新增活動失敗';
+        showAlert(error, 'danger');
+    });
+}
+
+// 創建回饋
+function createFeedback() {
+    const formData = {
+        visitorName: $('#visitorName').val(),
+        contactPhone: $('#contactPhone').val(),
+        email: $('#email').val(),
+        feedbackType: parseInt($('#feedbackType').val()),
+        rating: parseInt($('#rating').val()),
+        content: $('#content').val(),
+        location: $('#feedbackLocation').val(),
+        visitDate: $('#visitDate').val()
+    };
+    
+    $.ajax({
+        url: '/api/visitor-feedback',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(formData)
+    })
+    .done(function() {
+        $('#createFeedbackModal').modal('hide');
+        showAlert('回饋提交成功', 'success');
+        loadFeedbacks();
+        loadStats();
+    })
+    .fail(function(xhr) {
+        const error = xhr.responseJSON?.title || '提交回饋失敗';
+        showAlert(error, 'danger');
+    });
+}
+
+// 取得活動狀態徽章
+function getActivityStatusBadge(status) {
+    const badges = {
+        '即將開始': '<span class="badge bg-primary">即將開始</span>',
+        '進行中': '<span class="badge bg-success">進行中</span>',
+        '已結束': '<span class="badge bg-secondary">已結束</span>',
+        '已取消': '<span class="badge bg-danger">已取消</span>'
+    };
+    return badges[status] || '<span class="badge bg-secondary">未知</span>';
+}
+
+// 取得活動類型文字
+function getActivityTypeText(type) {
+    const types = {
+        'GuidedTour': '導覽解說',
+        'NatureEducation': '自然教育',
+        'Exercise': '運動健身',
+        'Photography': '攝影活動',
+        'Volunteer': '志工服務',
+        'Others': '其他'
+    };
+    return types[type] || type;
+}
+
+// 渲染預約表格（簡化版）
+function renderReservationsTable(reservations) {
+    const tbody = $('#reservationsTableBody');
+    tbody.empty();
+    
+    if (reservations.length === 0) {
+        tbody.append('<tr><td colspan="7" class="text-center text-muted">尚無預約資料</td></tr>');
+        return;
+    }
+    
+    reservations.forEach(function(reservation) {
+        const statusBadge = getReservationStatusBadge(reservation.status);
+        const reservationTime = new Date(reservation.reservationTime).toLocaleString('zh-TW');
+        
+        const row = `
+            <tr>
+                <td>${reservation.activityName}</td>
+                <td>${reservation.participantName}</td>
+                <td>
+                    <small>${reservation.contactPhone}</small>
+                    <br><small>${reservation.email}</small>
+                </td>
+                <td>${reservation.participantCount}</td>
+                <td>${reservationTime}</td>
+                <td>${statusBadge}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-success" onclick="confirmReservation(${reservation.id})" title="確認">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="cancelReservation(${reservation.id})" title="取消">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+        tbody.append(row);
+    });
+}
+
+// 渲染回饋表格（簡化版）
+function renderFeedbackTable(feedbacks) {
+    const tbody = $('#feedbackTableBody');
+    tbody.empty();
+    
+    if (feedbacks.length === 0) {
+        tbody.append('<tr><td colspan="7" class="text-center text-muted">尚無回饋資料</td></tr>');
+        return;
+    }
+    
+    feedbacks.forEach(function(feedback) {
+        const visitDate = new Date(feedback.visitDate).toLocaleDateString('zh-TW');
+        const processBadge = feedback.isProcessed ? 
+            '<span class="badge bg-success">已處理</span>' : 
+            '<span class="badge bg-warning">待處理</span>';
+        
+        const row = `
+            <tr>
+                <td>${feedback.visitorName}</td>
+                <td>${getFeedbackTypeText(feedback.feedbackType)}</td>
+                <td>${feedback.ratingStars}</td>
+                <td>
+                    <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        ${feedback.content}
+                    </div>
+                </td>
+                <td>${visitDate}</td>
+                <td>${processBadge}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="viewFeedback(${feedback.id})" title="檢視">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${!feedback.isProcessed ? `<button class="btn btn-outline-success" onclick="processFeedback(${feedback.id})" title="處理">
+                            <i class="fas fa-check"></i>
+                        </button>` : ''}
+                    </div>
+                </td>
+            </tr>
+        `;
+        tbody.append(row);
+    });
+}
+
+// 取得預約狀態徽章
+function getReservationStatusBadge(status) {
+    const badges = {
+        'Pending': '<span class="badge bg-warning">待確認</span>',
+        'Confirmed': '<span class="badge bg-success">已確認</span>',
+        'Cancelled': '<span class="badge bg-danger">已取消</span>'
+    };
+    return badges[status] || '<span class="badge bg-secondary">未知</span>';
+}
+
+// 取得回饋類型文字
+function getFeedbackTypeText(type) {
+    const types = {
+        'Compliment': '讚美',
+        'Suggestion': '建議',
+        'Complaint': '抱怨',
+        'Facility': '設施',
+        'Service': '服務',
+        'Others': '其他'
+    };
+    return types[type] || type;
+}
+
+// 工具函數
+function formatDateTimeLocal(date) {
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - (offset * 60 * 1000));
+    return localDate.toISOString().slice(0, 16);
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function showAlert(message, type) {
+    const alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // 移除現有的提醒
+    $('.alert').remove();
+    
+    // 在頁面頂部插入新提醒
+    $('main').prepend(alertHtml);
+    
+    // 自動移除提醒
+    setTimeout(function() {
+        $('.alert').fadeOut();
+    }, 5000);
+}
+
+// 佔位函數（實際實作時需要完整功能）
+function viewActivity(id) { console.log('檢視活動', id); }
+function editActivity(id) { console.log('編輯活動', id); }
+function cancelActivity(id) { console.log('取消活動', id); }
+function confirmReservation(id) { console.log('確認預約', id); }
+function cancelReservation(id) { console.log('取消預約', id); }
+function viewFeedback(id) { console.log('檢視回饋', id); }
+function processFeedback(id) { console.log('處理回饋', id); }
+</script>
+}

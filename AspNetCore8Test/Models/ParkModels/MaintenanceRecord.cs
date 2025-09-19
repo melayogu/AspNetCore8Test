@@ -72,22 +72,27 @@ public enum MaintenanceStatus
     Scheduled = 1,
 
     /// <summary>
+    /// 已指派
+    /// </summary>
+    Assigned = 2,
+
+    /// <summary>
     /// 進行中
     /// </summary>
-    InProgress = 2,
+    InProgress = 3,
 
     /// <summary>
     /// 已完成
     /// </summary>
-    Completed = 3,
+    Completed = 4,
 
     /// <summary>
     /// 已取消
     /// </summary>
-    Cancelled = 4,
+    Cancelled = 5,
 
     /// <summary>
     /// 延期
     /// </summary>
-    Postponed = 5
+    Postponed = 6
 }
