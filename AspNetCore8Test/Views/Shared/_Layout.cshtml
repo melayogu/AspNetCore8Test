@@ -68,6 +68,26 @@
                                 </a></li>
                             </ul>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="gasDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-fire me-1"></i>天然氣管理
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="gasDropdown">
+                                <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="Index">
+                                    <i class="fas fa-tachometer-alt me-2"></i>系統儀表板
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" asp-controller="Customer" asp-action="Index">
+                                    <i class="fas fa-users me-2"></i>客戶管理
+                                </a></li>
+                                <li><a class="dropdown-item" asp-controller="Billing" asp-action="Index">
+                                    <i class="fas fa-file-invoice-dollar me-2"></i>帳單管理
+                                </a></li>
+                                <li><a class="dropdown-item" asp-controller="Pipeline" asp-action="Index">
+                                    <i class="fas fa-project-diagram me-2"></i>管線監控
+                                </a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>

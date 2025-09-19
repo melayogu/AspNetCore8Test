@@ -1,0 +1,143 @@
+@model IEnumerable<AspNetCore8Test.Models.DTOs.GasDTOs.CustomerDto>
+
+@{
+    ViewData["Title"] = "客戶管理";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-users me-2"></i>客戶管理
+                </h4>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>新增客戶
+                </a>
+            </div>
+            <div class="card-body">
+                <!-- 搜尋表單 -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <form asp-action="Index" method="get" class="d-flex">
+                            <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" 
+                                   class="form-control me-2" placeholder="搜尋客戶姓名、編號、地址...">
+                            <button type="submit" class="btn btn-outline-secondary">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <!-- 客戶表格 -->
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>客戶編號</th>
+                                <th>姓名</th>
+                                <th>類型</th>
+                                <th>電話</th>
+                                <th>電子郵件</th>
+                                <th>狀態</th>
+                                <th>註冊日期</th>
+                                <th width="200">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                @foreach (var customer in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@customer.CustomerNumber</strong>
+                                        </td>
+                                        <td>@customer.Name</td>
+                                        <td>
+                                            <span class="badge bg-@(customer.Type == "住宅" ? "info" : customer.Type == "商業" ? "warning" : "success")">
+                                                @customer.Type
+                                            </span>
+                                        </td>
+                                        <td>@customer.Phone</td>
+                                        <td>@customer.Email</td>
+                                        <td>
+                                            <span class="badge bg-@(customer.Status == "Active" ? "success" : customer.Status == "Suspended" ? "warning" : "danger")">
+                                                @(customer.Status == "Active" ? "啟用" : customer.Status == "Suspended" ? "暫停" : "終止")
+                                            </span>
+                                        </td>
+                                        <td>@customer.RegisterDate.ToString("yyyy/MM/dd")</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@customer.Id" 
+                                                   class="btn btn-outline-info btn-sm" title="檢視詳細">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@customer.Id" 
+                                                   class="btn btn-outline-primary btn-sm" title="編輯">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@customer.Id" 
+                                                   class="btn btn-outline-danger btn-sm" title="刪除">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        @if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
+                                        {
+                                            <i class="fas fa-search fa-2x mb-2"></i>
+                                            <p>沒有找到符合條件的客戶</p>
+                                            <a asp-action="Index" class="btn btn-secondary">顯示所有客戶</a>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-users fa-2x mb-2"></i>
+                                            <p>目前沒有客戶資料</p>
+                                            <a asp-action="Create" class="btn btn-primary">新增第一個客戶</a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (Model != null && Model.Any())
+                {
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            共 @Model.Count() 筆客戶資料
+                        </small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+}

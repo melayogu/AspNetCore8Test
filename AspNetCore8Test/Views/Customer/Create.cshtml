@@ -1,0 +1,114 @@
+@model AspNetCore8Test.Models.DTOs.GasDTOs.CreateCustomerDto
+
+@{
+    ViewData["Title"] = "新增客戶";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-plus me-2"></i>新增客戶
+                </h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CustomerNumber" class="form-label">客戶編號 *</label>
+                                <input asp-for="CustomerNumber" class="form-control" placeholder="例如：C001" />
+                                <span asp-validation-for="CustomerNumber" class="text-danger"></span>
+                                <div class="form-text">格式：一個大寫字母後跟3-6位數字</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Type" class="form-label">客戶類型 *</label>
+                                <select asp-for="Type" class="form-select">
+                                    <option value="">請選擇類型</option>
+                                    <option value="住宅">住宅</option>
+                                    <option value="商業">商業</option>
+                                    <option value="工業">工業</option>
+                                </select>
+                                <span asp-validation-for="Type" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">客戶姓名 *</label>
+                        <input asp-for="Name" class="form-control" placeholder="請輸入客戶姓名或公司名稱" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label">地址 *</label>
+                        <textarea asp-for="Address" class="form-control" rows="2" placeholder="請輸入完整地址"></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Phone" class="form-label">電話號碼 *</label>
+                                <input asp-for="Phone" class="form-control" placeholder="02-12345678 或 0912345678" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label">電子郵件</label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="example@email.com" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TaxId" class="form-label">統一編號</label>
+                        <input asp-for="TaxId" class="form-control" placeholder="8位數字" maxlength="8" />
+                        <span asp-validation-for="TaxId" class="text-danger"></span>
+                        <div class="form-text">商業或工業客戶請填寫統一編號</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>返回列表
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>儲存
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // 當客戶類型改變時，自動調整統一編號的必填狀態
+        $('#Type').change(function() {
+            var type = $(this).val();
+            var taxIdField = $('#TaxId');
+            var taxIdLabel = $('label[for="TaxId"]');
+            
+            if (type === '商業' || type === '工業') {
+                taxIdLabel.html('統一編號 *');
+                taxIdField.attr('required', true);
+            } else {
+                taxIdLabel.html('統一編號');
+                taxIdField.removeAttr('required');
+            }
+        });
+    </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+}

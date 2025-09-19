@@ -26,10 +26,20 @@ builder.Services.AddScoped<IPlantService, PlantService>();
 builder.Services.AddScoped<IEnvironmentalService, EnvironmentalService>();
 builder.Services.AddScoped<IVisitorService, VisitorService>();
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 // 註冊 FluentValidation 驗證器
 builder.Services.AddScoped<IValidator<CreateProductDto>, CreateProductDtoValidator>();
 builder.Services.AddScoped<IValidator<UpdateProductDto>, UpdateProductDtoValidator>();
+
+// 註冊天然氣公司相關服務
+builder.Services.AddScoped<AspNetCore8Test.Services.GasServices.ICustomerService, AspNetCore8Test.Services.GasServices.CustomerService>();
+builder.Services.AddScoped<AspNetCore8Test.Services.GasServices.IBillingService, AspNetCore8Test.Services.GasServices.BillingService>();
+builder.Services.AddScoped<AspNetCore8Test.Services.GasServices.IPipelineService, AspNetCore8Test.Services.GasServices.PipelineService>();
+
+// 註冊天然氣公司相關驗證器
+builder.Services.AddScoped<IValidator<AspNetCore8Test.Models.DTOs.GasDTOs.CreateCustomerDto>, AspNetCore8Test.Validators.GasValidators.CreateCustomerDtoValidator>();
+builder.Services.AddScoped<IValidator<AspNetCore8Test.Models.DTOs.GasDTOs.UpdateCustomerDto>, AspNetCore8Test.Validators.GasValidators.UpdateCustomerDtoValidator>();
 
 var app = builder.Build();
 

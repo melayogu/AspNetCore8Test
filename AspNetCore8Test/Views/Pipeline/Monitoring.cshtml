@@ -1,0 +1,365 @@
+@model IEnumerable<AspNetCore8Test.Models.DTOs.GasDTOs.PipelineMonitoringDto>
+
+@{
+    ViewData["Title"] = "管線即時監控";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>管線即時監控
+                </h4>
+                <div class="btn-group">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-list me-1"></i>管線列表
+                    </a>
+                    <a asp-action="Alerts" class="btn btn-outline-warning">
+                        <i class="fas fa-bell me-1"></i>警報管理
+                    </a>
+                    <button type="button" class="btn btn-outline-info" onclick="refreshData()">
+                        <i class="fas fa-sync me-1"></i>重新整理
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <!-- 管線狀態概覽 -->
+                @if (ViewBag.Pipelines != null)
+                {
+                    var pipelines = ViewBag.Pipelines as List<AspNetCore8Test.Models.DTOs.GasDTOs.PipelineDto>;
+                    var activePipelines = pipelines?.Count(p => p.Status == "Active") ?? 0;
+                    var maintenancePipelines = pipelines?.Count(p => p.Status == "Maintenance") ?? 0;
+                    var totalLength = pipelines?.Sum(p => p.Length) ?? 0;
+
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title">活躍管線</h6>
+                                            <h4>@activePipelines 條</h4>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-check-circle fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title">維護中</h6>
+                                            <h4>@maintenancePipelines 條</h4>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-wrench fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title">總長度</h6>
+                                            <h4>@totalLength.ToString("N1") km</h4>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-route fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="card-title">最後更新</h6>
+                                            <h6 id="lastUpdate">@DateTime.Now.ToString("HH:mm:ss")</h6>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-clock fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- 即時監控數據表格 -->
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="monitoringTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>管線</th>
+                                <th>類型</th>
+                                <th>壓力 (kPa)</th>
+                                <th>流量 (m³/h)</th>
+                                <th>溫度 (°C)</th>
+                                <th>濕度 (%)</th>
+                                <th>狀態</th>
+                                <th>記錄時間</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                @foreach (var monitoring in Model)
+                                {
+                                    <tr class="@(monitoring.IsAlarmTriggered ? "table-danger" : "")" data-pipeline-id="@monitoring.PipelineId">
+                                        <td>
+                                            <strong>@monitoring.PipelineNumber</strong>
+                                            <br><small class="text-muted">@monitoring.PipelineName</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">
+                                                @(monitoring.PipelineNumber.StartsWith("P001") ? "主幹線" : "配送線")
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <span class="pressure-value" data-value="@monitoring.Pressure">
+                                                @monitoring.Pressure.ToString("N1")
+                                            </span>
+                                            @if (monitoring.IsAlarmTriggered && monitoring.AlarmType == "Pressure")
+                                            {
+                                                <i class="fas fa-exclamation-triangle text-danger ms-1" title="@monitoring.AlarmMessage"></i>
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <span class="flow-value" data-value="@monitoring.FlowRate">
+                                                @monitoring.FlowRate.ToString("N1")
+                                            </span>
+                                            @if (monitoring.IsAlarmTriggered && monitoring.AlarmType == "Flow")
+                                            {
+                                                <i class="fas fa-exclamation-triangle text-warning ms-1" title="@monitoring.AlarmMessage"></i>
+                                            }
+                                        </td>
+                                        <td class="text-end temperature-value" data-value="@monitoring.Temperature">
+                                            @monitoring.Temperature.ToString("N1")
+                                        </td>
+                                        <td class="text-end humidity-value" data-value="@monitoring.Humidity">
+                                            @monitoring.Humidity.ToString("N1")
+                                        </td>
+                                        <td>
+                                            @if (monitoring.IsAlarmTriggered)
+                                            {
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-bell me-1"></i>警報
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check me-1"></i>正常
+                                                </span>
+                                            }
+                                        </td>
+                                        <td class="record-time">
+                                            @monitoring.RecordTime.ToString("MM/dd HH:mm:ss")
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a asp-action="MonitoringData" asp-route-id="@monitoring.PipelineId" 
+                                                   class="btn btn-outline-info" title="歷史數據">
+                                                    <i class="fas fa-chart-area"></i>
+                                                </a>
+                                                <a asp-action="Details" asp-route-id="@monitoring.PipelineId" 
+                                                   class="btn btn-outline-primary" title="管線詳情">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted py-4">
+                                        <i class="fas fa-chart-line fa-2x mb-2"></i>
+                                        <p>目前沒有監控數據</p>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 圖表區域 -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">壓力趨勢圖</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="pressureChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">流量趨勢圖</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="flowChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .table-danger {
+            animation: blink 2s infinite;
+        }
+        
+        @@keyframes blink {
+            0%, 50% { background-color: #f8d7da; }
+            51%, 100% { background-color: transparent; }
+        }
+        
+        .pressure-value[data-value] {
+            font-weight: bold;
+        }
+        
+        .flow-value[data-value] {
+            font-weight: bold;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let pressureChart, flowChart;
+        
+        // 初始化圖表
+        function initCharts() {
+            const pressureCtx = document.getElementById('pressureChart').getContext('2d');
+            const flowCtx = document.getElementById('flowChart').getContext('2d');
+            
+            pressureChart = new Chart(pressureCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: '壓力 (kPa)',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+            
+            flowChart = new Chart(flowCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: '流量 (m³/h)',
+                        data: [],
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 更新圖表數據
+        function updateCharts() {
+            const rows = document.querySelectorAll('#monitoringTable tbody tr[data-pipeline-id]');
+            const labels = [];
+            const pressureData = [];
+            const flowData = [];
+            
+            rows.forEach(row => {
+                const time = row.querySelector('.record-time').textContent;
+                const pressure = parseFloat(row.querySelector('.pressure-value').dataset.value);
+                const flow = parseFloat(row.querySelector('.flow-value').dataset.value);
+                
+                labels.push(time);
+                pressureData.push(pressure);
+                flowData.push(flow);
+            });
+            
+            // 只保留最新10筆數據
+            if (labels.length > 10) {
+                labels.splice(0, labels.length - 10);
+                pressureData.splice(0, pressureData.length - 10);
+                flowData.splice(0, flowData.length - 10);
+            }
+            
+            pressureChart.data.labels = labels;
+            pressureChart.data.datasets[0].data = pressureData;
+            pressureChart.update();
+            
+            flowChart.data.labels = labels;
+            flowChart.data.datasets[0].data = flowData;
+            flowChart.update();
+        }
+        
+        // 重新整理數據
+        function refreshData() {
+            location.reload();
+        }
+        
+        // 自動重新整理（每30秒）
+        setInterval(function() {
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+            // 這裡可以實現AJAX更新，暫時使用頁面重新載入
+            // refreshData();
+        }, 30000);
+        
+        // 頁面載入完成後初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+            updateCharts();
+        });
+    </script>
+}

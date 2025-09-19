@@ -1,6 +1,5 @@
 using AspNetCore8Test.Models.ParkModels;
 using AspNetCore8Test.Models.DTOs.ParkDtos;
-using System.Threading;
 
 namespace AspNetCore8Test.Services.ParkServices;
 
@@ -39,7 +38,7 @@ public interface IEnvironmentalService
 public class EnvironmentalService : IEnvironmentalService
 {
     private static readonly List<EnvironmentalMonitoring> _monitoring = new();
-    private static readonly List<EnvironmentalAlert> _alerts = new();
+    private static readonly List<AspNetCore8Test.Models.ParkModels.EnvironmentalAlert> _alerts = new();
     private static int _monitoringIdCounter = 1;
     private static int _alertIdCounter = 1;
     private static readonly object _lock = new();
@@ -192,7 +191,7 @@ public class EnvironmentalService : IEnvironmentalService
         if (monitoring == null)
             throw new InvalidOperationException("找不到對應的監測記錄");
         
-        var alert = new EnvironmentalAlert
+        var alert = new AspNetCore8Test.Models.ParkModels.EnvironmentalAlert
         {
             Id = Interlocked.Increment(ref _alertIdCounter),
             MonitoringId = dto.MonitoringId,
@@ -449,7 +448,7 @@ public class EnvironmentalService : IEnvironmentalService
         };
     }
     
-    private static EnvironmentalAlertDto MapAlertToDto(EnvironmentalAlert alert)
+    private static EnvironmentalAlertDto MapAlertToDto(AspNetCore8Test.Models.ParkModels.EnvironmentalAlert alert)
     {
         var monitoring = _monitoring.FirstOrDefault(m => m.Id == alert.MonitoringId);
         
@@ -562,7 +561,7 @@ public class EnvironmentalService : IEnvironmentalService
         foreach (var record in highAQIRecords)
         {
             var alertId = Interlocked.Increment(ref _alertIdCounter);
-            _alerts.Add(new EnvironmentalAlert
+            _alerts.Add(new AspNetCore8Test.Models.ParkModels.EnvironmentalAlert
             {
                 Id = alertId,
                 MonitoringId = record.Id,
