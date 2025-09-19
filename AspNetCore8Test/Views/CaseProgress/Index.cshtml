@@ -1,0 +1,361 @@
+@using AspNetCore8Test.Models.LandSurveyorModels
+@model IEnumerable<AspNetCore8Test.Models.LandSurveyorModels.CaseProgress>
+
+@{
+    ViewData["Title"] = "案件進度追蹤";
+    var caseInfo = ViewBag.Case as Case;
+    var casesDict = ViewBag.Cases as Dictionary<int, Case>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2><i class="fas fa-tasks me-2"></i>@ViewData["Title"]</h2>
+        @if (caseInfo != null)
+        {
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Case" asp-action="Index">案件管理</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Case" asp-action="Details" asp-route-id="@caseInfo.Id">@caseInfo.CaseName</a></li>
+                    <li class="breadcrumb-item active">案件進度</li>
+                </ol>
+            </nav>
+        }
+    </div>
+    <div>
+        @if (ViewBag.CaseId != null)
+        {
+            <button type="button" class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#workflowModal">
+                <i class="fas fa-magic me-1"></i>初始化工作流程
+            </button>
+            <a asp-action="Create" asp-route-caseId="@ViewBag.CaseId" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>新增進度記錄
+            </a>
+        }
+        else
+        {
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>新增進度記錄
+            </a>
+        }
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (caseInfo != null)
+{
+    <!-- 案件資訊卡片 -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="card-title mb-1">
+                        <i class="fas fa-folder-open text-primary me-2"></i>@caseInfo.CaseName
+                    </h5>
+                    <p class="text-muted mb-0">
+                        <small>
+                            <span class="badge bg-@(caseInfo.Status switch {
+                                CaseStatus.Received => "secondary",
+                                CaseStatus.Processing => "warning",
+                                CaseStatus.Completed => "success",
+                                CaseStatus.PendingDocuments => "info",
+                                CaseStatus.Cancelled => "danger",
+                                _ => "primary"
+                            }) me-2">@caseInfo.Status</span>
+                            建立日期：@caseInfo.CreatedDate.ToString("yyyy/MM/dd")
+                        </small>
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a asp-controller="Case" asp-action="Details" asp-route-id="@caseInfo.Id" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-eye me-1"></i>查看案件詳情
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5">
+        <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">尚無進度記錄</h4>
+        <p class="text-muted">開始為此案件建立進度追蹤記錄</p>
+        @if (ViewBag.CaseId != null)
+        {
+            <a asp-action="Create" asp-route-caseId="@ViewBag.CaseId" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>新增第一筆進度記錄
+            </a>
+        }
+    </div>
+}
+else
+{
+    <!-- 進度時間軸 -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">
+                <i class="fas fa-history me-2"></i>進度時間軸
+                <small class="text-muted ms-2">(@Model.Count() 項記錄)</small>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="timeline">
+                @foreach (var item in Model.OrderByDescending(p => p.CreatedDate))
+                {
+                    <div class="timeline-item @(item.Status == CaseStatus.Completed ? "completed" : item.Status == CaseStatus.Processing ? "in-progress" : "pending")">
+                        <div class="timeline-marker">
+                            <i class="fas @(item.Status switch {
+                                CaseStatus.Completed => "fa-check",
+                                CaseStatus.Processing => "fa-clock",
+                                CaseStatus.PendingDocuments => "fa-pause",
+                                CaseStatus.Cancelled => "fa-times",
+                                _ => "fa-circle"
+                            })"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="timeline-title">@item.Title</h6>
+                                    @if (!string.IsNullOrEmpty(item.Description))
+                                    {
+                                        <p class="timeline-description">@item.Description</p>
+                                    }
+                                    <div class="timeline-meta">
+                                        <span class="badge bg-@(item.Status switch {
+                                            CaseStatus.Completed => "success",
+                                            CaseStatus.Processing => "warning",
+                                            CaseStatus.PendingDocuments => "info",
+                                            CaseStatus.Cancelled => "danger",
+                                            _ => "secondary"
+                                        }) me-2">
+                                            @(item.Status switch {
+                                                CaseStatus.Received => "待開始",
+                                                CaseStatus.Processing => "進行中",
+                                                CaseStatus.Completed => "已完成",
+                                                CaseStatus.PendingDocuments => "待補件",
+                                                CaseStatus.Cancelled => "已取消",
+                                                _ => item.Status.ToString()
+                                            })
+                                        </span>
+                                        @if (!string.IsNullOrEmpty(item.AssignedTo))
+                                        {
+                                            <small class="text-muted">
+                                                <i class="fas fa-user me-1"></i>@item.AssignedTo
+                                            </small>
+                                        }
+                                        <small class="text-muted ms-2">
+                                            <i class="fas fa-calendar me-1"></i>@item.CreatedDate.ToString("MM/dd HH:mm")
+                                        </small>
+                                        @if (item.CompletedDate.HasValue)
+                                        {
+                                            <small class="text-success ms-2">
+                                                <i class="fas fa-check-circle me-1"></i>完成於 @item.CompletedDate.Value.ToString("MM/dd HH:mm")
+                                            </small>
+                                        }
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(item.Notes))
+                                    {
+                                        <div class="timeline-notes mt-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-sticky-note me-1"></i>@item.Notes
+                                            </small>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="timeline-actions ms-3">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info" title="查看詳情">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning" title="編輯">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger" title="刪除">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<!-- 工作流程初始化模態框 -->
+@if (ViewBag.CaseId != null)
+{
+    <div class="modal fade" id="workflowModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-magic me-2"></i>初始化工作流程
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form asp-action="InitializeWorkflow" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="caseId" value="@ViewBag.CaseId" />
+                        <div class="mb-3">
+                            <label for="caseType" class="form-label">選擇案件類型</label>
+                            <select id="caseType" name="caseType" class="form-select" required>
+                                <option value="">請選擇案件類型</option>
+                                <option value="土地測量">土地測量</option>
+                                <option value="建物測量">建物測量</option>
+                                <option value="地籍調查">地籍調查</option>
+                                <option value="土地複丈">土地複丈</option>
+                                <option value="界址鑑定">界址鑑定</option>
+                            </select>
+                        </div>
+                        <div id="workflowPreview" class="alert alert-info d-none">
+                            <h6>將建立以下工作項目：</h6>
+                            <ul id="workflowSteps"></ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-magic me-1"></i>初始化工作流程
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+.timeline {
+    position: relative;
+    padding: 0;
+}
+
+.timeline-item {
+    position: relative;
+    padding: 1.5rem 0 1.5rem 3rem;
+    border-left: 2px solid #dee2e6;
+}
+
+.timeline-item:last-child {
+    border-left-color: transparent;
+}
+
+.timeline-item.completed {
+    border-left-color: #28a745;
+}
+
+.timeline-item.in-progress {
+    border-left-color: #ffc107;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -0.75rem;
+    top: 1.75rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: #fff;
+    border: 2px solid #dee2e6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+.timeline-item.completed .timeline-marker {
+    background: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.timeline-item.in-progress .timeline-marker {
+    background: #ffc107;
+    border-color: #ffc107;
+    color: white;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-title {
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-description {
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.timeline-meta {
+    margin-bottom: 0.5rem;
+}
+
+.timeline-actions {
+    flex-shrink: 0;
+}
+
+.timeline-notes {
+    background: rgba(0,123,255,0.1);
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border-left: 3px solid #007bff;
+}
+</style>
+
+@section Scripts {
+    <script>
+        // 工作流程預覽
+        document.getElementById('caseType')?.addEventListener('change', async function() {
+            const caseType = this.value;
+            const preview = document.getElementById('workflowPreview');
+            const stepsList = document.getElementById('workflowSteps');
+            
+            if (!caseType) {
+                preview.classList.add('d-none');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/CaseProgress/GetWorkflowTemplate?caseType=${encodeURIComponent(caseType)}`);
+                const steps = await response.json();
+                
+                stepsList.innerHTML = '';
+                steps.forEach(step => {
+                    const li = document.createElement('li');
+                    li.textContent = step;
+                    stepsList.appendChild(li);
+                });
+                
+                preview.classList.remove('d-none');
+            } catch (error) {
+                console.error('載入工作流程模板失敗:', error);
+            }
+        });
+    </script>
+}

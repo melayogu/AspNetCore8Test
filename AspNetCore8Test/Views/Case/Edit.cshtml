@@ -1,0 +1,253 @@
+@model AspNetCore8Test.Models.LandSurveyorModels.Case
+
+@{
+    ViewData["Title"] = "編輯案件";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-folder-open me-2"></i>@ViewData["Title"]</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>返回列表
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-edit me-2"></i>編輯案件資料
+                </h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CreatedDate" />
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="CaseNumber" class="form-label required"></label>
+                                <input asp-for="CaseNumber" class="form-control" placeholder="請輸入案件編號" />
+                                <span asp-validation-for="CaseNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="CaseType" class="form-label required"></label>
+                                <select asp-for="CaseType" class="form-control" asp-items="Html.GetEnumSelectList<AspNetCore8Test.Models.LandSurveyorModels.CaseType>()">
+                                    <option value="">請選擇案件類型</option>
+                                </select>
+                                <span asp-validation-for="CaseType" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="CaseName" class="form-label required"></label>
+                        <input asp-for="CaseName" class="form-control" placeholder="請輸入案件名稱" />
+                        <span asp-validation-for="CaseName" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="CustomerId" class="form-label required">客戶</label>
+                                <select asp-for="CustomerId" class="form-control" asp-items="ViewBag.CustomerId">
+                                    <option value="">請選擇客戶</option>
+                                </select>
+                                <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="Status" class="form-label required"></label>
+                                <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<AspNetCore8Test.Models.LandSurveyorModels.CaseStatus>()">
+                                    <option value="">請選擇案件狀態</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label asp-for="ReceivedDate" class="form-label required"></label>
+                                <input asp-for="ReceivedDate" class="form-control" type="date" />
+                                <span asp-validation-for="ReceivedDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label asp-for="ExpectedCompletionDate" class="form-label"></label>
+                                <input asp-for="ExpectedCompletionDate" class="form-control" type="date" />
+                                <span asp-validation-for="ExpectedCompletionDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label asp-for="ActualCompletionDate" class="form-label"></label>
+                                <input asp-for="ActualCompletionDate" class="form-control" type="date" />
+                                <span asp-validation-for="ActualCompletionDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="請輸入案件描述"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="Fee" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">NT$</span>
+                                    <input asp-for="Fee" class="form-control" placeholder="請輸入費用" />
+                                </div>
+                                <span asp-validation-for="Fee" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="PaidAmount" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">NT$</span>
+                                    <input asp-for="PaidAmount" class="form-control" placeholder="請輸入已收款項" />
+                                </div>
+                                <span asp-validation-for="PaidAmount" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Notes" class="form-label"></label>
+                        <textarea asp-for="Notes" class="form-control" rows="2" placeholder="請輸入備註（選填）"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                            <i class="fas fa-eye me-1"></i>檢視詳情
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i>取消
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>儲存
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>編輯說明
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <ul class="mb-0">
+                        <li>案件編號、名稱、類型、客戶和狀態為必填項目</li>
+                        <li>收件日期為必填，其他日期可選填</li>
+                        <li>費用和已收款項可留空</li>
+                        <li>實際完成日期通常在案件完成時填寫</li>
+                        <li>狀態變更會影響系統統計</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>案件資訊
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-muted small">
+                    <strong>案件編號：</strong>@Model.CaseNumber<br>
+                    <strong>建立日期：</strong>@Model.CreatedDate.ToString("yyyy年MM月dd日")<br>
+                    <strong>最後修改：</strong>
+                    @if (Model.LastModifiedDate.HasValue)
+                    {
+                        @Model.LastModifiedDate.Value.ToString("yyyy年MM月dd日")
+                    }
+                    else
+                    {
+                        <span>未修改過</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-tags me-2"></i>狀態說明
+                </h6>
+            </div>
+            <div class="card-body">
+                <small class="text-muted">
+                    <strong>已收件：</strong>案件已收件，準備處理<br>
+                    <strong>處理中：</strong>案件正在處理中<br>
+                    <strong>待補件：</strong>需要客戶補充文件<br>
+                    <strong>已送件：</strong>已送至相關機關<br>
+                    <strong>已完成：</strong>案件處理完成<br>
+                    <strong>已取消：</strong>案件已取消
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // 費用和已收款項格式化
+        document.getElementById('Fee').addEventListener('input', function(e) {
+            var value = e.target.value.replace(/[^0-9.]/g, '');
+            e.target.value = value;
+        });
+        
+        document.getElementById('PaidAmount').addEventListener('input', function(e) {
+            var value = e.target.value.replace(/[^0-9.]/g, '');
+            e.target.value = value;
+        });
+        
+        // 日期邏輯檢查
+        document.getElementById('ActualCompletionDate').addEventListener('change', function(e) {
+            var statusSelect = document.getElementById('Status');
+            if (e.target.value && statusSelect.value !== '@((int)AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Completed)') {
+                if (confirm('已填寫實際完成日期，是否要將狀態改為「已完成」？')) {
+                    statusSelect.value = '@((int)AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Completed)';
+                }
+            }
+        });
+        
+        // 狀態變更邏輯
+        document.getElementById('Status').addEventListener('change', function(e) {
+            var actualDateInput = document.getElementById('ActualCompletionDate');
+            if (e.target.value === '@((int)AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Completed)' && !actualDateInput.value) {
+                if (confirm('案件狀態已設為「已完成」，是否要自動填入今日為完成日期？')) {
+                    actualDateInput.value = new Date().toISOString().split('T')[0];
+                }
+            }
+        });
+    </script>
+}
+
+<style>
+    .required::after {
+        content: " *";
+        color: red;
+    }
+</style>

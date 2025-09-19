@@ -1,0 +1,159 @@
+@model AspNetCore8Test.Models.LandSurveyorModels.Appointment
+
+@{
+    ViewData["Title"] = "新增預約";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">
+                            <i class="fas fa-calendar-plus me-2"></i>新增預約
+                        </h3>
+                        <a asp-action="Index" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i>返回列表
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post" novalidate>
+                        <div class="row">
+                            <!-- 客戶選擇 -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CustomerId" class="form-label fw-bold">
+                                    <i class="fas fa-user text-primary me-2"></i>客戶
+                                </label>
+                                <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.CustomerId" required>
+                                    <option value="">請選擇客戶</option>
+                                </select>
+                                <span asp-validation-for="CustomerId" class="text-danger small"></span>
+                            </div>
+
+                            <!-- 服務類型 -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ServiceType" class="form-label fw-bold">
+                                    <i class="fas fa-tools text-primary me-2"></i>服務類型
+                                </label>
+                                <select asp-for="ServiceType" class="form-select" required>
+                                    <option value="">請選擇服務類型</option>
+                                    <option value="Consultation">諮詢服務</option>
+                                    <option value="DocumentPreparation">文件準備</option>
+                                    <option value="SiteInspection">現場會勘</option>
+                                    <option value="CaseExplanation">案件說明</option>
+                                    <option value="ContractSigning">簽約</option>
+                                    <option value="Other">其他</option>
+                                </select>
+                                <span asp-validation-for="ServiceType" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- 預約日期 -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="AppointmentDate" class="form-label fw-bold">
+                                    <i class="fas fa-calendar text-primary me-2"></i>預約日期
+                                </label>
+                                <input asp-for="AppointmentDate" class="form-control" type="date" required />
+                                <span asp-validation-for="AppointmentDate" class="text-danger small"></span>
+                            </div>
+
+                            <!-- 預約時間 -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="AppointmentTime" class="form-label fw-bold">
+                                    <i class="fas fa-clock text-primary me-2"></i>預約時間
+                                </label>
+                                <input asp-for="AppointmentTime" class="form-control" type="time" required />
+                                <span asp-validation-for="AppointmentTime" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- 預估時長 -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="EstimatedDuration" class="form-label fw-bold">
+                                    <i class="fas fa-hourglass-half text-primary me-2"></i>預估時長（分鐘）
+                                </label>
+                                <input asp-for="EstimatedDuration" class="form-control" type="number" min="30" max="480" step="15" placeholder="例：120" />
+                                <span asp-validation-for="EstimatedDuration" class="text-danger small"></span>
+                                <div class="form-text">建議預約時長：30-480分鐘</div>
+                            </div>
+
+                            <!-- 狀態 -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Status" class="form-label fw-bold">
+                                    <i class="fas fa-flag text-primary me-2"></i>狀態
+                                </label>
+                                <select asp-for="Status" class="form-select" required>
+                                    <option value="Scheduled">已預約</option>
+                                    <option value="Confirmed">已確認</option>
+                                    <option value="Completed">已完成</option>
+                                    <option value="Cancelled">已取消</option>
+                                    <option value="Postponed">已延期</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- 備註 -->
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label fw-bold">
+                                <i class="fas fa-sticky-note text-primary me-2"></i>備註
+                            </label>
+                            <textarea asp-for="Notes" class="form-control" rows="4" placeholder="預約相關備註、特殊需求或注意事項..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger small"></span>
+                        </div>
+
+                        <!-- 表單操作按鈕 -->
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>取消
+                            </a>
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-save me-1"></i>建立預約
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // 設定日期輸入的最小值為今天
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.querySelector('input[type="date"]');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.min = today;
+            }
+        });
+
+        // 根據服務類型預設預估時長
+        document.querySelector('select[name="ServiceType"]').addEventListener('change', function() {
+            const durationInput = document.querySelector('input[name="EstimatedDuration"]');
+            const serviceType = this.value;
+            
+            const durations = {
+                'Consultation': 60,
+                'DocumentPreparation': 90,
+                'SiteInspection': 120,
+                'CaseExplanation': 60,
+                'ContractSigning': 90,
+                'Other': 60
+            };
+            
+            if (durations[serviceType]) {
+                durationInput.value = durations[serviceType];
+            }
+        });
+    </script>
+}

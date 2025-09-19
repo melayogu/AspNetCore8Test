@@ -1,0 +1,168 @@
+@model AspNetCore8Test.Models.LandSurveyorModels.Customer
+
+@{
+    ViewData["Title"] = "編輯客戶";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-user-edit me-2"></i>@ViewData["Title"]</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>返回列表
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>編輯客戶資料
+                </h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CreatedDate" />
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="Name" class="form-label required"></label>
+                                <input asp-for="Name" class="form-control" placeholder="請輸入客戶姓名" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="IdNumber" class="form-label required"></label>
+                                <input asp-for="IdNumber" class="form-control" placeholder="請輸入身分證字號" maxlength="10" />
+                                <span asp-validation-for="IdNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="Phone" class="form-label"></label>
+                                <input asp-for="Phone" class="form-control" placeholder="請輸入電話號碼" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" placeholder="請輸入電子郵件" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Address" class="form-label"></label>
+                        <input asp-for="Address" class="form-control" placeholder="請輸入地址" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Notes" class="form-label"></label>
+                        <textarea asp-for="Notes" class="form-control" rows="3" placeholder="請輸入備註（選填）"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                        <label asp-for="IsActive" class="form-check-label"></label>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                            <i class="fas fa-eye me-1"></i>檢視詳情
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i>取消
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>儲存
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>編輯說明
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <ul class="mb-0">
+                        <li>客戶姓名和身分證字號為必填項目</li>
+                        <li>身分證字號格式：英文字母+9位數字</li>
+                        <li>電話號碼請輸入正確格式</li>
+                        <li>電子郵件請輸入有效格式</li>
+                        <li>取消勾選「是否為活躍客戶」將停用此客戶</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>客戶資訊
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-muted small">
+                    <strong>建立日期：</strong>@Model.CreatedDate.ToString("yyyy年MM月dd日")<br>
+                    <strong>最後修改：</strong>
+                    @if (Model.LastModifiedDate.HasValue)
+                    {
+                        @Model.LastModifiedDate.Value.ToString("yyyy年MM月dd日")
+                    }
+                    else
+                    {
+                        <span>未修改過</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // 身分證字號格式驗證
+        document.getElementById('IdNumber').addEventListener('input', function(e) {
+            var value = e.target.value.toUpperCase();
+            // 限制第一個字符為英文，其餘為數字
+            if (value.length > 1) {
+                var pattern = /^[A-Z][0-9]*$/;
+                if (!pattern.test(value)) {
+                    value = value.charAt(0) + value.slice(1).replace(/[^0-9]/g, '');
+                }
+            }
+            e.target.value = value;
+        });
+        
+        // 電話號碼格式化
+        document.getElementById('Phone').addEventListener('input', function(e) {
+            var value = e.target.value.replace(/[^0-9-+()]/g, '');
+            e.target.value = value;
+        });
+    </script>
+}
+
+<style>
+    .required::after {
+        content: " *";
+        color: red;
+    }
+</style>

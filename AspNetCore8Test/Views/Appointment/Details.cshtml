@@ -1,0 +1,220 @@
+@using AspNetCore8Test.Models.LandSurveyorModels
+@model AspNetCore8Test.Models.LandSurveyorModels.Appointment
+
+@{
+    ViewData["Title"] = "預約詳情";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-info text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">
+                            <i class="fas fa-calendar-check me-2"></i>預約詳情
+                        </h3>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-light btn-sm me-2">
+                                <i class="fas fa-edit me-1"></i>編輯
+                            </a>
+                            <a asp-action="Index" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>返回列表
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- 預約狀態橫幅 -->
+                    <div class="alert @(Model.Status switch {
+                        AppointmentStatus.Scheduled => "alert-primary",
+                        AppointmentStatus.Confirmed => "alert-success", 
+                        AppointmentStatus.Completed => "alert-success",
+                        AppointmentStatus.Cancelled => "alert-danger",
+                        AppointmentStatus.Postponed => "alert-secondary",
+                        _ => "alert-info"
+                    }) border-0 mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas @(Model.Status switch {
+                                AppointmentStatus.Scheduled => "fa-calendar",
+                                AppointmentStatus.Confirmed => "fa-check-circle", 
+                                AppointmentStatus.Completed => "fa-check-double",
+                                AppointmentStatus.Cancelled => "fa-times-circle",
+                                AppointmentStatus.Postponed => "fa-pause-circle",
+                                _ => "fa-question-circle"
+                            }) fa-2x me-3"></i>
+                            <div>
+                                <h5 class="mb-1">
+                                    預約狀態：@(Model.Status switch {
+                                        AppointmentStatus.Scheduled => "已預約",
+                                        AppointmentStatus.Confirmed => "已確認", 
+                                        AppointmentStatus.Completed => "已完成",
+                                        AppointmentStatus.Cancelled => "已取消",
+                                        AppointmentStatus.Postponed => "已延期",
+                                        _ => Model.Status.ToString()
+                                    })
+                                </h5>
+                                @if (Model.AppointmentDate.Date == DateTime.Today)
+                                {
+                                    <small class="badge bg-warning text-dark">今日預約</small>
+                                }
+                                else if (Model.AppointmentDate.Date == DateTime.Today.AddDays(1))
+                                {
+                                    <small class="badge bg-info">明日預約</small>
+                                }
+                                else if (Model.AppointmentDate.Date < DateTime.Today && Model.Status != AppointmentStatus.Completed)
+                                {
+                                    <small class="badge bg-danger">逾期預約</small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- 左側：基本資訊 -->
+                        <div class="col-md-6">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-header bg-transparent border-0 pb-1">
+                                    <h5 class="text-primary mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>基本資訊
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <dl class="row mb-0">
+                                        <dt class="col-sm-4 text-muted">
+                                            <i class="fas fa-user me-1"></i>客戶
+                                        </dt>
+                                        <dd class="col-sm-8 fw-bold">
+                                            @if (Model.Customer != null)
+                                            {
+                                                <a asp-controller="LandSurveyorCustomer" asp-action="Details" asp-route-id="@Model.Customer.Id" 
+                                                   class="text-decoration-none">
+                                                    @Model.Customer.Name
+                                                </a>
+                                                <div class="small text-muted">
+                                                    <i class="fas fa-phone me-1"></i>@Model.Customer.Phone
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">未指定客戶</span>
+                                            }
+                                        </dd>
+
+                                        <dt class="col-sm-4 text-muted">
+                                            <i class="fas fa-tools me-1"></i>服務類型
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <span class="badge bg-primary">@Model.ServiceType</span>
+                                        </dd>
+
+                                        <dt class="col-sm-4 text-muted">
+                                            <i class="fas fa-calendar me-1"></i>預約日期
+                                        </dt>
+                                        <dd class="col-sm-8 fw-bold">
+                                            @Model.AppointmentDate.ToString("yyyy年MM月dd日 (dddd)")
+                                        </dd>
+
+                                        <dt class="col-sm-4 text-muted">
+                                            <i class="fas fa-clock me-1"></i>預約時間
+                                        </dt>
+                                        <dd class="col-sm-8 fw-bold">
+                                            @Model.AppointmentTime.ToString(@"hh\:mm")
+                                        </dd>
+
+                                        @if (Model.EstimatedDuration > 0)
+                                        {
+                                            <dt class="col-sm-4 text-muted">
+                                                <i class="fas fa-hourglass-half me-1"></i>預估時長
+                                            </dt>
+                                            <dd class="col-sm-8">
+                                                <span class="badge bg-secondary">@Model.EstimatedDuration 分鐘</span>
+                                                @{
+                                                    var hours = Model.EstimatedDuration / 60;
+                                                    var minutes = Model.EstimatedDuration % 60;
+                                                }
+                                                @if (hours > 0)
+                                                {
+                                                    <small class="text-muted ms-2">
+                                                        (@hours 小時 @(minutes > 0 ? $"{minutes} 分鐘" : ""))
+                                                    </small>
+                                                }
+                                            </dd>
+                                        }
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右側：詳細資訊 -->
+                        <div class="col-md-6">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-header bg-transparent border-0 pb-1">
+                                    <h5 class="text-primary mb-0">
+                                        <i class="fas fa-clipboard-list me-2"></i>詳細資訊
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <!-- 備註 -->
+                                    @if (!string.IsNullOrEmpty(Model.Notes))
+                                    {
+                                        <div class="mb-3">
+                                            <dt class="text-muted mb-2">
+                                                <i class="fas fa-sticky-note me-1"></i>備註
+                                            </dt>
+                                            <dd class="bg-white p-3 rounded border">
+                                                @Model.Notes
+                                            </dd>
+                                        </div>
+                                    }
+
+                                    <!-- 時間戳記 -->
+                                    <div class="border-top pt-3">
+                                        <dt class="text-muted mb-2">
+                                            <i class="fas fa-history me-1"></i>時間記錄
+                                        </dt>
+                                        <dd class="mb-0">
+                                            <div class="small text-muted">
+                                                <div class="d-flex justify-content-between">
+                                                    <span><i class="fas fa-plus-circle me-1"></i>建立時間</span>
+                                                    <span>@Model.CreatedDate.ToString("yyyy/MM/dd HH:mm")</span>
+                                                </div>
+                                                @if (Model.LastModifiedDate.HasValue)
+                                                {
+                                                    <div class="d-flex justify-content-between">
+                                                        <span><i class="fas fa-edit me-1"></i>最後更新</span>
+                                                        <span>@Model.LastModifiedDate.Value.ToString("yyyy/MM/dd HH:mm")</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </dd>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按鈕 -->
+                    <div class="d-flex justify-content-between pt-4 border-top mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>返回列表
+                        </a>
+                        <div>
+                            @if (Model.Status != AppointmentStatus.Cancelled && Model.Status != AppointmentStatus.Completed)
+                            {
+                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+                                    <i class="fas fa-edit me-1"></i>編輯預約
+                                </a>
+                            }
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                                <i class="fas fa-trash me-1"></i>刪除預約
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

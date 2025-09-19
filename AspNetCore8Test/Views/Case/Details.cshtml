@@ -1,0 +1,348 @@
+@model AspNetCore8Test.Models.LandSurveyorModels.Case
+
+@{
+    ViewData["Title"] = "案件詳情";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-folder me-2"></i>@ViewData["Title"]</h2>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+            <i class="fas fa-edit me-1"></i>編輯
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>案件基本資料
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">案件編號</label>
+                            <div class="fw-bold fs-5">
+                                <i class="fas fa-hashtag me-2 text-primary"></i>@Html.DisplayFor(model => model.CaseNumber)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">案件類型</label>
+                            <div>
+                                <span class="badge bg-secondary fs-6">
+                                    <i class="fas fa-tag me-1"></i>@Html.DisplayFor(model => model.CaseType)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">案件名稱</label>
+                    <div class="fw-bold fs-5">@Html.DisplayFor(model => model.CaseName)</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">客戶</label>
+                            <div>
+                                @if (Model.Customer != null)
+                                {
+                                    <i class="fas fa-user me-2 text-success"></i>
+                                    <a href="@Url.Action("Details", "LandSurveyorCustomer", new { id = Model.CustomerId })" class="text-decoration-none fw-bold">
+                                        @Model.Customer.Name
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">客戶資料未載入</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">案件狀態</label>
+                            <div>
+                                @switch (Model.Status)
+                                {
+                                    case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Received:
+                                        <span class="badge bg-primary fs-6">
+                                            <i class="fas fa-inbox me-1"></i>@Html.DisplayFor(model => model.Status)
+                                        </span>
+                                        break;
+                                    case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Processing:
+                                        <span class="badge bg-warning fs-6">
+                                            <i class="fas fa-spinner me-1"></i>@Html.DisplayFor(model => model.Status)
+                                        </span>
+                                        break;
+                                    case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.PendingDocuments:
+                                        <span class="badge bg-danger fs-6">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>@Html.DisplayFor(model => model.Status)
+                                        </span>
+                                        break;
+                                    case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Submitted:
+                                        <span class="badge bg-info fs-6">
+                                            <i class="fas fa-paper-plane me-1"></i>@Html.DisplayFor(model => model.Status)
+                                        </span>
+                                        break;
+                                    case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Completed:
+                                        <span class="badge bg-success fs-6">
+                                            <i class="fas fa-check-circle me-1"></i>@Html.DisplayFor(model => model.Status)
+                                        </span>
+                                        break;
+                                    case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Cancelled:
+                                        <span class="badge bg-dark fs-6">
+                                            <i class="fas fa-times-circle me-1"></i>@Html.DisplayFor(model => model.Status)
+                                        </span>
+                                        break;
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <div class="mb-3">
+                        <label class="form-label text-muted">案件描述</label>
+                        <div class="border rounded p-3 bg-light">
+                            @Html.DisplayFor(model => model.Description)
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">收件日期</label>
+                            <div>
+                                <i class="fas fa-calendar me-2 text-info"></i>@Model.ReceivedDate.ToString("yyyy年MM月dd日")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">預計完成日期</label>
+                            <div>
+                                @if (Model.ExpectedCompletionDate.HasValue)
+                                {
+                                    <i class="fas fa-calendar-check me-2 text-warning"></i>@Model.ExpectedCompletionDate.Value.ToString("yyyy年MM月dd日")
+                                }
+                                else
+                                {
+                                    <span class="text-muted">未設定</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">實際完成日期</label>
+                            <div>
+                                @if (Model.ActualCompletionDate.HasValue)
+                                {
+                                    <i class="fas fa-calendar-check me-2 text-success"></i>@Model.ActualCompletionDate.Value.ToString("yyyy年MM月dd日")
+                                }
+                                else
+                                {
+                                    <span class="text-muted">尚未完成</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">案件費用</label>
+                            <div>
+                                @if (Model.Fee.HasValue)
+                                {
+                                    <i class="fas fa-dollar-sign me-2 text-success"></i>
+                                    <span class="fw-bold">NT$ @Model.Fee.Value.ToString("N0")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">未設定</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">已收款項</label>
+                            <div>
+                                @if (Model.PaidAmount.HasValue)
+                                {
+                                    <i class="fas fa-credit-card me-2 text-info"></i>
+                                    <span class="fw-bold">NT$ @Model.PaidAmount.Value.ToString("N0")</span>
+                                    @if (Model.Fee.HasValue && Model.PaidAmount < Model.Fee)
+                                    {
+                                        <span class="text-danger ms-2">
+                                            (尚欠 NT$ @((Model.Fee.Value - Model.PaidAmount.Value).ToString("N0")))
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">未收款</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <div class="mb-3">
+                        <label class="form-label text-muted">備註</label>
+                        <div class="border rounded p-3 bg-light">
+                            @Html.DisplayFor(model => model.Notes)
+                        </div>
+                    </div>
+                }
+
+                <div class="row text-muted small">
+                    <div class="col-md-6">
+                        <strong>建立時間：</strong>@Model.CreatedDate.ToString("yyyy年MM月dd日 HH:mm")
+                    </div>
+                    <div class="col-md-6">
+                        <strong>最後修改：</strong>
+                        @if (Model.LastModifiedDate.HasValue)
+                        {
+                            @Model.LastModifiedDate.Value.ToString("yyyy年MM月dd日 HH:mm")
+                        }
+                        else
+                        {
+                            <span>未修改過</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-cog me-2"></i>快速操作
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="fas fa-edit me-2"></i>編輯案件
+                    </a>
+                    @if (Model.Customer != null)
+                    {
+                        <a href="@Url.Action("Details", "LandSurveyorCustomer", new { id = Model.CustomerId })" class="btn btn-info">
+                            <i class="fas fa-user me-2"></i>查看客戶
+                        </a>
+                    }
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                        <i class="fas fa-trash me-2"></i>刪除案件
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>案件進度
+                </h6>
+            </div>
+            <div class="card-body">
+                @{
+                    var progressPercentage = 0;
+                    var progressClass = "bg-secondary";
+                    var progressText = "未開始";
+
+                    switch (Model.Status)
+                    {
+                        case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Received:
+                            progressPercentage = 20;
+                            progressClass = "bg-primary";
+                            progressText = "已收件";
+                            break;
+                        case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Processing:
+                            progressPercentage = 50;
+                            progressClass = "bg-warning";
+                            progressText = "處理中";
+                            break;
+                        case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.PendingDocuments:
+                            progressPercentage = 40;
+                            progressClass = "bg-danger";
+                            progressText = "待補件";
+                            break;
+                        case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Submitted:
+                            progressPercentage = 80;
+                            progressClass = "bg-info";
+                            progressText = "已送件";
+                            break;
+                        case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Completed:
+                            progressPercentage = 100;
+                            progressClass = "bg-success";
+                            progressText = "已完成";
+                            break;
+                        case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Cancelled:
+                            progressPercentage = 0;
+                            progressClass = "bg-dark";
+                            progressText = "已取消";
+                            break;
+                    }
+                }
+
+                <div class="progress mb-3" style="height: 20px;">
+                    <div class="progress-bar @progressClass" role="progressbar" style="width: @progressPercentage%">
+                        @progressPercentage%
+                    </div>
+                </div>
+                <div class="text-center">
+                    <small class="text-muted">@progressText</small>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Fee.HasValue && Model.PaidAmount.HasValue)
+        {
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-money-bill me-2"></i>收款狀況
+                    </h6>
+                </div>
+                <div class="card-body">
+                    @{
+                        var paymentPercentage = Model.Fee.Value > 0 ? (int)((Model.PaidAmount.Value / Model.Fee.Value) * 100) : 0;
+                        var paymentClass = paymentPercentage == 100 ? "bg-success" : paymentPercentage > 50 ? "bg-warning" : "bg-danger";
+                    }
+                    
+                    <div class="progress mb-3" style="height: 20px;">
+                        <div class="progress-bar @paymentClass" role="progressbar" style="width: @paymentPercentage%">
+                            @paymentPercentage%
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <small class="text-muted">
+                            已收 @Model.PaidAmount.Value.ToString("N0") / @Model.Fee.Value.ToString("N0")
+                        </small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

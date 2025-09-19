@@ -108,13 +108,35 @@
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a href="@Url.Action("Create", "Case")" class="btn btn-outline-warning w-100 mb-2">
+                        <a href="@Url.Action("Index", "Appointment")" class="btn btn-outline-warning w-100 mb-2">
+                            <i class="fas fa-calendar me-2"></i>預約管理
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="@Url.Action("Index", "CaseProgress")" class="btn btn-outline-info w-100 mb-2">
+                            <i class="fas fa-tasks me-2"></i>案件進度
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="@Url.Action("Create", "Case")" class="btn btn-outline-secondary w-100 mb-2">
                             <i class="fas fa-folder-plus me-2"></i>新增案件
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a href="@Url.Action("Create", "LandSurveyorCustomer")" class="btn btn-outline-info w-100 mb-2">
+                        <a href="@Url.Action("Create", "LandSurveyorCustomer")" class="btn btn-outline-secondary w-100 mb-2">
                             <i class="fas fa-user-plus me-2"></i>新增客戶
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="@Url.Action("Create", "Appointment")" class="btn btn-outline-secondary w-100 mb-2">
+                            <i class="fas fa-calendar-plus me-2"></i>新增預約
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="@Url.Action("Create", "CaseProgress")" class="btn btn-outline-secondary w-100 mb-2">
+                            <i class="fas fa-plus me-2"></i>新增進度
                         </a>
                     </div>
                 </div>

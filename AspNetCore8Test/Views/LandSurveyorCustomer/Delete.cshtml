@@ -1,0 +1,187 @@
+@model AspNetCore8Test.Models.LandSurveyorModels.Customer
+
+@{
+    ViewData["Title"] = "刪除客戶";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-user-times me-2 text-danger"></i>@ViewData["Title"]</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>返回列表
+    </a>
+</div>
+
+<div class="alert alert-danger">
+    <h4><i class="fas fa-exclamation-triangle me-2"></i>確認刪除</h4>
+    <p class="mb-0">您確定要刪除此客戶嗎？此操作無法復原。</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>即將刪除的客戶資料
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">客戶姓名</label>
+                            <div class="fw-bold fs-5">
+                                <i class="fas fa-user me-2 text-primary"></i>@Html.DisplayFor(model => model.Name)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">身分證字號</label>
+                            <div class="fw-bold">
+                                <i class="fas fa-id-card me-2 text-info"></i>@Html.DisplayFor(model => model.IdNumber)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">電話</label>
+                            <div>
+                                @if (!string.IsNullOrEmpty(Model.Phone))
+                                {
+                                    <i class="fas fa-phone me-2 text-success"></i>@Html.DisplayFor(model => model.Phone)
+                                }
+                                else
+                                {
+                                    <span class="text-muted">未提供</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">電子郵件</label>
+                            <div>
+                                @if (!string.IsNullOrEmpty(Model.Email))
+                                {
+                                    <i class="fas fa-envelope me-2 text-warning"></i>@Html.DisplayFor(model => model.Email)
+                                }
+                                else
+                                {
+                                    <span class="text-muted">未提供</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Address))
+                {
+                    <div class="mb-3">
+                        <label class="form-label text-muted">地址</label>
+                        <div>
+                            <i class="fas fa-map-marker-alt me-2 text-danger"></i>@Html.DisplayFor(model => model.Address)
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">建立日期</label>
+                            <div>@Model.CreatedDate.ToString("yyyy年MM月dd日")</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">客戶狀態</label>
+                            <div>
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>活躍
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-pause me-1"></i>停用
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                            <i class="fas fa-eye me-1"></i>檢視詳情
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i>取消
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-1"></i>確認刪除
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>刪除警告
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <strong>注意事項：</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>刪除客戶將同時刪除其相關案件</li>
+                        <li>此操作無法復原</li>
+                        <li>建議先檢查是否有進行中的案件</li>
+                        <li>如不確定請選擇「停用」而非刪除</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        @if (Model.Cases != null && Model.Cases.Any())
+        {
+            <div class="card mt-3 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-folder me-2"></i>相關案件 (@Model.Cases.Count)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <strong>警告！</strong> 此客戶有 @Model.Cases.Count 個相關案件，刪除客戶將同時刪除這些案件。
+                    </div>
+                    <div class="list-group list-group-flush">
+                        @foreach (var caseItem in Model.Cases.Take(5))
+                        {
+                            <div class="list-group-item px-0">
+                                <div class="fw-bold">@caseItem.CaseNumber</div>
+                                <small class="text-muted">@caseItem.CaseName</small>
+                            </div>
+                        }
+                        @if (Model.Cases.Count > 5)
+                        {
+                            <div class="list-group-item px-0 text-muted">
+                                <small>還有 @(Model.Cases.Count - 5) 個案件...</small>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

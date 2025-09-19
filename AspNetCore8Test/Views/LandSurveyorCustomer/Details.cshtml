@@ -1,0 +1,257 @@
+@model AspNetCore8Test.Models.LandSurveyorModels.Customer
+
+@{
+    ViewData["Title"] = "客戶詳情";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-user me-2"></i>@ViewData["Title"]</h2>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+            <i class="fas fa-edit me-1"></i>編輯
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>基本資料
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">@Html.DisplayNameFor(model => model.Name)</label>
+                            <div class="fw-bold fs-5">
+                                <i class="fas fa-user me-2 text-primary"></i>@Html.DisplayFor(model => model.Name)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">@Html.DisplayNameFor(model => model.IdNumber)</label>
+                            <div class="fw-bold">
+                                <i class="fas fa-id-card me-2 text-info"></i>@Html.DisplayFor(model => model.IdNumber)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">@Html.DisplayNameFor(model => model.Phone)</label>
+                            <div>
+                                @if (!string.IsNullOrEmpty(Model.Phone))
+                                {
+                                    <i class="fas fa-phone me-2 text-success"></i>
+                                    <a href="tel:@Model.Phone" class="text-decoration-none">@Html.DisplayFor(model => model.Phone)</a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">未提供</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">@Html.DisplayNameFor(model => model.Email)</label>
+                            <div>
+                                @if (!string.IsNullOrEmpty(Model.Email))
+                                {
+                                    <i class="fas fa-envelope me-2 text-warning"></i>
+                                    <a href="mailto:@Model.Email" class="text-decoration-none">@Html.DisplayFor(model => model.Email)</a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">未提供</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">@Html.DisplayNameFor(model => model.Address)</label>
+                    <div>
+                        @if (!string.IsNullOrEmpty(Model.Address))
+                        {
+                            <i class="fas fa-map-marker-alt me-2 text-danger"></i>@Html.DisplayFor(model => model.Address)
+                        }
+                        else
+                        {
+                            <span class="text-muted">未提供</span>
+                        }
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <div class="mb-3">
+                        <label class="form-label text-muted">@Html.DisplayNameFor(model => model.Notes)</label>
+                        <div class="border rounded p-3 bg-light">
+                            @Html.DisplayFor(model => model.Notes)
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">@Html.DisplayNameFor(model => model.CreatedDate)</label>
+                            <div>@Model.CreatedDate.ToString("yyyy年MM月dd日 HH:mm")</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">@Html.DisplayNameFor(model => model.LastModifiedDate)</label>
+                            <div>
+                                @if (Model.LastModifiedDate.HasValue)
+                                {
+                                    @Model.LastModifiedDate.Value.ToString("yyyy年MM月dd日 HH:mm")
+                                }
+                                else
+                                {
+                                    <span class="text-muted">未修改過</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">@Html.DisplayNameFor(model => model.IsActive)</label>
+                            <div>
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>活躍
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-pause me-1"></i>停用
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>客戶統計
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <h3 class="text-primary">@Model.Cases?.Count ?? 0</h3>
+                        <small class="text-muted">案件總數</small>
+                    </div>
+                    <div class="mb-3">
+                        <h4 class="text-success">@(Model.Cases?.Count(c => c.Status == AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Completed) ?? 0)</h4>
+                        <small class="text-muted">已完成案件</small>
+                    </div>
+                    <div class="mb-3">
+                        <h4 class="text-warning">@(Model.Cases?.Count(c => c.Status == AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Processing) ?? 0)</h4>
+                        <small class="text-muted">進行中案件</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-cog me-2"></i>快速操作
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="@Url.Action("Create", "Case", new { customerId = Model.Id })" class="btn btn-success">
+                        <i class="fas fa-folder-plus me-2"></i>為此客戶新增案件
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="fas fa-edit me-2"></i>編輯客戶資料
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                        <i class="fas fa-trash me-2"></i>刪除客戶
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Cases != null && Model.Cases.Any())
+{
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-folder me-2"></i>相關案件
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>案件編號</th>
+                            <th>案件名稱</th>
+                            <th>類型</th>
+                            <th>狀態</th>
+                            <th>建立日期</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var caseItem in Model.Cases.OrderByDescending(c => c.CreatedDate))
+                        {
+                            <tr>
+                                <td>@caseItem.CaseNumber</td>
+                                <td>@caseItem.CaseName</td>
+                                <td>
+                                    <span class="badge bg-secondary">@caseItem.CaseType</span>
+                                </td>
+                                <td>
+                                    @switch (caseItem.Status)
+                                    {
+                                        case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Completed:
+                                            <span class="badge bg-success">@caseItem.Status</span>
+                                            break;
+                                        case AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Processing:
+                                            <span class="badge bg-warning">@caseItem.Status</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-primary">@caseItem.Status</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>@caseItem.CreatedDate.ToString("yyyy/MM/dd")</td>
+                                <td>
+                                    <a href="@Url.Action("Details", "Case", new { id = caseItem.Id })" class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}

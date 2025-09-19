@@ -25,6 +25,10 @@ builder.Services.AddScoped<AspNetCore8Test.Services.LandSurveyorServices.ICustom
     AspNetCore8Test.Services.LandSurveyorServices.MockCustomerService>();
 builder.Services.AddScoped<AspNetCore8Test.Services.LandSurveyorServices.ICaseService, 
     AspNetCore8Test.Services.LandSurveyorServices.MockCaseService>();
+builder.Services.AddScoped<AspNetCore8Test.Services.LandSurveyorServices.IAppointmentService, 
+    AspNetCore8Test.Services.LandSurveyorServices.MockAppointmentService>();
+builder.Services.AddScoped<AspNetCore8Test.Services.LandSurveyorServices.ICaseProgressService, 
+    AspNetCore8Test.Services.LandSurveyorServices.MockCaseProgressService>();
 
 // 註冊公園管理服務
 builder.Services.AddScoped<IFacilityService, FacilityService>();
