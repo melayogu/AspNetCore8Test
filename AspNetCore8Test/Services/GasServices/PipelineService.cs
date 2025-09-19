@@ -7,6 +7,9 @@ namespace AspNetCore8Test.Services.GasServices
     {
         Task<IEnumerable<PipelineDto>> GetAllPipelinesAsync();
         Task<PipelineDto?> GetPipelineByIdAsync(int id);
+        Task<PipelineDto> CreatePipelineAsync(CreatePipelineDto createPipelineDto);
+        Task<bool> UpdatePipelineAsync(int id, UpdatePipelineDto updatePipelineDto);
+        Task<bool> DeletePipelineAsync(int id);
         Task<IEnumerable<PipelineMonitoringDto>> GetPipelineMonitoringDataAsync(int pipelineId, DateTime? fromDate = null, DateTime? toDate = null);
         Task<IEnumerable<PipelineAlertDto>> GetPipelineAlertsAsync(bool activeOnly = true);
         Task<IEnumerable<PipelineAlertDto>> GetPipelineAlertsByIdAsync(int pipelineId, bool activeOnly = true);
@@ -404,6 +407,87 @@ namespace AspNetCore8Test.Services.GasServices
                 ResolvedBy = alert.ResolvedBy,
                 Resolution = alert.Resolution
             };
+        }
+
+        public async Task<PipelineDto> CreatePipelineAsync(CreatePipelineDto createPipelineDto)
+        {
+            await Task.Delay(1);
+            
+            var pipeline = new Pipeline
+            {
+                Id = GetNextPipelineId(),
+                PipelineNumber = createPipelineDto.PipelineNumber,
+                Name = createPipelineDto.Name,
+                Type = createPipelineDto.Type,
+                Length = createPipelineDto.Length,
+                Diameter = createPipelineDto.Diameter,
+                MaxPressure = createPipelineDto.MaxPressure,
+                OperatingPressure = createPipelineDto.OperatingPressure,
+                Material = createPipelineDto.Material,
+                InstallationDate = createPipelineDto.InstallationDate,
+                LastInspectionDate = createPipelineDto.LastInspectionDate,
+                NextInspectionDate = createPipelineDto.NextInspectionDate,
+                Status = "Active",
+                Location = createPipelineDto.Location,
+                Latitude = createPipelineDto.Latitude,
+                Longitude = createPipelineDto.Longitude,
+                Notes = createPipelineDto.Description ?? string.Empty
+            };
+
+            _pipelines.Add(pipeline);
+            return MapToPipelineDto(pipeline);
+        }
+
+        public async Task<bool> UpdatePipelineAsync(int id, UpdatePipelineDto updatePipelineDto)
+        {
+            await Task.Delay(1);
+            
+            var pipeline = _pipelines.FirstOrDefault(p => p.Id == id);
+            if (pipeline == null)
+            {
+                return false;
+            }
+
+            pipeline.Name = updatePipelineDto.Name;
+            pipeline.Type = updatePipelineDto.Type;
+            pipeline.Length = updatePipelineDto.Length;
+            pipeline.Diameter = updatePipelineDto.Diameter;
+            pipeline.MaxPressure = updatePipelineDto.MaxPressure;
+            pipeline.OperatingPressure = updatePipelineDto.OperatingPressure;
+            pipeline.Material = updatePipelineDto.Material;
+            pipeline.Status = updatePipelineDto.Status;
+            pipeline.Location = updatePipelineDto.Location;
+            pipeline.Latitude = updatePipelineDto.Latitude;
+            pipeline.Longitude = updatePipelineDto.Longitude;
+            pipeline.Notes = updatePipelineDto.Description ?? string.Empty;
+            pipeline.LastInspectionDate = updatePipelineDto.LastInspectionDate;
+            pipeline.NextInspectionDate = updatePipelineDto.NextInspectionDate;
+
+            return true;
+        }
+
+        public async Task<bool> DeletePipelineAsync(int id)
+        {
+            await Task.Delay(1);
+            
+            var pipeline = _pipelines.FirstOrDefault(p => p.Id == id);
+            if (pipeline == null)
+            {
+                return false;
+            }
+
+            _pipelines.Remove(pipeline);
+            
+            // 同時刪除相關的監控數據和警報
+            _monitoringData.RemoveAll(m => m.PipelineId == id);
+            _alerts.RemoveAll(a => a.PipelineId == id);
+
+            return true;
+        }
+
+        private static int GetNextPipelineId()
+        {
+            return _nextPipelineId++;
         }
     }
 }
