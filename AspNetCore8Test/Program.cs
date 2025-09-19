@@ -20,6 +20,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ApprovalService>();
 
+// 註冊地政士系統服務
+builder.Services.AddScoped<AspNetCore8Test.Services.LandSurveyorServices.ICustomerService, 
+    AspNetCore8Test.Services.LandSurveyorServices.MockCustomerService>();
+
 // 註冊公園管理服務
 builder.Services.AddScoped<IFacilityService, FacilityService>();
 builder.Services.AddScoped<IPlantService, PlantService>();

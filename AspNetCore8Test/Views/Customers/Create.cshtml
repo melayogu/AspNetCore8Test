@@ -1,0 +1,127 @@
+@model AspNetCore8Test.Models.LandSurveyorModels.Customer
+
+@{
+    ViewData["Title"] = "新增客戶";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-plus"></i> @ViewData["Title"]
+                </h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Name" class="form-label"></label>
+                                <input asp-for="Name" class="form-control" placeholder="請輸入客戶姓名" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="IdNumber" class="form-label"></label>
+                                <input asp-for="IdNumber" class="form-control" placeholder="請輸入身分證字號" maxlength="10" />
+                                <span asp-validation-for="IdNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Phone" class="form-label"></label>
+                                <input asp-for="Phone" class="form-control" placeholder="請輸入電話號碼" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" placeholder="請輸入電子郵件地址" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label"></label>
+                        <textarea asp-for="Address" class="form-control" rows="3" placeholder="請輸入地址"></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label"></label>
+                        <textarea asp-for="Notes" class="form-control" rows="3" placeholder="其他備註事項"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> 返回列表
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 儲存
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function() {
+            // 身分證字號格式驗證
+            $('#IdNumber').on('input', function() {
+                var idNumber = $(this).val().toUpperCase();
+                $(this).val(idNumber);
+                
+                if (idNumber.length === 10) {
+                    if (!validateIdNumber(idNumber)) {
+                        $(this).addClass('is-invalid');
+                        if ($(this).next('.invalid-feedback').length === 0) {
+                            $(this).after('<div class="invalid-feedback">身分證字號格式不正確</div>');
+                        }
+                    } else {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    }
+                }
+            });
+        });
+
+        // 身分證字號驗證函數
+        function validateIdNumber(idNumber) {
+            if (!/^[A-Z][12]\d{8}$/.test(idNumber)) {
+                return false;
+            }
+
+            var letterValues = {
+                'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14, 'F': 15, 'G': 16, 'H': 17, 'I': 34, 'J': 18,
+                'K': 19, 'L': 20, 'M': 21, 'N': 22, 'O': 35, 'P': 23, 'Q': 24, 'R': 25, 'S': 26, 'T': 27,
+                'U': 28, 'V': 29, 'W': 32, 'X': 30, 'Y': 31, 'Z': 33
+            };
+
+            var firstLetter = idNumber.charAt(0);
+            var letterValue = letterValues[firstLetter];
+            var sum = Math.floor(letterValue / 10) + (letterValue % 10) * 9;
+
+            for (var i = 1; i < 9; i++) {
+                sum += parseInt(idNumber.charAt(i)) * (9 - i);
+            }
+
+            var checkDigit = parseInt(idNumber.charAt(9));
+            return (sum + checkDigit) % 10 === 0;
+        }
+    </script>
+}

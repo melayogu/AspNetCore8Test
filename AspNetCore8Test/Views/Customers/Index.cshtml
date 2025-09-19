@@ -1,0 +1,174 @@
+@model IEnumerable<AspNetCore8Test.Models.LandSurveyorModels.Customer>
+
+@{
+    ViewData["Title"] = "客戶管理";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>@ViewData["Title"]</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> 新增客戶
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- 搜尋區域 -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3">
+            <div class="col-md-8">
+                <input type="text" class="form-control" name="searchString" value="@ViewData["CurrentFilter"]" 
+                       placeholder="搜尋客戶姓名、身分證字號或電話...">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-search"></i> 搜尋
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-undo"></i> 清除
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 客戶列表 -->
+<div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>姓名</th>
+                            <th>身分證字號</th>
+                            <th>電話</th>
+                            <th>電子郵件</th>
+                            <th>建立日期</th>
+                            <th>案件數</th>
+                            <th class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var customer in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@customer.Name</strong>
+                                </td>
+                                <td>@customer.IdNumber</td>
+                                <td>@customer.Phone</td>
+                                <td>@customer.Email</td>
+                                <td>@customer.CreatedDate.ToString("yyyy/MM/dd")</td>
+                                <td>
+                                    <span class="badge bg-info">@customer.Cases.Count</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@customer.Id" 
+                                           class="btn btn-sm btn-outline-info" title="檢視詳細">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@customer.Id" 
+                                           class="btn btn-sm btn-outline-primary" title="編輯">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-controller="Cases" asp-action="Create" asp-route-customerId="@customer.Id"
+                                           class="btn btn-sm btn-outline-success" title="新增案件">
+                                            <i class="fas fa-folder-plus"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@customer.Id" 
+                                           class="btn btn-sm btn-outline-danger" title="停用">
+                                            <i class="fas fa-user-slash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁 -->
+            @if (ViewData["TotalPages"] != null && (int)ViewData["TotalPages"] > 1)
+            {
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        @{
+                            var currentPage = (int)ViewData["CurrentPage"];
+                            var totalPages = (int)ViewData["TotalPages"];
+                            var searchString = ViewData["CurrentFilter"]?.ToString();
+                        }
+
+                        @if (currentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-pageNumber="@(currentPage - 1)" asp-route-searchString="@searchString">
+                                    上一頁
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-searchString="@searchString">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        @if (currentPage < totalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-pageNumber="@(currentPage + 1)" asp-route-searchString="@searchString">
+                                    下一頁
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">沒有找到符合條件的客戶</h5>
+                <p class="text-muted">請嘗試調整搜尋條件或新增客戶</p>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> 新增客戶
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 確認刪除
+        $('.btn-outline-danger').on('click', function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            if (confirm('確定要停用此客戶嗎？')) {
+                window.location.href = url;
+            }
+        });
+    </script>
+}

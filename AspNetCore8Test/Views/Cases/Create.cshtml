@@ -1,0 +1,149 @@
+@model AspNetCore8Test.Models.LandSurveyorModels.Case
+
+@{
+    ViewData["Title"] = "新增案件";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-folder-plus"></i> @ViewData["Title"]
+                </h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CaseNumber" class="form-label"></label>
+                                <input asp-for="CaseNumber" class="form-control" readonly />
+                                <div class="form-text">系統自動產生案件編號</div>
+                                <span asp-validation-for="CaseNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CustomerId" class="form-label">客戶</label>
+                                <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.CustomerId">
+                                    <option value="">請選擇客戶</option>
+                                </select>
+                                <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label asp-for="CaseName" class="form-label"></label>
+                                <input asp-for="CaseName" class="form-control" placeholder="請輸入案件名稱" />
+                                <span asp-validation-for="CaseName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label asp-for="CaseType" class="form-label"></label>
+                                <select asp-for="CaseType" class="form-select" asp-items="ViewBag.CaseTypeList">
+                                    <option value="">請選擇案件類型</option>
+                                </select>
+                                <span asp-validation-for="CaseType" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label asp-for="ReceivedDate" class="form-label"></label>
+                                <input asp-for="ReceivedDate" class="form-control" type="date" />
+                                <span asp-validation-for="ReceivedDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label asp-for="ExpectedCompletionDate" class="form-label"></label>
+                                <input asp-for="ExpectedCompletionDate" class="form-control" type="date" />
+                                <span asp-validation-for="ExpectedCompletionDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label asp-for="Fee" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">NT$</span>
+                                    <input asp-for="Fee" class="form-control" placeholder="0" />
+                                </div>
+                                <span asp-validation-for="Fee" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="請詳細描述案件內容、需求或特殊注意事項"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label"></label>
+                        <textarea asp-for="Notes" class="form-control" rows="3" placeholder="其他備註事項"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> 返回列表
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 建立案件
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function() {
+            // 客戶搜尋功能
+            $('#CustomerId').select2({
+                placeholder: '搜尋客戶姓名或身分證字號',
+                allowClear: true,
+                ajax: {
+                    url: '@Url.Action("SearchCustomers", "Cases")',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function (data) {
+                        return {
+                            results: data.map(function(item) {
+                                return {
+                                    id: item.id,
+                                    text: item.name + ' (' + item.idNumber + ')'
+                                };
+                            })
+                        };
+                    },
+                    cache: true
+                }
+            });
+            
+            // 預設完成日期（收件日期後30天）
+            $('#ReceivedDate').on('change', function() {
+                var receivedDate = new Date($(this).val());
+                if (receivedDate && !$('#ExpectedCompletionDate').val()) {
+                    var expectedDate = new Date(receivedDate);
+                    expectedDate.setDate(expectedDate.getDate() + 30);
+                    $('#ExpectedCompletionDate').val(expectedDate.toISOString().split('T')[0]);
+                }
+            });
+        });
+    </script>
+}

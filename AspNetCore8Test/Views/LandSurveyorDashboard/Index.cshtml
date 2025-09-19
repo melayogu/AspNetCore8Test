@@ -1,0 +1,161 @@
+@{
+    ViewData["Title"] = "地政士系統儀表板";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tachometer-alt me-2"></i>@ViewData["Title"]</h2>
+    <div class="text-muted">
+        <i class="fas fa-calendar me-1"></i>@DateTime.Now.ToString("yyyy年MM月dd日")
+    </div>
+</div>
+
+<!-- 統計卡片 -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1">客戶總數</h5>
+                        <h3 class="text-white mb-1">@ViewData["TotalCustomers"]</h3>
+                        <small class="text-white-50">
+                            <i class="fas fa-arrow-up"></i> 本月新增 3 位
+                        </small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1">案件總數</h5>
+                        <h3 class="text-white mb-1">@ViewData["ActiveCases"]</h3>
+                        <small class="text-white-50">
+                            <i class="fas fa-clock"></i> 處理中 @ViewData["ActiveCases"] 件
+                        </small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-folder fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1">今日預約</h5>
+                        <h3 class="text-white mb-1">@ViewData["PendingAppointments"]</h3>
+                        <small class="text-white-50">
+                            <i class="fas fa-calendar-day"></i> 待處理
+                        </small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar-check fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1">本月營收</h5>
+                        <h3 class="text-white mb-1">NT$ @((int)ViewData["MonthlyRevenue"]).ToString("N0")</h3>
+                        <small class="text-white-50">
+                            <i class="fas fa-chart-line"></i> 較上月成長
+                        </small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-dollar-sign fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 快速操作 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-bolt me-2"></i>快速操作</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="@Url.Action("Create", "Customers")" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-user-plus me-2"></i>新增客戶
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-outline-success w-100 mb-2" onclick="alert('新增案件功能開發中...')">
+                            <i class="fas fa-folder-plus me-2"></i>新增案件
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-outline-warning w-100 mb-2" onclick="alert('預約管理功能開發中...')">
+                            <i class="fas fa-calendar-plus me-2"></i>新增預約
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-outline-info w-100 mb-2" onclick="alert('報表功能開發中...')">
+                            <i class="fas fa-chart-bar me-2"></i>查看報表
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 系統狀態 -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>系統狀態</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>所有系統服務正常運行
+                </div>
+                <p class="text-muted mb-0">
+                    <small>
+                        <i class="fas fa-clock me-1"></i>最後更新：@DateTime.Now.ToString("HH:mm:ss")
+                    </small>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-bell me-2"></i>系統通知</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>歡迎使用地政士管理系統
+                </div>
+                <p class="text-muted mb-0">
+                    <small>系統功能持續開發中，如有問題請聯繫系統管理員</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

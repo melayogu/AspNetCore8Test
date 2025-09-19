@@ -1,0 +1,230 @@
+@model IEnumerable<AspNetCore8Test.Models.LandSurveyorModels.Case>
+
+@{
+    ViewData["Title"] = "案件管理";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>@ViewData["Title"]</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> 新增案件
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- 搜尋和篩選區域 -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="searchString" value="@ViewData["CurrentFilter"]" 
+                       placeholder="搜尋案件編號、案件名稱或客戶姓名...">
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="">全部狀態</option>
+                    @foreach (var status in Enum.GetValues<AspNetCore8Test.Models.LandSurveyorModels.CaseStatus>())
+                    {
+                        var isSelected = ViewData["CurrentStatus"]?.Equals(status) == true ? "selected" : "";
+                        <option value="@((int)status)" selected="@isSelected">
+                            @status.ToString()
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="caseType" class="form-select">
+                    <option value="">全部類型</option>
+                    @foreach (var caseType in Enum.GetValues<AspNetCore8Test.Models.LandSurveyorModels.CaseType>())
+                    {
+                        var isSelected = ViewData["CurrentCaseType"]?.Equals(caseType) == true ? "selected" : "";
+                        <option value="@((int)caseType)" selected="@isSelected">
+                            @caseType.ToString()
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="fas fa-search"></i> 搜尋
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 案件列表 -->
+<div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>案件編號</th>
+                            <th>案件名稱</th>
+                            <th>客戶</th>
+                            <th>類型</th>
+                            <th>狀態</th>
+                            <th>收件日期</th>
+                            <th>預計完成</th>
+                            <th>費用</th>
+                            <th class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var caseItem in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@caseItem.CaseNumber</strong>
+                                </td>
+                                <td>@caseItem.CaseName</td>
+                                <td>
+                                    <a asp-controller="Customers" asp-action="Details" asp-route-id="@caseItem.Customer.Id">
+                                        @caseItem.Customer.Name
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@caseItem.CaseType.ToString()</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-@GetStatusColor(caseItem.Status)">
+                                        @caseItem.Status.ToString()
+                                    </span>
+                                </td>
+                                <td>@caseItem.ReceivedDate.ToString("yyyy/MM/dd")</td>
+                                <td>
+                                    @if (caseItem.ExpectedCompletionDate.HasValue)
+                                    {
+                                        @caseItem.ExpectedCompletionDate.Value.ToString("yyyy/MM/dd")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">未設定</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (caseItem.Fee.HasValue)
+                                    {
+                                        <span class="text-success">NT$ @caseItem.Fee.Value.ToString("N0")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">未設定</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Details" asp-route-id="@caseItem.Id" 
+                                           class="btn btn-outline-info" title="檢視詳細">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@caseItem.Id" 
+                                           class="btn btn-outline-primary" title="編輯">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-controller="RealEstateRegistrations" asp-action="Create" asp-route-caseId="@caseItem.Id"
+                                           class="btn btn-outline-success" title="不動產登記">
+                                            <i class="fas fa-home"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁 -->
+            @if (ViewData["TotalPages"] != null && (int)ViewData["TotalPages"] > 1)
+            {
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        @{
+                            var currentPage = (int)ViewData["CurrentPage"];
+                            var totalPages = (int)ViewData["TotalPages"];
+                            var searchString = ViewData["CurrentFilter"]?.ToString();
+                            var status = ViewData["CurrentStatus"];
+                            var caseType = ViewData["CurrentCaseType"];
+                        }
+
+                        @if (currentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" 
+                                   asp-route-pageNumber="@(currentPage - 1)" 
+                                   asp-route-searchString="@searchString"
+                                   asp-route-status="@status"
+                                   asp-route-caseType="@caseType">
+                                    上一頁
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link" asp-action="Index" 
+                                   asp-route-pageNumber="@i" 
+                                   asp-route-searchString="@searchString"
+                                   asp-route-status="@status"
+                                   asp-route-caseType="@caseType">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        @if (currentPage < totalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" 
+                                   asp-route-pageNumber="@(currentPage + 1)" 
+                                   asp-route-searchString="@searchString"
+                                   asp-route-status="@status"
+                                   asp-route-caseType="@caseType">
+                                    下一頁
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">沒有找到符合條件的案件</h5>
+                <p class="text-muted">請嘗試調整搜尋條件或新增案件</p>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> 新增案件
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@functions {
+    private string GetStatusColor(AspNetCore8Test.Models.LandSurveyorModels.CaseStatus status)
+    {
+        return status switch
+        {
+            AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Received => "primary",
+            AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Processing => "warning",
+            AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.PendingDocuments => "info",
+            AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Submitted => "secondary",
+            AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Completed => "success",
+            AspNetCore8Test.Models.LandSurveyorModels.CaseStatus.Cancelled => "danger",
+            _ => "secondary"
+        };
+    }
+}
