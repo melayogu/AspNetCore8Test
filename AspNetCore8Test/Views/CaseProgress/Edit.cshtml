@@ -1,0 +1,191 @@
+@using AspNetCore8Test.Models.LandSurveyorModels
+@model AspNetCore8Test.Models.LandSurveyorModels.CaseProgress
+
+@{
+    ViewData["Title"] = "編輯案件進度";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-edit me-2"></i>@ViewData["Title"]</h2>
+    <div>
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info me-2">
+            <i class="fas fa-eye me-1"></i>查看詳情
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-pencil-alt me-2"></i>編輯進度詳情</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post" class="needs-validation" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <input asp-for="Id" type="hidden" />
+                    <input asp-for="CreatedDate" type="hidden" />
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CaseId" class="form-label">案件</label>
+                            <select asp-for="CaseId" class="form-select" asp-items="ViewBag.CaseList" required>
+                                <option value="">請選擇案件...</option>
+                            </select>
+                            <span asp-validation-for="CaseId" class="invalid-feedback"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Status" class="form-label">狀態</label>
+                            <select asp-for="Status" class="form-select" required>
+                                <option value="">請選擇狀態...</option>
+                                <option value="@((int)CaseStatus.Received)">已收件</option>
+                                <option value="@((int)CaseStatus.Processing)">處理中</option>
+                                <option value="@((int)CaseStatus.PendingDocuments)">待補件</option>
+                                <option value="@((int)CaseStatus.Submitted)">已送件</option>
+                                <option value="@((int)CaseStatus.Completed)">已完成</option>
+                                <option value="@((int)CaseStatus.Cancelled)">已取消</option>
+                            </select>
+                            <span asp-validation-for="Status" class="invalid-feedback"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AssignedTo" class="form-label">負責人</label>
+                            <input asp-for="AssignedTo" class="form-control" placeholder="請輸入負責人姓名">
+                            <span asp-validation-for="AssignedTo" class="invalid-feedback"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CompletedDate" class="form-label">完成日期</label>
+                            <input asp-for="CompletedDate" type="date" class="form-control">
+                            <span asp-validation-for="CompletedDate" class="invalid-feedback"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label">說明</label>
+                        <textarea asp-for="Notes" class="form-control" rows="4" placeholder="請輸入進度說明或備註..."></textarea>
+                        <span asp-validation-for="Notes" class="invalid-feedback"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">建立時間</label>
+                            <input type="text" class="form-control" value="@Model.CreatedDate.ToString("yyyy/MM/dd HH:mm")" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">最後更新</label>
+                            <input type="text" class="form-control" value="@DateTime.Now.ToString("yyyy/MM/dd HH:mm")" readonly>
+                            <input asp-for="CreatedDate" type="hidden" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <a asp-action="Index" class="btn btn-secondary me-2">
+                            <i class="fas fa-times me-1"></i>取消
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>更新
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-info-circle me-2"></i>進度資訊</h6>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">進度ID</dt>
+                    <dd class="col-sm-8">#@Model.Id</dd>
+                    
+                    <dt class="col-sm-4">建立時間</dt>
+                    <dd class="col-sm-8">@Model.CreatedDate.ToString("yyyy/MM/dd HH:mm")</dd>
+                    
+                    <dt class="col-sm-4">最後更新</dt>
+                    <dd class="col-sm-8">@Model.CreatedDate.ToString("yyyy/MM/dd HH:mm")</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6><i class="fas fa-lightbulb me-2"></i>狀態說明</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <span class="badge bg-secondary">未開始</span> - 尚未開始執行
+                </div>
+                <div class="mb-2">
+                    <span class="badge bg-warning">進行中</span> - 正在執行中
+                </div>
+                <div class="mb-2">
+                    <span class="badge bg-success">已完成</span> - 已完成
+                </div>
+                <div class="mb-0">
+                    <span class="badge bg-danger">暫停</span> - 暫時停止
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6><i class="fas fa-exclamation-triangle me-2"></i>注意事項</h6>
+            </div>
+            <div class="card-body">
+                <small class="text-muted">
+                    <ul class="mb-0">
+                        <li>修改狀態會自動更新時間戳</li>
+                        <li>請確認負責人資訊正確</li>
+                        <li>預計完成日期有助於專案管控</li>
+                    </ul>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function() {
+            // 表單驗證
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+
+            // 自動更新時間戳
+            $('#UpdatedDate').val(new Date().toISOString());
+            
+            // 狀態變更時提示
+            $('#Status').change(function() {
+                const status = $(this).val();
+                if (status === '已完成') {
+                    if (confirm('確認將狀態設為「已完成」？這將表示此進度項目已完全完成。')) {
+                        // 用戶確認
+                    } else {
+                        $(this).val('@Model.Status'); // 恢復原狀態
+                    }
+                }
+            });
+        });
+    </script>
+}

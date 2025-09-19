@@ -158,10 +158,10 @@
                                         <i class="fas fa-users me-2"></i>客戶管理
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="customerDropdown">
-                                        <li><a class="dropdown-item" asp-controller="Customers" asp-action="Index">
+                                        <li><a class="dropdown-item" asp-controller="LandSurveyorCustomer" asp-action="Index">
                                             <i class="fas fa-list me-2"></i>客戶清單
                                         </a></li>
-                                        <li><a class="dropdown-item" asp-controller="Customers" asp-action="Create">
+                                        <li><a class="dropdown-item" asp-controller="LandSurveyorCustomer" asp-action="Create">
                                             <i class="fas fa-user-plus me-2"></i>新增客戶
                                         </a></li>
                                         <li><hr class="dropdown-divider"></li>
@@ -177,11 +177,14 @@
                                         <i class="fas fa-folder me-2"></i>案件管理
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="caseDropdown">
-                                        <li><a class="dropdown-item" asp-controller="Cases" asp-action="Index">
+                                        <li><a class="dropdown-item" asp-controller="Case" asp-action="Index">
                                             <i class="fas fa-list me-2"></i>案件清單
                                         </a></li>
-                                        <li><a class="dropdown-item" asp-controller="Cases" asp-action="Create">
+                                        <li><a class="dropdown-item" asp-controller="Case" asp-action="Create">
                                             <i class="fas fa-folder-plus me-2"></i>新增案件
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="CaseProgress" asp-action="Index">
+                                            <i class="fas fa-tasks me-2"></i>案件進度
                                         </a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><h6 class="dropdown-header">案件類型</h6></li>
@@ -228,13 +231,13 @@
                                         <i class="fas fa-calendar-check me-2"></i>預約管理
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="appointmentDropdown">
-                                        <li><a class="dropdown-item" asp-controller="Appointments" asp-action="Index">
+                                        <li><a class="dropdown-item" asp-controller="Appointment" asp-action="Index">
                                             <i class="fas fa-list me-2"></i>預約清單
                                         </a></li>
-                                        <li><a class="dropdown-item" asp-controller="Appointments" asp-action="Create">
+                                        <li><a class="dropdown-item" asp-controller="Appointment" asp-action="Create">
                                             <i class="fas fa-calendar-plus me-2"></i>新增預約
                                         </a></li>
-                                        <li><a class="dropdown-item" asp-controller="Appointments" asp-action="Calendar">
+                                        <li><a class="dropdown-item" asp-controller="Appointment" asp-action="Calendar">
                                             <i class="fas fa-calendar me-2"></i>行事曆檢視
                                         </a></li>
                                         <li><hr class="dropdown-divider"></li>

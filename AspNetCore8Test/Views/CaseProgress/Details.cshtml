@@ -1,0 +1,291 @@
+@using AspNetCore8Test.Models.LandSurveyorModels
+@model AspNetCore8Test.Models.LandSurveyorModels.CaseProgress
+
+@{
+    ViewData["Title"] = "案件進度詳情";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-eye me-2"></i>@ViewData["Title"]</h2>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+            <i class="fas fa-edit me-1"></i>編輯
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle me-2"></i>進度基本資訊</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">進度ID</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge bg-primary">#@Model.Id</span>
+                    </dd>
+
+                    <dt class="col-sm-3">關聯案件</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.Case != null)
+                        {
+                            <a asp-controller="Case" asp-action="Details" asp-route-id="@Model.Case.Id" class="text-decoration-none">
+                                <i class="fas fa-folder me-1"></i>@Model.Case.CaseNumber - @Model.Case.CaseName
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">未設定案件</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">狀態</dt>
+                    <dd class="col-sm-9">
+                        @switch (Model.Status)
+                        {
+                            case CaseStatus.Received:
+                                <span class="badge bg-secondary fs-6">
+                                    <i class="fas fa-clock me-1"></i>已收件
+                                </span>
+                                break;
+                            case CaseStatus.Processing:
+                                <span class="badge bg-warning fs-6">
+                                    <i class="fas fa-spinner me-1"></i>處理中
+                                </span>
+                                break;
+                            case CaseStatus.Completed:
+                                <span class="badge bg-success fs-6">
+                                    <i class="fas fa-check-circle me-1"></i>已完成
+                                </span>
+                                break;
+                            case CaseStatus.PendingDocuments:
+                                <span class="badge bg-danger fs-6">
+                                    <i class="fas fa-pause-circle me-1"></i>待補件
+                                </span>
+                                break;
+                            case CaseStatus.Submitted:
+                                <span class="badge bg-info fs-6">
+                                    <i class="fas fa-paper-plane me-1"></i>已送件
+                                </span>
+                                break;
+                            case CaseStatus.Cancelled:
+                                <span class="badge bg-dark fs-6">
+                                    <i class="fas fa-times-circle me-1"></i>已取消
+                                </span>
+                                break;
+                            default:
+                                <span class="badge bg-light text-dark fs-6">@Model.Status</span>
+                                break;
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">負責人</dt>
+                    <dd class="col-sm-9">
+                        @if (!string.IsNullOrEmpty(Model.AssignedTo))
+                        {
+                            <i class="fas fa-user me-1"></i>@Model.AssignedTo
+                        }
+                        else
+                        {
+                            <span class="text-muted">未指派</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">完成日期</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.CompletedDate.HasValue)
+                        {
+                            <i class="fas fa-calendar-alt me-1"></i>@Model.CompletedDate.Value.ToString("yyyy/MM/dd")
+                            var daysAgo = (DateTime.Now - Model.CompletedDate.Value).Days;
+                            @if (daysAgo == 0)
+                            {
+                                <span class="badge bg-success ms-2">今日完成</span>
+                            }
+                            else if (daysAgo > 0)
+                            {
+                                <span class="badge bg-info ms-2">@daysAgo 天前完成</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">未完成</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-sticky-note me-2"></i>進度說明</h5>
+            </div>
+            <div class="card-body">
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <div class="border-start border-primary border-4 ps-3">
+                        @Html.Raw(Model.Notes.Replace("\n", "<br />"))
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-info-circle me-2"></i>尚未填寫說明
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-clock me-2"></i>時間軸</h6>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <h6 class="timeline-title">進度建立</h6>
+                            <p class="timeline-description">
+                                @Model.CreatedDate.ToString("yyyy/MM/dd HH:mm")
+                            </p>
+                        </div>
+                    </div>
+                    
+                    @if (Model.CreatedDate != DateTime.MinValue)
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-warning"></div>
+                            <div class="timeline-content">
+                                <h6 class="timeline-title">進度記錄更新</h6>
+                                <p class="timeline-description">
+                                    最後記錄時間
+                                </p>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.Status == CaseStatus.Completed)
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6 class="timeline-title">進度完成</h6>
+                                <p class="timeline-description">
+                                    此進度項目已標記為完成
+                                </p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6><i class="fas fa-tools me-2"></i>快速操作</h6>
+            </div>
+            <div class="card-body d-grid gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning">
+                    <i class="fas fa-edit me-1"></i>編輯進度
+                </a>
+                
+                @if (Model.Case != null)
+                {
+                    <a asp-controller="Case" asp-action="Details" asp-route-id="@Model.Case.Id" class="btn btn-outline-info">
+                        <i class="fas fa-folder me-1"></i>查看案件
+                    </a>
+                }
+
+                <a asp-action="Create" asp-route-caseId="@Model.CaseId" class="btn btn-outline-primary">
+                    <i class="fas fa-plus me-1"></i>新增相關進度
+                </a>
+
+                <hr />
+
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger" 
+                   onclick="return confirm('確定要刪除這筆進度記錄嗎？')">
+                    <i class="fas fa-trash me-1"></i>刪除進度
+                </a>
+            </div>
+        </div>
+
+        @if (Model.Case?.Customer != null)
+        {
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6><i class="fas fa-user me-2"></i>客戶資訊</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>@Model.Case.Customer.Name</strong></p>
+                    @if (!string.IsNullOrEmpty(Model.Case.Customer.Phone))
+                    {
+                        <p class="mb-1"><i class="fas fa-phone me-1"></i>@Model.Case.Customer.Phone</p>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Case.Customer.Email))
+                    {
+                        <p class="mb-0"><i class="fas fa-envelope me-1"></i>@Model.Case.Customer.Email</p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #dee2e6;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -15px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 2px #dee2e6;
+        }
+
+        .timeline-content {
+            padding-left: 15px;
+        }
+
+        .timeline-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+
+        .timeline-description {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+    </style>
+}
