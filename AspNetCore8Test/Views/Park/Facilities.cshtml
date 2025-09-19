@@ -1,0 +1,610 @@
+@{
+    ViewData["Title"] = "設施管理 - 碧湖公園管理系統";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-tools me-2"></i>設施管理</h2>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFacilityModal">
+                    <i class="fas fa-plus me-1"></i>新增設施
+                </button>
+            </div>
+
+            <!-- 篩選和搜尋區域 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="typeFilter" class="form-label">設施類型</label>
+                            <select class="form-select" id="typeFilter">
+                                <option value="">全部類型</option>
+                                <option value="1">遊樂設施</option>
+                                <option value="2">運動設施</option>
+                                <option value="3">休憩設施</option>
+                                <option value="4">照明設備</option>
+                                <option value="5">安全設備</option>
+                                <option value="6">景觀設施</option>
+                                <option value="7">服務設施</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="statusFilter" class="form-label">設施狀態</label>
+                            <select class="form-select" id="statusFilter">
+                                <option value="">全部狀態</option>
+                                <option value="1">正常使用</option>
+                                <option value="2">需要維護</option>
+                                <option value="3">維護中</option>
+                                <option value="4">故障</option>
+                                <option value="5">停用</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="searchInput" class="form-label">搜尋設施</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="searchInput" placeholder="輸入設施名稱或位置...">
+                                <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div>
+                                <button type="button" class="btn btn-warning w-100" id="maintenanceAlertBtn">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>維護提醒
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 設施列表 -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="facilitiesTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>設施名稱</th>
+                                    <th>類型</th>
+                                    <th>狀態</th>
+                                    <th>位置</th>
+                                    <th>安裝日期</th>
+                                    <th>最後維護</th>
+                                    <th>下次維護</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="facilitiesTableBody">
+                                <!-- 動態載入設施數據 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 新增設施模態窗口 -->
+<div class="modal fade" id="createFacilityModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增設施</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createFacilityForm">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="facilityName" class="form-label">設施名稱 *</label>
+                            <input type="text" class="form-control" id="facilityName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="facilityType" class="form-label">設施類型 *</label>
+                            <select class="form-select" id="facilityType" required>
+                                <option value="">請選擇類型</option>
+                                <option value="1">遊樂設施</option>
+                                <option value="2">運動設施</option>
+                                <option value="3">休憩設施</option>
+                                <option value="4">照明設備</option>
+                                <option value="5">安全設備</option>
+                                <option value="6">景觀設施</option>
+                                <option value="7">服務設施</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="facilityStatus" class="form-label">設施狀態 *</label>
+                            <select class="form-select" id="facilityStatus" required>
+                                <option value="">請選擇狀態</option>
+                                <option value="1">正常使用</option>
+                                <option value="2">需要維護</option>
+                                <option value="3">維護中</option>
+                                <option value="4">故障</option>
+                                <option value="5">停用</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="facilityLocation" class="form-label">設施位置</label>
+                            <input type="text" class="form-control" id="facilityLocation">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="facilityLatitude" class="form-label">緯度</label>
+                            <input type="number" step="any" class="form-control" id="facilityLatitude" placeholder="25.0842">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="facilityLongitude" class="form-label">經度</label>
+                            <input type="number" step="any" class="form-control" id="facilityLongitude" placeholder="121.5736">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="installationDate" class="form-label">安裝日期 *</label>
+                            <input type="date" class="form-control" id="installationDate" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="maintenanceCost" class="form-label">維護成本</label>
+                            <input type="number" step="1" class="form-control" id="maintenanceCost" placeholder="0">
+                        </div>
+                        <div class="col-12">
+                            <label for="facilityDescription" class="form-label">設施描述</label>
+                            <textarea class="form-control" id="facilityDescription" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">建立設施</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 維護記錄模態窗口 -->
+<div class="modal fade" id="maintenanceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">維護記錄</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="maintenanceContent">
+                    <!-- 動態載入維護記錄 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 新增維護記錄模態窗口 -->
+<div class="modal fade" id="addMaintenanceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增維護記錄</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addMaintenanceForm">
+                <div class="modal-body">
+                    <input type="hidden" id="maintenanceFacilityId">
+                    <div class="mb-3">
+                        <label for="maintenanceType" class="form-label">維護類型 *</label>
+                        <input type="text" class="form-control" id="maintenanceType" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="maintenanceDescription" class="form-label">維護描述</label>
+                        <textarea class="form-control" id="maintenanceDescription" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="maintenanceStatus" class="form-label">狀態 *</label>
+                        <select class="form-select" id="maintenanceStatus" required>
+                            <option value="1">已排程</option>
+                            <option value="2">進行中</option>
+                            <option value="3">已完成</option>
+                            <option value="4">已取消</option>
+                            <option value="5">延期</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="scheduledDate" class="form-label">預定日期 *</label>
+                        <input type="datetime-local" class="form-control" id="scheduledDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignedTo" class="form-label">負責人 *</label>
+                        <input type="text" class="form-control" id="assignedTo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="maintenanceCostInput" class="form-label">維護成本</label>
+                        <input type="number" step="1" class="form-control" id="maintenanceCostInput" placeholder="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="maintenanceNotes" class="form-label">備註</label>
+                        <textarea class="form-control" id="maintenanceNotes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">建立記錄</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 設施類型對應
+        const facilityTypes = {
+            1: '遊樂設施',
+            2: '運動設施',
+            3: '休憩設施',
+            4: '照明設備',
+            5: '安全設備',
+            6: '景觀設施',
+            7: '服務設施'
+        };
+
+        // 設施狀態對應
+        const facilityStatuses = {
+            1: { name: '正常使用', class: 'success' },
+            2: { name: '需要維護', class: 'warning' },
+            3: { name: '維護中', class: 'info' },
+            4: { name: '故障', class: 'danger' },
+            5: { name: '停用', class: 'secondary' }
+        };
+
+        // 維護狀態對應
+        const maintenanceStatuses = {
+            1: { name: '已排程', class: 'primary' },
+            2: { name: '進行中', class: 'warning' },
+            3: { name: '已完成', class: 'success' },
+            4: { name: '已取消', class: 'secondary' },
+            5: { name: '延期', class: 'info' }
+        };
+
+        // 載入所有設施
+        async function loadFacilities() {
+            try {
+                const response = await fetch('/api/park/facilities');
+                const facilities = await response.json();
+                displayFacilities(facilities);
+            } catch (error) {
+                console.error('載入設施失敗:', error);
+                showAlert('載入設施失敗', 'danger');
+            }
+        }
+
+        // 顯示設施列表
+        function displayFacilities(facilities) {
+            const tbody = document.getElementById('facilitiesTableBody');
+            tbody.innerHTML = '';
+
+            facilities.forEach(facility => {
+                const status = facilityStatuses[facility.status] || { name: facility.status, class: 'secondary' };
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <strong>${facility.name}</strong>
+                        <br><small class="text-muted">${facility.description}</small>
+                    </td>
+                    <td><span class="badge bg-primary">${facilityTypes[facility.type] || facility.type}</span></td>
+                    <td><span class="badge bg-${status.class}">${status.name}</span></td>
+                    <td>${facility.location}</td>
+                    <td>${new Date(facility.installationDate).toLocaleDateString('zh-TW')}</td>
+                    <td>${facility.lastMaintenanceDate ? new Date(facility.lastMaintenanceDate).toLocaleDateString('zh-TW') : '無'}</td>
+                    <td>${facility.nextMaintenanceDate ? new Date(facility.nextMaintenanceDate).toLocaleDateString('zh-TW') : '無'}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="showMaintenanceRecords(${facility.id}, '${facility.name}')">
+                                <i class="fas fa-wrench"></i>
+                            </button>
+                            <button class="btn btn-outline-success" onclick="addMaintenance(${facility.id}, '${facility.name}')">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="editFacility(${facility.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deleteFacility(${facility.id}, '${facility.name}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // 顯示維護記錄
+        async function showMaintenanceRecords(facilityId, facilityName) {
+            try {
+                const response = await fetch(`/api/park/facilities/${facilityId}/maintenance-records`);
+                const records = await response.json();
+                
+                const content = document.getElementById('maintenanceContent');
+                content.innerHTML = `
+                    <h6>設施：${facilityName}</h6>
+                    <hr>
+                    ${records.length === 0 ? '<p class="text-muted">暫無維護記錄</p>' : ''}
+                    ${records.map(record => `
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="card-title">${record.maintenanceType}</h6>
+                                        <p class="card-text">${record.description}</p>
+                                        <small class="text-muted">
+                                            預定日期: ${new Date(record.scheduledDate).toLocaleDateString('zh-TW')}
+                                            ${record.completedDate ? `| 完成日期: ${new Date(record.completedDate).toLocaleDateString('zh-TW')}` : ''}
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-${maintenanceStatuses[record.status]?.class || 'secondary'}">${maintenanceStatuses[record.status]?.name || record.status}</span>
+                                        <br><small class="text-muted">負責人: ${record.assignedTo}</small>
+                                        <br><small class="text-muted">成本: $${record.cost.toLocaleString()}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+                
+                const modal = new bootstrap.Modal(document.getElementById('maintenanceModal'));
+                modal.show();
+            } catch (error) {
+                console.error('載入維護記錄失敗:', error);
+                showAlert('載入維護記錄失敗', 'danger');
+            }
+        }
+
+        // 新增維護記錄
+        function addMaintenance(facilityId, facilityName) {
+            document.getElementById('maintenanceFacilityId').value = facilityId;
+            document.getElementById('addMaintenanceModal').querySelector('.modal-title').textContent = `新增維護記錄 - ${facilityName}`;
+            
+            const modal = new bootstrap.Modal(document.getElementById('addMaintenanceModal'));
+            modal.show();
+        }
+
+        // 顯示需要維護的設施
+        async function showMaintenanceAlerts() {
+            try {
+                const response = await fetch('/api/park/facilities/needs-maintenance');
+                const facilities = await response.json();
+                
+                if (facilities.length === 0) {
+                    showAlert('目前沒有需要維護的設施', 'success');
+                    return;
+                }
+                
+                displayFacilities(facilities);
+                showAlert(`發現 ${facilities.length} 個設施需要維護`, 'warning');
+            } catch (error) {
+                console.error('載入維護提醒失敗:', error);
+                showAlert('載入維護提醒失敗', 'danger');
+            }
+        }
+
+        // 搜尋設施
+        async function searchFacilities() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (!searchTerm) {
+                loadFacilities();
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/park/facilities/search?searchTerm=${encodeURIComponent(searchTerm)}`);
+                const facilities = await response.json();
+                displayFacilities(facilities);
+            } catch (error) {
+                console.error('搜尋失敗:', error);
+                showAlert('搜尋失敗', 'danger');
+            }
+        }
+
+        // 篩選設施
+        async function filterFacilities() {
+            const typeFilter = document.getElementById('typeFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            if (!typeFilter && !statusFilter) {
+                loadFacilities();
+                return;
+            }
+            
+            try {
+                let url = '/api/park/facilities';
+                if (typeFilter) {
+                    url = `/api/park/facilities/by-type/${typeFilter}`;
+                } else if (statusFilter) {
+                    url = `/api/park/facilities/by-status/${statusFilter}`;
+                }
+                
+                const response = await fetch(url);
+                const facilities = await response.json();
+                displayFacilities(facilities);
+            } catch (error) {
+                console.error('篩選失敗:', error);
+                showAlert('篩選失敗', 'danger');
+            }
+        }
+
+        // 顯示警告訊息
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // 事件監聽器
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFacilities();
+            
+            // 搜尋按鈕
+            document.getElementById('searchBtn').addEventListener('click', searchFacilities);
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchFacilities();
+                }
+            });
+            
+            // 篩選器
+            document.getElementById('typeFilter').addEventListener('change', filterFacilities);
+            document.getElementById('statusFilter').addEventListener('change', filterFacilities);
+            
+            // 維護提醒按鈕
+            document.getElementById('maintenanceAlertBtn').addEventListener('click', showMaintenanceAlerts);
+            
+            // 表單提交處理
+            document.getElementById('createFacilityForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    name: document.getElementById('facilityName').value,
+                    description: document.getElementById('facilityDescription').value,
+                    type: parseInt(document.getElementById('facilityType').value),
+                    status: parseInt(document.getElementById('facilityStatus').value),
+                    location: document.getElementById('facilityLocation').value,
+                    latitude: document.getElementById('facilityLatitude').value ? parseFloat(document.getElementById('facilityLatitude').value) : null,
+                    longitude: document.getElementById('facilityLongitude').value ? parseFloat(document.getElementById('facilityLongitude').value) : null,
+                    installationDate: document.getElementById('installationDate').value,
+                    maintenanceCost: parseFloat(document.getElementById('maintenanceCost').value) || 0
+                };
+                
+                try {
+                    const response = await fetch('/api/park/facilities', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    if (response.ok) {
+                        showAlert('設施建立成功', 'success');
+                        document.getElementById('createFacilityForm').reset();
+                        bootstrap.Modal.getInstance(document.getElementById('createFacilityModal')).hide();
+                        loadFacilities();
+                    } else {
+                        const error = await response.text();
+                        showAlert('建立設施失敗: ' + error, 'danger');
+                    }
+                } catch (error) {
+                    console.error('建立設施失敗:', error);
+                    showAlert('建立設施失敗', 'danger');
+                }
+            });
+            
+            // 新增維護記錄表單
+            document.getElementById('addMaintenanceForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    facilityId: parseInt(document.getElementById('maintenanceFacilityId').value),
+                    maintenanceType: document.getElementById('maintenanceType').value,
+                    description: document.getElementById('maintenanceDescription').value,
+                    status: parseInt(document.getElementById('maintenanceStatus').value),
+                    scheduledDate: document.getElementById('scheduledDate').value,
+                    assignedTo: document.getElementById('assignedTo').value,
+                    cost: parseFloat(document.getElementById('maintenanceCostInput').value) || 0,
+                    notes: document.getElementById('maintenanceNotes').value
+                };
+                
+                try {
+                    const response = await fetch('/api/park/facilities/maintenance-records', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    if (response.ok) {
+                        showAlert('維護記錄建立成功', 'success');
+                        document.getElementById('addMaintenanceForm').reset();
+                        bootstrap.Modal.getInstance(document.getElementById('addMaintenanceModal')).hide();
+                        loadFacilities();
+                    } else {
+                        const error = await response.text();
+                        showAlert('建立維護記錄失敗: ' + error, 'danger');
+                    }
+                } catch (error) {
+                    console.error('建立維護記錄失敗:', error);
+                    showAlert('建立維護記錄失敗', 'danger');
+                }
+            });
+        });
+
+        // 刪除設施函數
+        async function deleteFacility(id, name) {
+            if (!confirm(`確定要刪除設施「${name}」嗎？`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/park/facilities/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    showAlert('設施刪除成功', 'success');
+                    loadFacilities();
+                } else {
+                    showAlert('刪除設施失敗', 'danger');
+                }
+            } catch (error) {
+                console.error('刪除設施失敗:', error);
+                showAlert('刪除設施失敗', 'danger');
+            }
+        }
+
+        // 編輯設施函數 (暫時顯示提示)
+        function editFacility(id) {
+            showAlert('編輯功能開發中...', 'info');
+        }
+    </script>
+}
+
+<style>
+    .table th {
+        border-top: none;
+        font-weight: 600;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .card {
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .badge {
+        font-size: 0.75em;
+    }
+    
+    .modal-lg {
+        max-width: 900px;
+    }
+    
+    .alert {
+        border: none;
+        border-radius: 0.5rem;
+    }
+</style>

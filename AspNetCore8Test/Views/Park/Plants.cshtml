@@ -1,0 +1,752 @@
+@{
+    ViewData["Title"] = "植栽管理 - 碧湖公園管理系統";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-seedling me-2"></i>植栽管理</h2>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createPlantModal">
+                    <i class="fas fa-plus me-1"></i>新增植物
+                </button>
+            </div>
+
+            <!-- 篩選和搜尋區域 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="typeFilter" class="form-label">植物類型</label>
+                            <select class="form-select" id="typeFilter">
+                                <option value="">全部類型</option>
+                                <option value="1">樹木</option>
+                                <option value="2">灌木</option>
+                                <option value="3">花卉</option>
+                                <option value="4">草本植物</option>
+                                <option value="5">藤本植物</option>
+                                <option value="6">水生植物</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="statusFilter" class="form-label">植物狀態</label>
+                            <select class="form-select" id="statusFilter">
+                                <option value="">全部狀態</option>
+                                <option value="1">健康</option>
+                                <option value="2">需要關注</option>
+                                <option value="3">生病</option>
+                                <option value="4">死亡</option>
+                                <option value="5">已移除</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="searchInput" class="form-label">搜尋植物</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="searchInput" placeholder="輸入植物名稱或學名...">
+                                <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="careFilter" class="form-label">養護提醒</label>
+                            <div class="btn-group w-100" role="group">
+                                <button type="button" class="btn btn-info btn-sm" id="wateringAlertBtn" title="需要澆水">
+                                    <i class="fas fa-tint"></i>
+                                </button>
+                                <button type="button" class="btn btn-warning btn-sm" id="fertilizingAlertBtn" title="需要施肥">
+                                    <i class="fas fa-leaf"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm" id="careAlertBtn" title="需要養護">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 植物列表 -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="plantsTable">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>植物資訊</th>
+                                    <th>類型</th>
+                                    <th>狀態</th>
+                                    <th>位置</th>
+                                    <th>種植日期</th>
+                                    <th>澆水狀況</th>
+                                    <th>施肥狀況</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="plantsTableBody">
+                                <!-- 動態載入植物數據 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 新增植物模態窗口 -->
+<div class="modal fade" id="createPlantModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增植物</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createPlantForm">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="plantName" class="form-label">植物名稱 *</label>
+                            <input type="text" class="form-control" id="plantName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="scientificName" class="form-label">學名 *</label>
+                            <input type="text" class="form-control" id="scientificName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="plantType" class="form-label">植物類型 *</label>
+                            <select class="form-select" id="plantType" required>
+                                <option value="">請選擇類型</option>
+                                <option value="1">樹木</option>
+                                <option value="2">灌木</option>
+                                <option value="3">花卉</option>
+                                <option value="4">草本植物</option>
+                                <option value="5">藤本植物</option>
+                                <option value="6">水生植物</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="plantStatus" class="form-label">植物狀態 *</label>
+                            <select class="form-select" id="plantStatus" required>
+                                <option value="">請選擇狀態</option>
+                                <option value="1">健康</option>
+                                <option value="2">需要關注</option>
+                                <option value="3">生病</option>
+                                <option value="4">死亡</option>
+                                <option value="5">已移除</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="plantLocation" class="form-label">植物位置</label>
+                            <input type="text" class="form-control" id="plantLocation">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="plantingDate" class="form-label">種植日期 *</label>
+                            <input type="date" class="form-control" id="plantingDate" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="estimatedHeight" class="form-label">預估高度(cm)</label>
+                            <input type="number" class="form-control" id="estimatedHeight" placeholder="100">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="estimatedDiameter" class="form-label">預估直徑(cm)</label>
+                            <input type="number" class="form-control" id="estimatedDiameter" placeholder="50">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="wateringFrequency" class="form-label">澆水頻率(天) *</label>
+                            <input type="number" class="form-control" id="wateringFrequency" value="7" min="1" max="365" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fertilizingFrequency" class="form-label">施肥頻率(天) *</label>
+                            <input type="number" class="form-control" id="fertilizingFrequency" value="30" min="1" max="365" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="plantLatitude" class="form-label">緯度</label>
+                            <input type="number" step="any" class="form-control" id="plantLatitude" placeholder="25.0842">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="plantLongitude" class="form-label">經度</label>
+                            <input type="number" step="any" class="form-control" id="plantLongitude" placeholder="121.5736">
+                        </div>
+                        <div class="col-12">
+                            <label for="plantNotes" class="form-label">備註</label>
+                            <textarea class="form-control" id="plantNotes" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-success">建立植物</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 養護記錄模態窗口 -->
+<div class="modal fade" id="careRecordsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">養護記錄</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="careRecordsContent">
+                    <!-- 動態載入養護記錄 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 快速澆水模態窗口 -->
+<div class="modal fade" id="quickWateringModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">記錄澆水</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="quickWateringForm">
+                <div class="modal-body">
+                    <input type="hidden" id="wateringPlantId">
+                    <div class="mb-3">
+                        <label for="wateringCaregiver" class="form-label">養護人員 *</label>
+                        <input type="text" class="form-control" id="wateringCaregiver" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="wateringNotes" class="form-label">備註</label>
+                        <textarea class="form-control" id="wateringNotes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-info">記錄澆水</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 快速施肥模態窗口 -->
+<div class="modal fade" id="quickFertilizingModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">記錄施肥</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="quickFertilizingForm">
+                <div class="modal-body">
+                    <input type="hidden" id="fertilizingPlantId">
+                    <div class="mb-3">
+                        <label for="fertilizingCaregiver" class="form-label">養護人員 *</label>
+                        <input type="text" class="form-control" id="fertilizingCaregiver" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fertilizingNotes" class="form-label">備註</label>
+                        <textarea class="form-control" id="fertilizingNotes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-warning text-dark">記錄施肥</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 植物類型對應
+        const plantTypes = {
+            1: '樹木',
+            2: '灌木',
+            3: '花卉',
+            4: '草本植物',
+            5: '藤本植物',
+            6: '水生植物'
+        };
+
+        // 植物狀態對應
+        const plantStatuses = {
+            1: { name: '健康', class: 'success' },
+            2: { name: '需要關注', class: 'warning' },
+            3: { name: '生病', class: 'danger' },
+            4: { name: '死亡', class: 'dark' },
+            5: { name: '已移除', class: 'secondary' }
+        };
+
+        // 養護類型對應
+        const careTypes = {
+            1: { name: '澆水', class: 'info' },
+            2: { name: '施肥', class: 'success' },
+            3: { name: '修剪', class: 'warning' },
+            4: { name: '除草', class: 'secondary' },
+            5: { name: '病蟲害防治', class: 'danger' },
+            6: { name: '土壤改良', class: 'primary' },
+            7: { name: '支撐固定', class: 'dark' },
+            8: { name: '其他', class: 'light' }
+        };
+
+        // 載入所有植物
+        async function loadPlants() {
+            try {
+                const response = await fetch('/api/park/plants');
+                const plants = await response.json();
+                displayPlants(plants);
+            } catch (error) {
+                console.error('載入植物失敗:', error);
+                showAlert('載入植物失敗', 'danger');
+            }
+        }
+
+        // 顯示植物列表
+        function displayPlants(plants) {
+            const tbody = document.getElementById('plantsTableBody');
+            tbody.innerHTML = '';
+
+            plants.forEach(plant => {
+                const status = plantStatuses[plant.status] || { name: plant.status, class: 'secondary' };
+                const needsWatering = plant.nextWateringDate && new Date(plant.nextWateringDate) <= new Date();
+                const needsFertilizing = plant.nextFertilizingDate && new Date(plant.nextFertilizingDate) <= new Date();
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <strong>${plant.name}</strong>
+                        <br><small class="text-muted fst-italic">${plant.scientificName}</small>
+                        ${plant.estimatedHeight ? `<br><small class="text-muted">高度: ${plant.estimatedHeight}cm</small>` : ''}
+                    </td>
+                    <td><span class="badge bg-primary">${plantTypes[plant.type] || plant.type}</span></td>
+                    <td><span class="badge bg-${status.class}">${status.name}</span></td>
+                    <td>${plant.location}</td>
+                    <td>${new Date(plant.plantingDate).toLocaleDateString('zh-TW')}</td>
+                    <td>
+                        ${plant.lastWateringDate ? 
+                            `<small>上次: ${new Date(plant.lastWateringDate).toLocaleDateString('zh-TW')}</small><br>` : 
+                            '<small class="text-muted">未記錄</small><br>'
+                        }
+                        ${needsWatering ? 
+                            '<span class="badge bg-danger">需要澆水</span>' : 
+                            plant.nextWateringDate ? 
+                                `<small class="text-success">下次: ${new Date(plant.nextWateringDate).toLocaleDateString('zh-TW')}</small>` : 
+                                ''
+                        }
+                    </td>
+                    <td>
+                        ${plant.lastFertilizingDate ? 
+                            `<small>上次: ${new Date(plant.lastFertilizingDate).toLocaleDateString('zh-TW')}</small><br>` : 
+                            '<small class="text-muted">未記錄</small><br>'
+                        }
+                        ${needsFertilizing ? 
+                            '<span class="badge bg-warning">需要施肥</span>' : 
+                            plant.nextFertilizingDate ? 
+                                `<small class="text-success">下次: ${new Date(plant.nextFertilizingDate).toLocaleDateString('zh-TW')}</small>` : 
+                                ''
+                        }
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-info" onclick="quickWatering(${plant.id}, '${plant.name}')" title="澆水">
+                                <i class="fas fa-tint"></i>
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="quickFertilizing(${plant.id}, '${plant.name}')" title="施肥">
+                                <i class="fas fa-leaf"></i>
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="showCareRecords(${plant.id}, '${plant.name}')" title="養護記錄">
+                                <i class="fas fa-clipboard-list"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="editPlant(${plant.id})" title="編輯">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deletePlant(${plant.id}, '${plant.name}')" title="刪除">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // 快速澆水
+        function quickWatering(plantId, plantName) {
+            document.getElementById('wateringPlantId').value = plantId;
+            document.getElementById('quickWateringModal').querySelector('.modal-title').textContent = `記錄澆水 - ${plantName}`;
+            
+            const modal = new bootstrap.Modal(document.getElementById('quickWateringModal'));
+            modal.show();
+        }
+
+        // 快速施肥
+        function quickFertilizing(plantId, plantName) {
+            document.getElementById('fertilizingPlantId').value = plantId;
+            document.getElementById('quickFertilizingModal').querySelector('.modal-title').textContent = `記錄施肥 - ${plantName}`;
+            
+            const modal = new bootstrap.Modal(document.getElementById('quickFertilizingModal'));
+            modal.show();
+        }
+
+        // 顯示養護記錄
+        async function showCareRecords(plantId, plantName) {
+            try {
+                const response = await fetch(`/api/park/plants/${plantId}/care-records`);
+                const records = await response.json();
+                
+                const content = document.getElementById('careRecordsContent');
+                content.innerHTML = `
+                    <h6>植物：${plantName}</h6>
+                    <hr>
+                    ${records.length === 0 ? '<p class="text-muted">暫無養護記錄</p>' : ''}
+                    ${records.map(record => `
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="card-title">
+                                            <span class="badge bg-${careTypes[record.careType]?.class || 'secondary'}">${careTypes[record.careType]?.name || record.careType}</span>
+                                            ${record.description}
+                                        </h6>
+                                        <p class="card-text">${record.materialsUsed}</p>
+                                        <small class="text-muted">
+                                            日期: ${new Date(record.careDate).toLocaleDateString('zh-TW')}
+                                            ${record.nextScheduledDate ? `| 下次預定: ${new Date(record.nextScheduledDate).toLocaleDateString('zh-TW')}` : ''}
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted">養護人員: ${record.caregiverName}</small>
+                                        <br><small class="text-muted">成本: $${record.cost.toLocaleString()}</small>
+                                    </div>
+                                </div>
+                                ${record.notes ? `<p class="card-text mt-2"><small class="text-muted">${record.notes}</small></p>` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+                
+                const modal = new bootstrap.Modal(document.getElementById('careRecordsModal'));
+                modal.show();
+            } catch (error) {
+                console.error('載入養護記錄失敗:', error);
+                showAlert('載入養護記錄失敗', 'danger');
+            }
+        }
+
+        // 搜尋植物
+        async function searchPlants() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (!searchTerm) {
+                loadPlants();
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/park/plants/search?searchTerm=${encodeURIComponent(searchTerm)}`);
+                const plants = await response.json();
+                displayPlants(plants);
+            } catch (error) {
+                console.error('搜尋失敗:', error);
+                showAlert('搜尋失敗', 'danger');
+            }
+        }
+
+        // 篩選植物
+        async function filterPlants() {
+            const typeFilter = document.getElementById('typeFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            if (!typeFilter && !statusFilter) {
+                loadPlants();
+                return;
+            }
+            
+            try {
+                let url = '/api/park/plants';
+                if (typeFilter) {
+                    url = `/api/park/plants/by-type/${typeFilter}`;
+                } else if (statusFilter) {
+                    url = `/api/park/plants/by-status/${statusFilter}`;
+                }
+                
+                const response = await fetch(url);
+                const plants = await response.json();
+                displayPlants(plants);
+            } catch (error) {
+                console.error('篩選失敗:', error);
+                showAlert('篩選失敗', 'danger');
+            }
+        }
+
+        // 顯示需要澆水的植物
+        async function showWateringAlerts() {
+            try {
+                const response = await fetch('/api/park/plants/needs-watering');
+                const plants = await response.json();
+                
+                if (plants.length === 0) {
+                    showAlert('目前沒有植物需要澆水', 'success');
+                    return;
+                }
+                
+                displayPlants(plants);
+                showAlert(`發現 ${plants.length} 株植物需要澆水`, 'info');
+            } catch (error) {
+                console.error('載入澆水提醒失敗:', error);
+                showAlert('載入澆水提醒失敗', 'danger');
+            }
+        }
+
+        // 顯示需要施肥的植物
+        async function showFertilizingAlerts() {
+            try {
+                const response = await fetch('/api/park/plants/needs-fertilizing');
+                const plants = await response.json();
+                
+                if (plants.length === 0) {
+                    showAlert('目前沒有植物需要施肥', 'success');
+                    return;
+                }
+                
+                displayPlants(plants);
+                showAlert(`發現 ${plants.length} 株植物需要施肥`, 'warning');
+            } catch (error) {
+                console.error('載入施肥提醒失敗:', error);
+                showAlert('載入施肥提醒失敗', 'danger');
+            }
+        }
+
+        // 顯示需要養護的植物
+        async function showCareAlerts() {
+            try {
+                const response = await fetch('/api/park/plants/needs-care');
+                const plants = await response.json();
+                
+                if (plants.length === 0) {
+                    showAlert('目前沒有植物需要特別養護', 'success');
+                    return;
+                }
+                
+                displayPlants(plants);
+                showAlert(`發現 ${plants.length} 株植物需要養護`, 'danger');
+            } catch (error) {
+                console.error('載入養護提醒失敗:', error);
+                showAlert('載入養護提醒失敗', 'danger');
+            }
+        }
+
+        // 顯示警告訊息
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // 事件監聽器
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPlants();
+            
+            // 搜尋按鈕
+            document.getElementById('searchBtn').addEventListener('click', searchPlants);
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchPlants();
+                }
+            });
+            
+            // 篩選器
+            document.getElementById('typeFilter').addEventListener('change', filterPlants);
+            document.getElementById('statusFilter').addEventListener('change', filterPlants);
+            
+            // 養護提醒按鈕
+            document.getElementById('wateringAlertBtn').addEventListener('click', showWateringAlerts);
+            document.getElementById('fertilizingAlertBtn').addEventListener('click', showFertilizingAlerts);
+            document.getElementById('careAlertBtn').addEventListener('click', showCareAlerts);
+            
+            // 新增植物表單提交
+            document.getElementById('createPlantForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    name: document.getElementById('plantName').value,
+                    scientificName: document.getElementById('scientificName').value,
+                    type: parseInt(document.getElementById('plantType').value),
+                    status: parseInt(document.getElementById('plantStatus').value),
+                    location: document.getElementById('plantLocation').value,
+                    latitude: document.getElementById('plantLatitude').value ? parseFloat(document.getElementById('plantLatitude').value) : null,
+                    longitude: document.getElementById('plantLongitude').value ? parseFloat(document.getElementById('plantLongitude').value) : null,
+                    plantingDate: document.getElementById('plantingDate').value,
+                    estimatedHeight: document.getElementById('estimatedHeight').value ? parseInt(document.getElementById('estimatedHeight').value) : null,
+                    estimatedDiameter: document.getElementById('estimatedDiameter').value ? parseInt(document.getElementById('estimatedDiameter').value) : null,
+                    wateringFrequency: parseInt(document.getElementById('wateringFrequency').value),
+                    fertilizingFrequency: parseInt(document.getElementById('fertilizingFrequency').value),
+                    notes: document.getElementById('plantNotes').value
+                };
+                
+                try {
+                    const response = await fetch('/api/park/plants', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    if (response.ok) {
+                        showAlert('植物建立成功', 'success');
+                        document.getElementById('createPlantForm').reset();
+                        bootstrap.Modal.getInstance(document.getElementById('createPlantModal')).hide();
+                        loadPlants();
+                    } else {
+                        const error = await response.text();
+                        showAlert('建立植物失敗: ' + error, 'danger');
+                    }
+                } catch (error) {
+                    console.error('建立植物失敗:', error);
+                    showAlert('建立植物失敗', 'danger');
+                }
+            });
+            
+            // 快速澆水表單提交
+            document.getElementById('quickWateringForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const plantId = document.getElementById('wateringPlantId').value;
+                const formData = {
+                    caregiverName: document.getElementById('wateringCaregiver').value,
+                    notes: document.getElementById('wateringNotes').value
+                };
+                
+                try {
+                    const response = await fetch(`/api/park/plants/${plantId}/watering`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    if (response.ok) {
+                        showAlert('澆水記錄成功', 'success');
+                        document.getElementById('quickWateringForm').reset();
+                        bootstrap.Modal.getInstance(document.getElementById('quickWateringModal')).hide();
+                        loadPlants();
+                    } else {
+                        const error = await response.text();
+                        showAlert('記錄澆水失敗: ' + error, 'danger');
+                    }
+                } catch (error) {
+                    console.error('記錄澆水失敗:', error);
+                    showAlert('記錄澆水失敗', 'danger');
+                }
+            });
+            
+            // 快速施肥表單提交
+            document.getElementById('quickFertilizingForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const plantId = document.getElementById('fertilizingPlantId').value;
+                const formData = {
+                    caregiverName: document.getElementById('fertilizingCaregiver').value,
+                    notes: document.getElementById('fertilizingNotes').value
+                };
+                
+                try {
+                    const response = await fetch(`/api/park/plants/${plantId}/fertilizing`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    if (response.ok) {
+                        showAlert('施肥記錄成功', 'success');
+                        document.getElementById('quickFertilizingForm').reset();
+                        bootstrap.Modal.getInstance(document.getElementById('quickFertilizingModal')).hide();
+                        loadPlants();
+                    } else {
+                        const error = await response.text();
+                        showAlert('記錄施肥失敗: ' + error, 'danger');
+                    }
+                } catch (error) {
+                    console.error('記錄施肥失敗:', error);
+                    showAlert('記錄施肥失敗', 'danger');
+                }
+            });
+        });
+
+        // 刪除植物函數
+        async function deletePlant(id, name) {
+            if (!confirm(`確定要刪除植物「${name}」嗎？`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/park/plants/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    showAlert('植物刪除成功', 'success');
+                    loadPlants();
+                } else {
+                    showAlert('刪除植物失敗', 'danger');
+                }
+            } catch (error) {
+                console.error('刪除植物失敗:', error);
+                showAlert('刪除植物失敗', 'danger');
+            }
+        }
+
+        // 編輯植物函數 (暫時顯示提示)
+        function editPlant(id) {
+            showAlert('編輯功能開發中...', 'info');
+        }
+    </script>
+}
+
+<style>
+    .table th {
+        border-top: none;
+        font-weight: 600;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .card {
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .badge {
+        font-size: 0.75em;
+    }
+    
+    .modal-lg {
+        max-width: 900px;
+    }
+    
+    .alert {
+        border: none;
+        border-radius: 0.5rem;
+    }
+    
+    .fst-italic {
+        font-style: italic;
+    }
+</style>

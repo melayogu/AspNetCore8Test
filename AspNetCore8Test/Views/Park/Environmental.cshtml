@@ -1,0 +1,911 @@
+@{
+    ViewData["Title"] = "環境監測 - 碧湖公園管理系統";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <!-- 頁面標題 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="fas fa-thermometer-half text-info"></i> 環境監測</h2>
+                    <p class="text-muted">即時監控公園環境狀況，包含空氣品質、溫濕度、噪音等指標</p>
+                </div>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMonitoringModal">
+                    <i class="fas fa-plus"></i> 新增監測記錄
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 統計卡片 -->
+    <div class="row mb-4" id="statsCards">
+        <div class="col-md-3 mb-3">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <i class="fas fa-clipboard-list fa-2x text-info mb-2"></i>
+                    <h5 class="card-title">總記錄數</h5>
+                    <h3 class="text-info" id="totalRecords">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                    <h5 class="card-title">活躍警報</h5>
+                    <h3 class="text-warning" id="activeAlerts">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-thermometer-three-quarters fa-2x text-success mb-2"></i>
+                    <h5 class="card-title">當前溫度</h5>
+                    <h3 class="text-success" id="currentTemperature">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="fas fa-lungs fa-2x text-primary mb-2"></i>
+                    <h5 class="card-title">空氣品質</h5>
+                    <h3 class="text-primary" id="airQuality">-</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 搜尋和篩選 -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" class="form-control" id="searchInput" placeholder="搜尋位置或設備ID...">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="locationFilter">
+                <option value="">所有位置</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="date" class="form-control" id="startDate">
+        </div>
+        <div class="col-md-2">
+            <input type="date" class="form-control" id="endDate">
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-secondary w-100" onclick="clearFilters()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 快速篩選按鈕 -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="btn-group" aria-label="快速篩選工具">
+                <button type="button" class="btn btn-outline-primary" onclick="showLatestData()">最新數據</button>
+                <button type="button" class="btn btn-outline-warning" onclick="showPoorAirQuality()">空氣品質不良</button>
+                <button type="button" class="btn btn-outline-danger" onclick="showExtremeTemperature()">極端溫度</button>
+                <button type="button" class="btn btn-outline-info" onclick="showHighNoise()">高噪音</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="showAlerts()">環境警報</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 環境監測記錄表格 -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-list"></i> 環境監測記錄
+                <span class="badge bg-primary ms-2" id="recordCount">0</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="monitoringTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>位置</th>
+                            <th>記錄時間</th>
+                            <th>溫度 (°C)</th>
+                            <th>濕度 (%)</th>
+                            <th>空氣品質</th>
+                            <th>PM2.5</th>
+                            <th>噪音 (dB)</th>
+                            <th>設備ID</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 數據將通過 JavaScript 動態載入 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 新增監測記錄模態框 -->
+<div class="modal fade" id="addMonitoringModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增環境監測記錄</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addMonitoringForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="location" class="form-label">監測位置 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="location" name="location" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="latitude" class="form-label">緯度</label>
+                            <input type="number" class="form-control" id="latitude" name="latitude" step="0.000001" min="-90" max="90">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="longitude" class="form-label">經度</label>
+                            <input type="number" class="form-control" id="longitude" name="longitude" step="0.000001" min="-180" max="180">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="recordedAt" class="form-label">記錄時間 <span class="text-danger">*</span></label>
+                            <input type="datetime-local" class="form-control" id="recordedAt" name="recordedAt" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="deviceId" class="form-label">設備ID</label>
+                            <input type="text" class="form-control" id="deviceId" name="deviceId">
+                        </div>
+                    </div>
+                    
+                    <!-- 空氣品質參數 -->
+                    <h6 class="mt-3 mb-2"><i class="fas fa-lungs text-primary"></i> 空氣品質參數</h6>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="airQualityIndex" class="form-label">AQI</label>
+                            <input type="number" class="form-control" id="airQualityIndex" name="airQualityIndex" min="0" max="500">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="pm25" class="form-label">PM2.5 (μg/m³)</label>
+                            <input type="number" class="form-control" id="pm25" name="pm25" step="0.1" min="0">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="pm10" class="form-label">PM10 (μg/m³)</label>
+                            <input type="number" class="form-control" id="pm10" name="pm10" step="0.1" min="0">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="co2Level" class="form-label">CO2 (ppm)</label>
+                            <input type="number" class="form-control" id="co2Level" name="co2Level" step="0.1" min="0">
+                        </div>
+                    </div>
+                    
+                    <!-- 氣象參數 -->
+                    <h6 class="mt-3 mb-2"><i class="fas fa-cloud-sun text-info"></i> 氣象參數</h6>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="temperature" class="form-label">溫度 (°C)</label>
+                            <input type="number" class="form-control" id="temperature" name="temperature" step="0.1" min="-50" max="80">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="humidity" class="form-label">濕度 (%)</label>
+                            <input type="number" class="form-control" id="humidity" name="humidity" step="0.1" min="0" max="100">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="windSpeed" class="form-label">風速 (m/s)</label>
+                            <input type="number" class="form-control" id="windSpeed" name="windSpeed" step="0.1" min="0">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="windDirection" class="form-label">風向 (度)</label>
+                            <input type="number" class="form-control" id="windDirection" name="windDirection" min="0" max="360">
+                        </div>
+                    </div>
+                    
+                    <!-- 其他參數 -->
+                    <h6 class="mt-3 mb-2"><i class="fas fa-volume-up text-warning"></i> 其他參數</h6>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="noiseLevel" class="form-label">噪音等級 (dB)</label>
+                            <input type="number" class="form-control" id="noiseLevel" name="noiseLevel" step="0.1" min="0" max="200">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="uvIndex" class="form-label">紫外線指數</label>
+                            <input type="number" class="form-control" id="uvIndex" name="uvIndex" step="0.1" min="0" max="20">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="rainfall" class="form-label">降雨量 (mm)</label>
+                            <input type="number" class="form-control" id="rainfall" name="rainfall" step="0.1" min="0">
+                        </div>
+                    </div>
+                    
+                    <!-- 水質參數 -->
+                    <h6 class="mt-3 mb-2"><i class="fas fa-tint text-primary"></i> 水質參數</h6>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="waterPH" class="form-label">水質 pH</label>
+                            <input type="number" class="form-control" id="waterPH" name="waterPH" step="0.1" min="0" max="14">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="dissolvedOxygen" class="form-label">溶氧量 (mg/L)</label>
+                            <input type="number" class="form-control" id="dissolvedOxygen" name="dissolvedOxygen" step="0.1" min="0">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="waterTemperature" class="form-label">水溫 (°C)</label>
+                            <input type="number" class="form-control" id="waterTemperature" name="waterTemperature" step="0.1" min="0" max="50">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="waterTurbidity" class="form-label">濁度 (NTU)</label>
+                            <input type="number" class="form-control" id="waterTurbidity" name="waterTurbidity" step="0.1" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">備註</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">新增記錄</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 詳細資訊模態框 -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">監測記錄詳細資訊</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detailContent">
+                <!-- 詳細內容將通過 JavaScript 動態載入 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+$(document).ready(function() {
+    loadStats();
+    loadMonitoring();
+    loadLocationFilter();
+    
+    // 設定預設時間
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    $('#startDate').val(oneWeekAgo.toISOString().split('T')[0]);
+    $('#endDate').val(now.toISOString().split('T')[0]);
+    
+    // 設定當前時間為預設記錄時間
+    $('#recordedAt').val(now.toISOString().slice(0, 16));
+    
+    // 搜尋功能
+    $('#searchInput').on('keyup', function() {
+        const searchTerm = $(this).val();
+        if (searchTerm.length >= 2 || searchTerm.length === 0) {
+            searchMonitoring(searchTerm);
+        }
+    });
+    
+    // 位置篩選
+    $('#locationFilter').on('change', function() {
+        const location = $(this).val();
+        if (location) {
+            filterByLocation(location);
+        } else {
+            loadMonitoring();
+        }
+    });
+    
+    // 日期範圍篩選
+    $('#startDate, #endDate').on('change', function() {
+        const startDate = $('#startDate').val();
+        const endDate = $('#endDate').val();
+        if (startDate && endDate) {
+            filterByDateRange(startDate, endDate);
+        }
+    });
+    
+    // 新增監測記錄表單提交
+    $('#addMonitoringForm').on('submit', function(e) {
+        e.preventDefault();
+        addMonitoring();
+    });
+});
+
+// 載入統計資料
+async function loadStats() {
+    try {
+        const response = await fetch('/api/environmental/stats');
+        const stats = await response.json();
+        
+        $('#totalRecords').text(stats.totalRecords || 0);
+        $('#activeAlerts').text(stats.activeAlerts || 0);
+        $('#currentTemperature').text(stats.latestTemperature ? `${stats.latestTemperature}°C` : '-');
+        $('#airQuality').text(stats.airQualityStatus || '-');
+        
+        // 更新卡片顏色
+        updateAlertCardColor(stats.activeAlerts);
+        updateAirQualityCardColor(stats.latestAQI);
+        
+    } catch (error) {
+        console.error('載入統計資料失敗:', error);
+    }
+}
+
+// 載入監測記錄
+async function loadMonitoring() {
+    try {
+        const response = await fetch('/api/environmental');
+        const monitoring = await response.json();
+        
+        displayMonitoring(monitoring);
+        
+    } catch (error) {
+        console.error('載入監測記錄失敗:', error);
+        showError('載入監測記錄失敗');
+    }
+}
+
+// 載入位置篩選選項
+async function loadLocationFilter() {
+    try {
+        const response = await fetch('/api/environmental');
+        const monitoring = await response.json();
+        
+        const locations = [...new Set(monitoring.map(m => m.location))];
+        const locationFilter = $('#locationFilter');
+        
+        locations.forEach(location => {
+            locationFilter.append(`<option value="${location}">${location}</option>`);
+        });
+        
+    } catch (error) {
+        console.error('載入位置選項失敗:', error);
+    }
+}
+
+// 顯示監測記錄
+function displayMonitoring(monitoring) {
+    const tbody = $('#monitoringTable tbody');
+    tbody.empty();
+    
+    $('#recordCount').text(monitoring.length);
+    
+    if (monitoring.length === 0) {
+        tbody.append(`
+            <tr>
+                <td colspan="9" class="text-center text-muted">
+                    <i class="fas fa-info-circle"></i> 目前沒有監測記錄
+                </td>
+            </tr>
+        `);
+        return;
+    }
+    
+    monitoring.forEach(record => {
+        const row = `
+            <tr>
+                <td>
+                    <i class="fas fa-map-marker-alt text-primary"></i>
+                    ${record.location}
+                    ${record.latitude && record.longitude ? 
+                        `<br><small class="text-muted">${record.latitude.toFixed(4)}, ${record.longitude.toFixed(4)}</small>` : ''}
+                </td>
+                <td>
+                    ${new Date(record.recordedAt).toLocaleString('zh-TW')}
+                </td>
+                <td>
+                    ${record.temperature ? 
+                        `<span class="${getTemperatureClass(record.temperature)}">${record.temperature}°C</span>
+                         <br><small class="text-muted">${record.temperatureComfort}</small>` : '-'}
+                </td>
+                <td>
+                    ${record.humidity ? 
+                        `<span class="${getHumidityClass(record.humidity)}">${record.humidity}%</span>` : '-'}
+                </td>
+                <td>
+                    ${record.airQualityIndex ? 
+                        `<span class="badge ${getAQIBadgeClass(record.airQualityIndex)}">${record.airQualityIndex}</span>
+                         <br><small>${record.airQualityLevel}</small>` : '-'}
+                </td>
+                <td>
+                    ${record.pm25 ? 
+                        `<span class="${getPM25Class(record.pm25)}">${record.pm25} μg/m³</span>` : '-'}
+                </td>
+                <td>
+                    ${record.noiseLevel ? 
+                        `<span class="${getNoiseClass(record.noiseLevel)}">${record.noiseLevel} dB</span>` : '-'}
+                </td>
+                <td>
+                    ${record.deviceId ? 
+                        `<span class="badge bg-secondary">${record.deviceId}</span>` : '-'}
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="showDetail(${record.id})" title="查看詳細">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger ms-1" onclick="deleteMonitoring(${record.id})" title="刪除">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+        tbody.append(row);
+    });
+}
+
+// 搜尋監測記錄
+async function searchMonitoring(searchTerm) {
+    try {
+        const response = await fetch(`/api/environmental/search?searchTerm=${encodeURIComponent(searchTerm)}`);
+        const monitoring = await response.json();
+        
+        displayMonitoring(monitoring);
+        
+    } catch (error) {
+        console.error('搜尋失敗:', error);
+        showError('搜尋失敗');
+    }
+}
+
+// 依位置篩選
+async function filterByLocation(location) {
+    try {
+        const response = await fetch(`/api/environmental/location/${encodeURIComponent(location)}`);
+        const monitoring = await response.json();
+        
+        displayMonitoring(monitoring);
+        
+    } catch (error) {
+        console.error('篩選失敗:', error);
+        showError('篩選失敗');
+    }
+}
+
+// 依日期範圍篩選
+async function filterByDateRange(startDate, endDate) {
+    try {
+        const response = await fetch(`/api/environmental/daterange?startDate=${startDate}&endDate=${endDate}`);
+        const monitoring = await response.json();
+        
+        displayMonitoring(monitoring);
+        
+    } catch (error) {
+        console.error('日期篩選失敗:', error);
+        showError('日期篩選失敗');
+    }
+}
+
+// 清除篩選
+function clearFilters() {
+    $('#searchInput').val('');
+    $('#locationFilter').val('');
+    $('#startDate').val('');
+    $('#endDate').val('');
+    loadMonitoring();
+}
+
+// 顯示最新數據
+async function showLatestData() {
+    try {
+        const response = await fetch('/api/environmental/latest');
+        const monitoring = await response.json();
+        
+        displayMonitoring(monitoring);
+        
+    } catch (error) {
+        console.error('載入最新數據失敗:', error);
+        showError('載入最新數據失敗');
+    }
+}
+
+// 顯示空氣品質不良記錄
+async function showPoorAirQuality() {
+    try {
+        const response = await fetch('/api/environmental/poor-air-quality');
+        const monitoring = await response.json();
+        
+        displayMonitoring(monitoring);
+        
+    } catch (error) {
+        console.error('載入空氣品質不良記錄失敗:', error);
+        showError('載入空氣品質不良記錄失敗');
+    }
+}
+
+// 顯示極端溫度記錄
+async function showExtremeTemperature() {
+    try {
+        const response = await fetch('/api/environmental/extreme-temperature');
+        const monitoring = await response.json();
+        
+        displayMonitoring(monitoring);
+        
+    } catch (error) {
+        console.error('載入極端溫度記錄失敗:', error);
+        showError('載入極端溫度記錄失敗');
+    }
+}
+
+// 顯示高噪音記錄
+async function showHighNoise() {
+    try {
+        const response = await fetch('/api/environmental/high-noise');
+        const monitoring = await response.json();
+        
+        displayMonitoring(monitoring);
+        
+    } catch (error) {
+        console.error('載入高噪音記錄失敗:', error);
+        showError('載入高噪音記錄失敗');
+    }
+}
+
+// 顯示環境警報
+async function showAlerts() {
+    try {
+        const response = await fetch('/api/environmental-alerts');
+        const alerts = await response.json();
+        
+        displayAlerts(alerts);
+        
+    } catch (error) {
+        console.error('載入環境警報失敗:', error);
+        showError('載入環境警報失敗');
+    }
+}
+
+// 顯示警報列表
+function displayAlerts(alerts) {
+    const tbody = $('#monitoringTable tbody');
+    tbody.empty();
+    
+    // 更改表格標題
+    $('#monitoringTable thead tr').html(`
+        <th>位置</th>
+        <th>警報類型</th>
+        <th>警報等級</th>
+        <th>警報訊息</th>
+        <th>觸發時間</th>
+        <th>狀態</th>
+        <th>處理人員</th>
+        <th>操作</th>
+    `);
+    
+    $('#recordCount').text(alerts.length);
+    
+    if (alerts.length === 0) {
+        tbody.append(`
+            <tr>
+                <td colspan="8" class="text-center text-muted">
+                    <i class="fas fa-info-circle"></i> 目前沒有環境警報
+                </td>
+            </tr>
+        `);
+        return;
+    }
+    
+    alerts.forEach(alert => {
+        const row = `
+            <tr class="${alert.isResolved ? '' : 'table-warning'}">
+                <td>
+                    <i class="fas fa-map-marker-alt text-primary"></i>
+                    ${alert.location}
+                </td>
+                <td>
+                    <span class="badge ${getAlertTypeBadgeClass(alert.alertType)}">${alert.alertType}</span>
+                </td>
+                <td>
+                    <span class="badge ${getAlertLevelBadgeClass(alert.alertLevel)}">${alert.alertLevel}</span>
+                </td>
+                <td>
+                    ${alert.message}
+                    ${alert.description ? `<br><small class="text-muted">${alert.description}</small>` : ''}
+                </td>
+                <td>
+                    ${new Date(alert.triggeredAt).toLocaleString('zh-TW')}
+                </td>
+                <td>
+                    ${alert.isResolved ? 
+                        `<span class="badge bg-success">已解決</span>
+                         <br><small class="text-muted">${new Date(alert.resolvedAt).toLocaleString('zh-TW')}</small>` :
+                        '<span class="badge bg-warning">待處理</span>'}
+                </td>
+                <td>
+                    ${alert.resolvedBy || '-'}
+                </td>
+                <td>
+                    ${!alert.isResolved ? 
+                        `<button class="btn btn-sm btn-success" onclick="resolveAlert(${alert.id})" title="標記為已解決">
+                            <i class="fas fa-check"></i>
+                         </button>` : 
+                        `<button class="btn btn-sm btn-outline-primary" onclick="showAlertDetail(${alert.id})" title="查看詳細">
+                            <i class="fas fa-eye"></i>
+                         </button>`}
+                </td>
+            </tr>
+        `;
+        tbody.append(row);
+    });
+}
+
+// 新增監測記錄
+async function addMonitoring() {
+    try {
+        const formData = new FormData(document.getElementById('addMonitoringForm'));
+        const data = {};
+        
+        // 轉換表單數據
+        for (let [key, value] of formData.entries()) {
+            if (value) {
+                if (['latitude', 'longitude', 'airQualityIndex', 'pm25', 'pm10', 'co2Level', 
+                     'temperature', 'humidity', 'noiseLevel', 'waterPH', 'dissolvedOxygen', 
+                     'waterTemperature', 'waterTurbidity', 'uvIndex', 'windSpeed', 
+                     'windDirection', 'rainfall'].includes(key)) {
+                    data[key] = parseFloat(value);
+                } else {
+                    data[key] = value;
+                }
+            }
+        }
+        
+        const response = await fetch('/api/environmental', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            $('#addMonitoringModal').modal('hide');
+            $('#addMonitoringForm')[0].reset();
+            loadMonitoring();
+            loadStats();
+            showSuccess('監測記錄新增成功');
+        } else {
+            const error = await response.text();
+            showError(`新增失敗: ${error}`);
+        }
+        
+    } catch (error) {
+        console.error('新增監測記錄失敗:', error);
+        showError('新增監測記錄失敗');
+    }
+}
+
+// 刪除監測記錄
+async function deleteMonitoring(id) {
+    if (!confirm('確定要刪除這筆監測記錄嗎？')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/environmental/${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            loadMonitoring();
+            loadStats();
+            showSuccess('監測記錄刪除成功');
+        } else {
+            showError('刪除失敗');
+        }
+        
+    } catch (error) {
+        console.error('刪除監測記錄失敗:', error);
+        showError('刪除監測記錄失敗');
+    }
+}
+
+// 顯示詳細資訊
+async function showDetail(id) {
+    try {
+        const response = await fetch(`/api/environmental/${id}`);
+        const record = await response.json();
+        
+        const detailHtml = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><i class="fas fa-map-marker-alt text-primary"></i> 位置資訊</h6>
+                    <p><strong>位置:</strong> ${record.location}</p>
+                    ${record.latitude && record.longitude ? 
+                        `<p><strong>座標:</strong> ${record.latitude}, ${record.longitude}</p>` : ''}
+                    <p><strong>記錄時間:</strong> ${new Date(record.recordedAt).toLocaleString('zh-TW')}</p>
+                    <p><strong>設備ID:</strong> ${record.deviceId || '無'}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6><i class="fas fa-lungs text-info"></i> 空氣品質</h6>
+                    <p><strong>AQI:</strong> ${record.airQualityIndex || '無數據'} (${record.airQualityLevel})</p>
+                    <p><strong>PM2.5:</strong> ${record.pm25 ? record.pm25 + ' μg/m³' : '無數據'}</p>
+                    <p><strong>PM10:</strong> ${record.pm10 ? record.pm10 + ' μg/m³' : '無數據'}</p>
+                    <p><strong>CO2:</strong> ${record.co2Level ? record.co2Level + ' ppm' : '無數據'}</p>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h6><i class="fas fa-thermometer-half text-success"></i> 氣象資訊</h6>
+                    <p><strong>溫度:</strong> ${record.temperature ? record.temperature + '°C' : '無數據'} (${record.temperatureComfort})</p>
+                    <p><strong>濕度:</strong> ${record.humidity ? record.humidity + '%' : '無數據'}</p>
+                    <p><strong>風速:</strong> ${record.windSpeed ? record.windSpeed + ' m/s' : '無數據'}</p>
+                    <p><strong>風向:</strong> ${record.windDirection ? record.windDirection + '度' : '無數據'}</p>
+                    <p><strong>降雨量:</strong> ${record.rainfall ? record.rainfall + ' mm' : '無數據'}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6><i class="fas fa-tint text-primary"></i> 水質 & 其他</h6>
+                    <p><strong>水質pH:</strong> ${record.waterPH || '無數據'}</p>
+                    <p><strong>溶氧量:</strong> ${record.dissolvedOxygen ? record.dissolvedOxygen + ' mg/L' : '無數據'}</p>
+                    <p><strong>水溫:</strong> ${record.waterTemperature ? record.waterTemperature + '°C' : '無數據'}</p>
+                    <p><strong>濁度:</strong> ${record.waterTurbidity ? record.waterTurbidity + ' NTU' : '無數據'}</p>
+                    <p><strong>噪音:</strong> ${record.noiseLevel ? record.noiseLevel + ' dB' : '無數據'}</p>
+                    <p><strong>紫外線:</strong> ${record.uvIndex || '無數據'}</p>
+                </div>
+            </div>
+            ${record.notes ? `
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6><i class="fas fa-sticky-note text-warning"></i> 備註</h6>
+                        <p>${record.notes}</p>
+                    </div>
+                </div>
+            ` : ''}
+        `;
+        
+        $('#detailContent').html(detailHtml);
+        $('#detailModal').modal('show');
+        
+    } catch (error) {
+        console.error('載入詳細資訊失敗:', error);
+        showError('載入詳細資訊失敗');
+    }
+}
+
+// 解決警報
+async function resolveAlert(alertId) {
+    const resolvedBy = prompt('請輸入處理人員姓名:');
+    if (!resolvedBy) return;
+    
+    const notes = prompt('請輸入處理備註:') || '';
+    
+    try {
+        const response = await fetch(`/api/environmental-alerts/${alertId}/resolve`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                resolvedBy: resolvedBy,
+                notes: notes
+            })
+        });
+        
+        if (response.ok) {
+            showAlerts(); // 重新載入警報列表
+            loadStats(); // 更新統計
+            showSuccess('警報已標記為解決');
+        } else {
+            showError('標記解決失敗');
+        }
+        
+    } catch (error) {
+        console.error('解決警報失敗:', error);
+        showError('解決警報失敗');
+    }
+}
+
+// 輔助函數 - 取得溫度樣式
+function getTemperatureClass(temp) {
+    if (temp < 10) return 'text-primary';
+    if (temp > 35) return 'text-danger';
+    if (temp > 28) return 'text-warning';
+    return 'text-success';
+}
+
+// 輔助函數 - 取得濕度樣式
+function getHumidityClass(humidity) {
+    if (humidity > 80) return 'text-info';
+    if (humidity < 30) return 'text-warning';
+    return 'text-success';
+}
+
+// 輔助函數 - 取得 AQI 徽章樣式
+function getAQIBadgeClass(aqi) {
+    if (aqi <= 50) return 'bg-success';
+    if (aqi <= 100) return 'bg-info';
+    if (aqi <= 150) return 'bg-warning';
+    if (aqi <= 200) return 'bg-danger';
+    return 'bg-dark';
+}
+
+// 輔助函數 - 取得 PM2.5 樣式
+function getPM25Class(pm25) {
+    if (pm25 <= 12) return 'text-success';
+    if (pm25 <= 35) return 'text-info';
+    if (pm25 <= 55) return 'text-warning';
+    return 'text-danger';
+}
+
+// 輔助函數 - 取得噪音樣式
+function getNoiseClass(noise) {
+    if (noise <= 50) return 'text-success';
+    if (noise <= 70) return 'text-info';
+    if (noise <= 85) return 'text-warning';
+    return 'text-danger';
+}
+
+// 輔助函數 - 取得警報類型徽章樣式
+function getAlertTypeBadgeClass(type) {
+    switch (type) {
+        case 'AirQuality': return 'bg-warning';
+        case 'Temperature': return 'bg-info';
+        case 'Noise': return 'bg-danger';
+        case 'Water': return 'bg-primary';
+        default: return 'bg-secondary';
+    }
+}
+
+// 輔助函數 - 取得警報等級徽章樣式
+function getAlertLevelBadgeClass(level) {
+    switch (level) {
+        case 'Info': return 'bg-info';
+        case 'Warning': return 'bg-warning';
+        case 'Danger': return 'bg-danger';
+        case 'Critical': return 'bg-dark';
+        default: return 'bg-secondary';
+    }
+}
+
+// 更新警報卡片顏色
+function updateAlertCardColor(alertCount) {
+    const alertCard = $('#activeAlerts').closest('.card');
+    alertCard.removeClass('border-warning border-danger');
+    if (alertCount > 5) {
+        alertCard.addClass('border-danger');
+    } else if (alertCount > 0) {
+        alertCard.addClass('border-warning');
+    }
+}
+
+// 更新空氣品質卡片顏色
+function updateAirQualityCardColor(aqi) {
+    const aqiCard = $('#airQuality').closest('.card');
+    aqiCard.removeClass('border-primary border-warning border-danger');
+    if (aqi > 150) {
+        aqiCard.addClass('border-danger');
+    } else if (aqi > 100) {
+        aqiCard.addClass('border-warning');
+    } else {
+        aqiCard.addClass('border-primary');
+    }
+}
+
+// 顯示成功訊息
+function showSuccess(message) {
+    // 這裡可以使用 toast 或其他通知元件
+    alert(message);
+}
+
+// 顯示錯誤訊息
+function showError(message) {
+    // 這裡可以使用 toast 或其他通知元件
+    alert(message);
+}
+</script>
+}

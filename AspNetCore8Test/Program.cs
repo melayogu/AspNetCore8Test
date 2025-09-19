@@ -2,6 +2,7 @@ using FluentValidation;
 using AspNetCore8Test.Models.DTOs;
 using AspNetCore8Test.Validators;
 using AspNetCore8Test.Services;
+using AspNetCore8Test.Services.ParkServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,11 @@ builder.Services.AddSwaggerGen();
 // 註冊服務
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ApprovalService>();
+
+// 註冊公園管理服務
+builder.Services.AddScoped<IFacilityService, FacilityService>();
+builder.Services.AddScoped<IPlantService, PlantService>();
+builder.Services.AddScoped<IEnvironmentalService, EnvironmentalService>();
 
 // 註冊 FluentValidation 驗證器
 builder.Services.AddScoped<IValidator<CreateProductDto>, CreateProductDtoValidator>();
