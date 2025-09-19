@@ -26,14 +26,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group mb-3">
-                                <label asp-for="CaseNumber" class="form-label"></label>
+                                <label asp-for="CaseNumber" class="form-label">@Html.DisplayNameFor(m => m.CaseNumber)</label>
                                 <input asp-for="CaseNumber" class="form-control" placeholder="請輸入案件編號" />
                                 <span asp-validation-for="CaseNumber" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
-                                <label asp-for="CaseType" class="form-label"></label>
+                                <label asp-for="CaseType" class="form-label">@Html.DisplayNameFor(m => m.CaseType)</label>
                                 <select asp-for="CaseType" class="form-control" asp-items="Html.GetEnumSelectList<AspNetCore8Test.Models.LandSurveyorModels.CaseType>()">
                                     <option value="">請選擇案件類型</option>
                                 </select>
@@ -43,7 +43,7 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="CaseName" class="form-label"></label>
+                        <label asp-for="CaseName" class="form-label">@Html.DisplayNameFor(m => m.CaseName)</label>
                         <input asp-for="CaseName" class="form-control" placeholder="請輸入案件名稱" />
                         <span asp-validation-for="CaseName" class="text-danger"></span>
                     </div>
@@ -59,14 +59,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group mb-3">
-                                <label asp-for="ReceivedDate" class="form-label"></label>
+                                <label asp-for="ReceivedDate" class="form-label">@Html.DisplayNameFor(m => m.ReceivedDate)</label>
                                 <input asp-for="ReceivedDate" class="form-control" type="date" />
                                 <span asp-validation-for="ReceivedDate" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
-                                <label asp-for="ExpectedCompletionDate" class="form-label"></label>
+                                <label asp-for="ExpectedCompletionDate" class="form-label">@Html.DisplayNameFor(m => m.ExpectedCompletionDate)</label>
                                 <input asp-for="ExpectedCompletionDate" class="form-control" type="date" />
                                 <span asp-validation-for="ExpectedCompletionDate" class="text-danger"></span>
                             </div>
@@ -74,13 +74,13 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="Description" class="form-label"></label>
+                        <label asp-for="Description" class="form-label">@Html.DisplayNameFor(m => m.Description)</label>
                         <textarea asp-for="Description" class="form-control" rows="3" placeholder="請輸入案件描述"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="Fee" class="form-label"></label>
+                        <label asp-for="Fee" class="form-label">@Html.DisplayNameFor(m => m.Fee)</label>
                         <div class="input-group">
                             <span class="input-group-text">NT$</span>
                             <input asp-for="Fee" class="form-control" placeholder="請輸入費用" />
@@ -89,7 +89,7 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="Notes" class="form-label"></label>
+                        <label asp-for="Notes" class="form-label">@Html.DisplayNameFor(m => m.Notes)</label>
                         <textarea asp-for="Notes" class="form-control" rows="2" placeholder="請輸入備註（選填）"></textarea>
                         <span asp-validation-for="Notes" class="text-danger"></span>
                     </div>
