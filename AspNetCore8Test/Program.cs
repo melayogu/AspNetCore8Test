@@ -23,6 +23,8 @@ builder.Services.AddScoped<ApprovalService>();
 // 註冊地政士系統服務
 builder.Services.AddScoped<AspNetCore8Test.Services.LandSurveyorServices.ICustomerService, 
     AspNetCore8Test.Services.LandSurveyorServices.MockCustomerService>();
+builder.Services.AddScoped<AspNetCore8Test.Services.LandSurveyorServices.ICaseService, 
+    AspNetCore8Test.Services.LandSurveyorServices.MockCaseService>();
 
 // 註冊公園管理服務
 builder.Services.AddScoped<IFacilityService, FacilityService>();
