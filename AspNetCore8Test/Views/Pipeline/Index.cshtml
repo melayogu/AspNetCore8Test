@@ -1,0 +1,318 @@
+@{
+    ViewData["Title"] = "管線管理";
+}
+
+<div class="container-fluid">
+    <!-- 頁面標題 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="fas fa-project-diagram text-primary me-2"></i>管線管理系統</h2>
+                    <p class="text-muted mb-0">管理天然氣管線網路、監控系統狀態</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("Create")" class="btn btn-success">
+                        <i class="fas fa-plus me-1"></i>新增管線
+                    </a>
+                    <a href="@Url.Action("Monitoring")" class="btn btn-info">
+                        <i class="fas fa-chart-line me-1"></i>即時監控
+                    </a>
+                    <a href="@Url.Action("Alerts")" class="btn btn-warning">
+                        <i class="fas fa-bell me-1"></i>警報管理
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 統計卡片 -->
+    <div class="row mb-4" id="statsCards">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">總管線數</h6>
+                            <h3 class="mb-0" id="totalPipelines">-</h3>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-route text-primary fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">運行中</h6>
+                            <h3 class="mb-0" id="activePipelines">-</h3>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-play-circle text-success fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">維護中</h6>
+                            <h3 class="mb-0" id="maintenancePipelines">-</h3>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-wrench text-warning fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">活躍警報</h6>
+                            <h3 class="mb-0" id="activeAlerts">-</h3>
+                        </div>
+                        <div class="bg-danger bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-exclamation-triangle text-danger fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要內容區域 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">管線列表</h5>
+                    <div class="d-flex gap-2">
+                        <div class="input-group" style="width: 300px;">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" id="searchInput" placeholder="搜尋管線名稱或位置...">
+                        </div>
+                        <select class="form-select" id="statusFilter" style="width: auto;">
+                            <option value="">所有狀態</option>
+                            <option value="Active">運行中</option>
+                            <option value="Maintenance">維護中</option>
+                            <option value="Inactive">停用</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>管線名稱</th>
+                                    <th>位置</th>
+                                    <th>長度 (km)</th>
+                                    <th>壓力 (bar)</th>
+                                    <th>狀態</th>
+                                    <th>最後檢查</th>
+                                    <th style="width: 200px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pipelinesTableBody">
+                                <!-- 動態載入內容 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+$(document).ready(function() {
+    loadStats();
+    loadPipelines();
+    
+    // 搜尋功能
+    $('#searchInput').on('keyup', debounce(function() {
+        loadPipelines();
+    }, 300));
+    
+    // 篩選功能
+    $('#statusFilter').change(function() {
+        loadPipelines();
+    });
+});
+
+// 載入統計數據
+function loadStats() {
+    $.get('/api/pipelines/stats')
+        .done(function(data) {
+            $('#totalPipelines').text(data.totalPipelines || 0);
+            $('#activePipelines').text(data.activePipelines || 0);
+            $('#maintenancePipelines').text(data.maintenancePipelines || 0);
+            $('#activeAlerts').text(data.activeAlerts || 0);
+        })
+        .fail(function() {
+            console.error('載入統計數據失敗');
+        });
+}
+
+// 載入管線列表
+function loadPipelines() {
+    const searchTerm = $('#searchInput').val();
+    const statusFilter = $('#statusFilter').val();
+    
+    let url = '/api/pipelines';
+    const params = new URLSearchParams();
+    
+    if (searchTerm) params.append('search', searchTerm);
+    if (statusFilter) params.append('status', statusFilter);
+    
+    if (params.toString()) {
+        url += '?' + params.toString();
+    }
+    
+    $.get(url)
+        .done(function(data) {
+            renderPipelinesTable(data);
+        })
+        .fail(function() {
+            showAlert('載入管線列表失敗', 'danger');
+        });
+}
+
+// 渲染管線表格
+function renderPipelinesTable(pipelines) {
+    const tbody = $('#pipelinesTableBody');
+    tbody.empty();
+    
+    if (pipelines.length === 0) {
+        tbody.append('<tr><td colspan="7" class="text-center text-muted">尚無管線資料</td></tr>');
+        return;
+    }
+    
+    pipelines.forEach(function(pipeline) {
+        const statusBadge = getPipelineStatusBadge(pipeline.status);
+        const lastInspection = pipeline.lastInspectionDate ? 
+            new Date(pipeline.lastInspectionDate).toLocaleDateString('zh-TW') : '無記錄';
+        
+        const row = `
+            <tr>
+                <td>
+                    <strong>${pipeline.name}</strong>
+                    <br><small class="text-muted">${pipeline.description || ''}</small>
+                </td>
+                <td>${pipeline.location}</td>
+                <td>${pipeline.length}</td>
+                <td>
+                    <span class="badge ${pipeline.pressure > 50 ? 'bg-danger' : pipeline.pressure > 30 ? 'bg-warning' : 'bg-success'}">
+                        ${pipeline.pressure}
+                    </span>
+                </td>
+                <td>${statusBadge}</td>
+                <td><small>${lastInspection}</small></td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="viewPipeline(${pipeline.id})" title="檢視">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="editPipeline(${pipeline.id})" title="編輯">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-info" onclick="monitorPipeline(${pipeline.id})" title="監控">
+                            <i class="fas fa-chart-line"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="deletePipeline(${pipeline.id})" title="刪除">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+        tbody.append(row);
+    });
+}
+
+// 取得管線狀態徽章
+function getPipelineStatusBadge(status) {
+    const badges = {
+        'Active': '<span class="badge bg-success">運行中</span>',
+        'Maintenance': '<span class="badge bg-warning">維護中</span>',
+        'Inactive': '<span class="badge bg-secondary">停用</span>',
+        'Emergency': '<span class="badge bg-danger">緊急</span>'
+    };
+    return badges[status] || '<span class="badge bg-secondary">未知</span>';
+}
+
+// 工具函數
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function showAlert(message, type) {
+    const alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // 移除現有的提醒
+    $('.alert').remove();
+    
+    // 在頁面頂部插入新提醒
+    $('main').prepend(alertHtml);
+    
+    // 自動移除提醒
+    setTimeout(function() {
+        $('.alert').fadeOut();
+    }, 5000);
+}
+
+// 佔位函數（實際實作時需要完整功能）
+function viewPipeline(id) { 
+    window.location.href = `/Pipeline/Details/${id}`;
+}
+
+function editPipeline(id) { 
+    window.location.href = `/Pipeline/Edit/${id}`;
+}
+
+function monitorPipeline(id) { 
+    window.location.href = `/Pipeline/Monitor/${id}`;
+}
+
+function deletePipeline(id) { 
+    if (confirm('確定要刪除這條管線嗎？')) {
+        $.ajax({
+            url: `/api/pipelines/${id}`,
+            method: 'DELETE'
+        })
+        .done(function() {
+            showAlert('管線刪除成功', 'success');
+            loadPipelines();
+            loadStats();
+        })
+        .fail(function() {
+            showAlert('刪除管線失敗', 'danger');
+        });
+    }
+}
+</script>
+}
