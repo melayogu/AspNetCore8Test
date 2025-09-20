@@ -143,6 +143,25 @@
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
+                            <button class="btn nav-link dropdown-toggle text-dark border-0 bg-transparent" id="loRaDropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-broadcast-tower me-1"></i>LoRa 管理系統
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="loRaDropdown">
+                                <li><a class="dropdown-item" asp-controller="LoRa" asp-action="VersionOne">
+                                    <i class="fas fa-circle-dot me-2"></i>LoRa管理系統(一)
+                                </a></li>
+                                <li><a class="dropdown-item" asp-controller="LoRa" asp-action="VersionTwo">
+                                    <i class="fas fa-circle me-2"></i>LoRa管理系統(二)
+                                </a></li>
+                                <li><a class="dropdown-item" asp-controller="LoRa" asp-action="VersionThree">
+                                    <i class="fas fa-ring me-2"></i>LoRa管理系統(三)
+                                </a></li>
+                                <li><a class="dropdown-item" asp-controller="LoRa" asp-action="VersionFour">
+                                    <i class="fas fa-sun me-2"></i>LoRa管理系統(四)
+                                </a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
                             <button class="btn nav-link dropdown-toggle text-dark border-0 bg-transparent" id="landSurveyorDropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-map me-1"></i>地政士系統
                             </button>
