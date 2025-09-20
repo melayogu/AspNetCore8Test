@@ -1,0 +1,165 @@
+@model IEnumerable<AspNetCore8Test.Models.DTOs.GasDTOs.LoRaAlertDto>
+@{
+    ViewData["Title"] = "LoRa 警報中心";
+    bool includeResolved = ViewBag.IncludeResolved != null ? (bool)ViewBag.IncludeResolved : false;
+    var alerts = Model.ToList();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0"><i class="fas fa-exclamation-triangle me-2 text-danger"></i>LoRa 警報中心</h2>
+        <small class="text-muted">目前共 @alerts.Count 筆警報紀錄</small>
+    </div>
+    <div class="btn-group">
+        <a asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-tachometer-alt me-1"></i>儀表板</a>
+        <a asp-action="Devices" class="btn btn-outline-primary"><i class="fas fa-microchip me-1"></i>裝置清單</a>
+        <a asp-action="Gateways" class="btn btn-outline-secondary"><i class="fas fa-broadcast-tower me-1"></i>閘道器</a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+            <strong class="text-muted me-2">顯示選項：</strong>
+            <div class="form-check form-switch d-inline-flex align-items-center gap-2">
+                <input class="form-check-input" type="checkbox" role="switch" id="includeResolvedSwitch" @(includeResolved ? "checked" : string.Empty)>
+                <label class="form-check-label" for="includeResolvedSwitch">顯示已解決警報</label>
+            </div>
+        </div>
+        <div class="text-muted">
+            <i class="fas fa-info-circle me-1"></i>使用預設值班人員名稱提交確認/結案
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>警報</th>
+                        <th>裝置資訊</th>
+                        <th>警報內容</th>
+                        <th>時間軸</th>
+                        <th class="text-center">狀態</th>
+                        <th class="text-end">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (alerts.Any())
+                    {
+                        foreach (var alert in alerts)
+                        {
+                            <tr class="@(alert.Status == "Resolved" ? "table-light" : string.Empty)">
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge bg-@(alert.Severity == "High" ? "danger" : alert.Severity == "Medium" ? "warning" : "info")">@alert.Severity</span>
+                                        <div>
+                                            <div class="fw-semibold">@alert.AlertType</div>
+                                            <div class="text-muted small">@alert.Description</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">@alert.DeviceNumber</div>
+                                    <div class="text-muted small">@alert.CustomerName</div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(alert.RecommendedAction))
+                                    {
+                                        <div class="small text-muted">建議：@alert.RecommendedAction</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="small text-muted">無建議措施</div>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="small text-muted">觸發：@alert.DetectedAt.ToString("yyyy/MM/dd HH:mm")</div>
+                                    @if (alert.AcknowledgedAt.HasValue)
+                                    {
+                                        <div class="small text-muted">確認：@alert.AcknowledgedAt.Value.ToString("MM/dd HH:mm") (@alert.AcknowledgedBy)</div>
+                                    }
+                                    @if (alert.ResolvedAt.HasValue)
+                                    {
+                                        <div class="small text-muted">結案：@alert.ResolvedAt.Value.ToString("MM/dd HH:mm") (@alert.ResolvedBy)</div>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-@(alert.Status == "Active" ? "danger" : alert.Status == "Acknowledged" ? "warning" : "success")">@alert.Status</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex flex-column gap-2 align-items-end">
+                                        <a asp-action="DeviceDetails" asp-route-id="@alert.DeviceId" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-eye me-1"></i>裝置
+                                        </a>
+                                        <div class="d-flex gap-2">
+                                            <form asp-action="AcknowledgeAlert" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="alertId" value="@alert.Id" />
+                                                <input type="hidden" name="acknowledgedBy" value="值班工程師" />
+                                                <button type="submit" class="btn btn-sm btn-outline-primary" @(alert.Status == "Active" ? string.Empty : "disabled")>
+                                                    <i class="fas fa-check me-1"></i>確認
+                                                </button>
+                                            </form>
+                                            <form asp-action="ResolveAlert" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="alertId" value="@alert.Id" />
+                                                <input type="hidden" name="resolvedBy" value="維運值班" />
+                                                <button type="submit" class="btn btn-sm btn-outline-success" @(alert.Status == "Resolved" ? "disabled" : string.Empty)>
+                                                    <i class="fas fa-flag-checkered me-1"></i>結案
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="fas fa-check-circle fa-2x mb-2 text-success"></i>
+                                <p class="mb-0">目前沒有警報資料</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const switcher = document.getElementById('includeResolvedSwitch');
+            if (!switcher) {
+                return;
+            }
+            switcher.addEventListener('change', function () {
+                const includeResolved = switcher.checked;
+                const url = new URL(window.location.href);
+                url.searchParams.set('includeResolved', includeResolved);
+                window.location.href = url.toString();
+            });
+        });
+    </script>
+}

@@ -47,6 +47,7 @@ builder.Services.AddScoped<IValidator<UpdateProductDto>, UpdateProductDtoValidat
 builder.Services.AddScoped<AspNetCore8Test.Services.GasServices.ICustomerService, AspNetCore8Test.Services.GasServices.CustomerService>();
 builder.Services.AddScoped<AspNetCore8Test.Services.GasServices.IBillingService, AspNetCore8Test.Services.GasServices.BillingService>();
 builder.Services.AddScoped<AspNetCore8Test.Services.GasServices.IPipelineService, AspNetCore8Test.Services.GasServices.PipelineService>();
+builder.Services.AddScoped<AspNetCore8Test.Services.GasServices.ILoRaMeterService, AspNetCore8Test.Services.GasServices.LoRaMeterService>();
 
 // 註冊天然氣公司相關驗證器
 builder.Services.AddScoped<IValidator<AspNetCore8Test.Models.DTOs.GasDTOs.CreateCustomerDto>, AspNetCore8Test.Validators.GasValidators.CreateCustomerDtoValidator>();

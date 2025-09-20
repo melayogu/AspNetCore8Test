@@ -1,0 +1,120 @@
+@model IEnumerable<AspNetCore8Test.Models.DTOs.GasDTOs.LoRaGatewayDto>
+@{
+    ViewData["Title"] = "LoRa 閘道器管理";
+    var gateways = Model.ToList();
+    var onlineCount = gateways.Count(g => g.Status == "Online");
+    var maintenanceCount = gateways.Count(g => g.Status == "Maintenance");
+    var offlineCount = gateways.Count(g => g.Status == "Offline");
+    var averageSuccess = gateways.Any() ? gateways.Average(g => g.PacketSuccessRate) : 0;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0"><i class="fas fa-broadcast-tower me-2 text-primary"></i>LoRa 閘道器管理</h2>
+        <small class="text-muted">目前共有 @gateways.Count 閘道器 · 平均封包成功率 @averageSuccess.ToString("F2")%</small>
+    </div>
+    <div class="btn-group">
+        <a asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-tachometer-alt me-1"></i>儀表板</a>
+        <a asp-action="Devices" class="btn btn-outline-primary"><i class="fas fa-microchip me-1"></i>裝置清單</a>
+        <a asp-action="Alerts" class="btn btn-outline-danger"><i class="fas fa-exclamation-triangle me-1"></i>警報中心</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase">線上閘道器</h6>
+                        <h2 class="mb-0 text-success">@onlineCount</h2>
+                    </div>
+                    <i class="fas fa-satellite-dish fa-2x text-success"></i>
+                </div>
+                <small class="text-muted">維持 @(gateways.Count > 0 ? (onlineCount / (double)gateways.Count * 100).ToString("F1") : "0.0")% 線上率</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase">維護中</h6>
+                        <h2 class="mb-0 text-warning">@maintenanceCount</h2>
+                    </div>
+                    <i class="fas fa-tools fa-2x text-warning"></i>
+                </div>
+                <small class="text-muted">請留意維護排程與備援</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase">離線/異常</h6>
+                        <h2 class="mb-0 text-danger">@offlineCount</h2>
+                    </div>
+                    <i class="fas fa-exclamation-circle fa-2x text-danger"></i>
+                </div>
+                <small class="text-muted">需立即排查並通知維運團隊</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>閘道器</th>
+                        <th>區域</th>
+                        <th>位置</th>
+                        <th>狀態</th>
+                        <th>連線裝置</th>
+                        <th>封包成功率</th>
+                        <th>平均 RSSI</th>
+                        <th>最後心跳</th>
+                        <th>韌體版本</th>
+                        <th>備援</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var gateway in gateways)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@gateway.GatewayId</td>
+                            <td>@gateway.Region</td>
+                            <td>
+                                <div>@gateway.Location</div>
+                                <div class="text-muted small">@gateway.Latitude.ToString("F4"), @gateway.Longitude.ToString("F4")</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-@(gateway.Status == "Online" ? "success" : gateway.Status == "Maintenance" ? "warning" : "secondary")">@gateway.Status</span>
+                            </td>
+                            <td>@gateway.ConnectedDevices</td>
+                            <td>@gateway.PacketSuccessRate.ToString("F2")%</td>
+                            <td>@gateway.AverageSignalStrength.ToString("F1") dBm</td>
+                            <td>@gateway.LastHeartbeat.ToString("MM/dd HH:mm")</td>
+                            <td>@gateway.FirmwareVersion</td>
+                            <td>
+                                @if (gateway.HasBackupPower)
+                                {
+                                    <span class="badge bg-success">備援供電</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">無</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
