@@ -1,0 +1,147 @@
+@model IEnumerable<AspNetCore8Test.Models.DTOs.GasDTOs.LoRaDeviceDto>
+@{
+    ViewData["Title"] = "LoRa 裝置清單";
+    var statusFilter = (ViewBag.StatusFilter as string ?? "all").ToLowerInvariant();
+    var sortOption = (ViewBag.Sort as string ?? "signal").ToLowerInvariant();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0"><i class="fas fa-microchip me-2 text-primary"></i>LoRa 智慧抄錶裝置清單</h2>
+        <small class="text-muted">共 @Model.Count() 台裝置</small>
+    </div>
+    <div class="btn-group" role="group" aria-label="LoRa quick actions">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-tachometer-alt me-1"></i>返回儀表板
+        </a>
+        <a asp-action="Readings" class="btn btn-outline-secondary">
+            <i class="fas fa-stream me-1"></i>最新傳輸
+        </a>
+        <a asp-action="Alerts" class="btn btn-outline-danger">
+            <i class="fas fa-exclamation-triangle me-1"></i>警報中心
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-center">
+            <div class="col-md-6 d-flex flex-wrap align-items-center gap-2">
+                <strong class="text-muted me-2">狀態篩選：</strong>
+                <div class="btn-group" role="group" aria-label="Status filter">
+                    <a asp-action="Devices" asp-route-status="all" asp-route-sort="@sortOption" class="btn btn-sm @(statusFilter == "all" ? "btn-primary" : "btn-outline-primary")">全部</a>
+                    <a asp-action="Devices" asp-route-status="Active" asp-route-sort="@sortOption" class="btn btn-sm @(statusFilter == "active" ? "btn-primary" : "btn-outline-primary")">啟用</a>
+                    <a asp-action="Devices" asp-route-status="Maintenance" asp-route-sort="@sortOption" class="btn btn-sm @(statusFilter == "maintenance" ? "btn-primary" : "btn-outline-primary")">維護</a>
+                    <a asp-action="Devices" asp-route-status="Offline" asp-route-sort="@sortOption" class="btn btn-sm @(statusFilter == "offline" ? "btn-primary" : "btn-outline-primary")">離線</a>
+                </div>
+            </div>
+            <div class="col-md-6 d-flex flex-wrap justify-content-md-end align-items-center gap-2">
+                <strong class="text-muted">排序：</strong>
+                <div class="btn-group" role="group" aria-label="Sort options">
+                    <a asp-action="Devices" asp-route-status="@statusFilter" asp-route-sort="signal" class="btn btn-sm @(sortOption == "signal" ? "btn-secondary" : "btn-outline-secondary")">
+                        <i class="fas fa-signal me-1"></i>訊號
+                    </a>
+                    <a asp-action="Devices" asp-route-status="@statusFilter" asp-route-sort="battery" class="btn btn-sm @(sortOption == "battery" ? "btn-secondary" : "btn-outline-secondary")">
+                        <i class="fas fa-battery-half me-1"></i>電量
+                    </a>
+                    <a asp-action="Devices" asp-route-status="@statusFilter" asp-route-sort="usage" class="btn btn-sm @(sortOption == "usage" ? "btn-secondary" : "btn-outline-secondary")">
+                        <i class="fas fa-chart-line me-1"></i>用量
+                    </a>
+                    <a asp-action="Devices" asp-route-status="@statusFilter" asp-route-sort="reading" class="btn btn-sm @(sortOption == "reading" ? "btn-secondary" : "btn-outline-secondary")">
+                        <i class="fas fa-clock me-1"></i>最新傳輸
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>裝置編號</th>
+                        <th>客戶 / 地址</th>
+                        <th>狀態</th>
+                        <th>RSSI</th>
+                        <th>SNR</th>
+                        <th>電量</th>
+                        <th class="text-end">本月用量</th>
+                        <th>韌體</th>
+                        <th>最後傳輸</th>
+                        <th>異常</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        foreach (var device in Model)
+                        {
+                            <tr class="@(device.IsBatteryCritical ? "table-warning" : string.Empty)">
+                                <td class="fw-semibold">
+                                    <a asp-action="DeviceDetails" asp-route-id="@device.Id" class="text-decoration-none">
+                                        @device.DeviceNumber
+                                    </a>
+                                    <div class="text-muted small">計量錶：@device.MeterNumber</div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">@device.CustomerName</div>
+                                    <div class="text-muted small">@device.Address</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-@(device.Status == "Active" ? "success" : device.Status == "Maintenance" ? "warning" : "secondary")">@device.Status</span>
+                                </td>
+                                <td>@device.SignalStrength.ToString("F1") dBm</td>
+                                <td>@device.Snr.ToString("F1") dB</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                            <div class="progress-bar bg-@(device.BatteryLevel < 25 ? "danger" : device.BatteryLevel < 50 ? "warning" : "success")" role="progressbar" style="width: @device.BatteryLevel%"></div>
+                                        </div>
+                                        <small>@device.BatteryLevel%</small>
+                                    </div>
+                                </td>
+                                <td class="text-end">@device.MonthlyUsage.ToString("N2") m³</td>
+                                <td>
+                                    <span class="badge bg-@(device.FirmwareUpToDate ? "info" : "secondary")">@device.FirmwareVersion</span>
+                                    @if (!device.FirmwareUpToDate)
+                                    {
+                                        <div class="small text-danger">需更新</div>
+                                    }
+                                </td>
+                                <td>@device.LastReadingTime.ToString("yyyy/MM/dd HH:mm")</td>
+                                <td>
+                                    @if (device.HasRecentAlert)
+                                    {
+                                        <span class="badge bg-danger">@device.AlertStatus</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">正常</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="DeviceDetails" asp-route-id="@device.Id" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>檢視
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="11" class="text-center text-muted py-4">
+                                <i class="fas fa-info-circle fa-2x mb-2"></i>
+                                <p class="mb-0">目前無符合條件的裝置資料</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
