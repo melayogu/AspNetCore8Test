@@ -1,0 +1,274 @@
+@{
+    ViewData["Title"] = "LoRa管理系統(一)";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid lora-v1">
+    <!-- 頁首資訊 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-lg border-0 overflow-hidden">
+                <div class="card-body p-4 position-relative">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h2 class="fw-bold text-white mb-2"><i class="fas fa-satellite-dish me-2"></i>LoRa 管理系統 - 即時監控中心</h2>
+                            <p class="text-white-50 mb-0">掌握閘道器與終端節點的連線狀態、傳輸品質與警示通知，協助維運人員快速反應。</p>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                            <div class="text-white-50 small">最後更新時間</div>
+                            <div class="fs-4 text-white">@DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")</div>
+                            <span class="badge bg-success-subtle text-success">連線正常</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-wave-square position-absolute opacity-25 display-1 top-50 end-0 translate-middle-y text-white"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 即時指標 -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-circle bg-primary-subtle text-primary me-3">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted text-uppercase small">線上閘道器</div>
+                        <div class="fs-4 fw-bold">18/20</div>
+                        <div class="text-success small"><i class="fas fa-arrow-up"></i> 較昨日 +2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-circle bg-success-subtle text-success me-3">
+                        <i class="fas fa-signal"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted text-uppercase small">平均訊號強度</div>
+                        <div class="fs-4 fw-bold">-92 dBm</div>
+                        <div class="text-success small"><i class="fas fa-check-circle"></i> 達標</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-circle bg-warning-subtle text-warning me-3">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted text-uppercase small">日封包量</div>
+                        <div class="fs-4 fw-bold">52,340</div>
+                        <div class="text-warning small"><i class="fas fa-exclamation-triangle"></i> 峰值 70%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-circle bg-danger-subtle text-danger me-3">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted text-uppercase small">告警事件</div>
+                        <div class="fs-4 fw-bold">3</div>
+                        <div class="text-danger small"><i class="fas fa-clock"></i> 待處理 2 件</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- 網路健康度 -->
+        <div class="col-xl-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-heartbeat text-danger me-2"></i>網路健康度</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">封包成功率</span>
+                            <span class="text-success">98.6%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 98.6%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">平均延遲</span>
+                            <span class="text-warning">420 ms</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">耗電狀態</span>
+                            <span class="text-info">74% 節點良好</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 74%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 閘道器狀態 -->
+        <div class="col-xl-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-server text-primary me-2"></i>閘道器狀態總覽</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            北區-01
+                            <span class="badge bg-success">運作中</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            北區-02
+                            <span class="badge bg-success">運作中</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            中區-03
+                            <span class="badge bg-warning text-dark">封包延遲</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            南區-04
+                            <span class="badge bg-danger">離線</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            南區-05
+                            <span class="badge bg-success">運作中</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 告警與事件 -->
+        <div class="col-xl-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-exclamation-circle text-danger me-2"></i>最新告警</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <i class="fas fa-bolt me-2"></i>
+                        <div>
+                            閘道器南區-04 於 10 分鐘前離線，請儘速安排現場檢修。
+                        </div>
+                    </div>
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <i class="fas fa-battery-quarter me-2"></i>
+                        <div>
+                            感測節點 #A1025 電量低於 20%，建議進行電池更換。
+                        </div>
+                    </div>
+                    <div class="alert alert-info d-flex align-items-center mb-0" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <div>
+                            自動頻率調整已於 5 分鐘前啟用，正在觀察干擾狀況。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 傳輸紀錄 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-stream text-primary me-2"></i>最近 24 小時封包監測</h5>
+                    <span class="badge bg-primary-subtle text-primary">平均成功率 98.6%</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-lg-7">
+                            <div class="placeholder-wave chart-placeholder">
+                                <span class="placeholder col-12"></span>
+                                <span class="placeholder col-12"></span>
+                                <span class="placeholder col-12"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <ul class="list-group list-group-flush small">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    平均 SNR
+                                    <span class="fw-semibold">8.2 dB</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    平均上行速率
+                                    <span class="fw-semibold">4.8 kbps</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    下行成功率
+                                    <span class="fw-semibold">97.4%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    重新傳送率
+                                    <span class="fw-semibold text-danger">4.1%</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <small class="text-muted d-block mt-3">圖表為樣板展示，可與實際 LoRa 伺服器 API 串接以呈現真實數據。</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .lora-v1 .card-body {
+            position: relative;
+        }
+
+        .lora-v1 .card:first-child .card-body {
+            background: linear-gradient(135deg, #4a90e2, #2d59c6);
+        }
+
+        .lora-v1 .icon-circle {
+            width: 3.25rem;
+            height: 3.25rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .lora-v1 .badge.bg-success-subtle {
+            background-color: rgba(40, 167, 69, 0.15);
+        }
+
+        .chart-placeholder .placeholder {
+            display: block;
+            height: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .chart-placeholder .placeholder:nth-child(2) {
+            opacity: 0.7;
+        }
+
+        .chart-placeholder .placeholder:last-child {
+            opacity: 0.4;
+        }
+    </style>
+}
