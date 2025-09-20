@@ -1,8 +1,11 @@
 using FluentValidation;
 using AspNetCore8Test.Models.DTOs;
+using AspNetCore8Test.Models.DTOs.LoRaDtos;
 using AspNetCore8Test.Validators;
 using AspNetCore8Test.Services;
 using AspNetCore8Test.Services.ParkServices;
+using AspNetCore8Test.Services.LoRaServices;
+using AspNetCore8Test.Validators.LoRaValidators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +42,9 @@ builder.Services.AddScoped<IVisitorService, VisitorService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 
+// 註冊微電腦無線抄表 LoRa 系統服務
+builder.Services.AddScoped<ILoRaMeteringService, LoRaMeteringService>();
+
 // 註冊 FluentValidation 驗證器
 builder.Services.AddScoped<IValidator<CreateProductDto>, CreateProductDtoValidator>();
 builder.Services.AddScoped<IValidator<UpdateProductDto>, UpdateProductDtoValidator>();
@@ -51,6 +57,10 @@ builder.Services.AddScoped<AspNetCore8Test.Services.GasServices.IPipelineService
 // 註冊天然氣公司相關驗證器
 builder.Services.AddScoped<IValidator<AspNetCore8Test.Models.DTOs.GasDTOs.CreateCustomerDto>, AspNetCore8Test.Validators.GasValidators.CreateCustomerDtoValidator>();
 builder.Services.AddScoped<IValidator<AspNetCore8Test.Models.DTOs.GasDTOs.UpdateCustomerDto>, AspNetCore8Test.Validators.GasValidators.UpdateCustomerDtoValidator>();
+builder.Services.AddScoped<IValidator<CreateLoRaDeviceDto>, CreateLoRaDeviceDtoValidator>();
+builder.Services.AddScoped<IValidator<UpdateLoRaDeviceDto>, UpdateLoRaDeviceDtoValidator>();
+builder.Services.AddScoped<IValidator<CreateMeterReadingDto>, CreateMeterReadingDtoValidator>();
+builder.Services.AddScoped<IValidator<AlertActionDto>, AlertActionDtoValidator>();
 
 var app = builder.Build();
 
