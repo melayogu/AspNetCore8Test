@@ -1,0 +1,328 @@
+@{
+    ViewData["Title"] = "LoRa管理系統(二)";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid lora-v2">
+    <div class="row mb-4 align-items-center">
+        <div class="col-lg-7">
+            <div class="p-4 rounded-4 shadow-sm bg-white position-relative overflow-hidden">
+                <div class="d-flex align-items-center">
+                    <div class="icon-stack bg-gradient text-white me-3">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-1">LoRa 管理系統 - 維運排程中心</h2>
+                        <p class="text-muted mb-0">跨區域頻段配置、排程維護與事件追蹤在此一站式完成，提供不同版本的版面配置體驗。</p>
+                    </div>
+                </div>
+                <div class="floating-badge">
+                    <span class="badge rounded-pill bg-primary">版本 2 Prototype</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 mt-3 mt-lg-0">
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="card shadow-sm border-0 h-100 text-center">
+                        <div class="card-body">
+                            <h6 class="text-muted text-uppercase">待排程任務</h6>
+                            <div class="display-6 fw-bold text-primary">12</div>
+                            <span class="text-success small"><i class="fas fa-level-up-alt"></i> 3 新增</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card shadow-sm border-0 h-100 text-center">
+                        <div class="card-body">
+                            <h6 class="text-muted text-uppercase">重大事件</h6>
+                            <div class="display-6 fw-bold text-danger">2</div>
+                            <span class="text-danger small"><i class="fas fa-exclamation-circle"></i> 需立即處理</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-muted text-uppercase small">網路穩定度</div>
+                                    <div class="h4 fw-bold">92.4%</div>
+                                </div>
+                                <div class="progress flex-grow-1 ms-3" style="height: 8px;">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: 92.4%"></div>
+                                </div>
+                            </div>
+                            <div class="mt-3 small text-muted">根據最近 7 天指標，北區干擾指數偏高，建議重新調整頻譜。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- 事件追蹤 -->
+        <div class="col-xl-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-route me-2 text-primary"></i>跨區事件追蹤</h5>
+                    <span class="badge bg-light text-primary border">本週 8 件</span>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-dot bg-danger"></div>
+                            <div>
+                                <div class="fw-semibold">03/18 09:20 - 南區閘道器離線</div>
+                                <p class="text-muted mb-0 small">自動派單至現場維護組，預計 30 分鐘到場。</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot bg-warning"></div>
+                            <div>
+                                <div class="fw-semibold">03/18 08:45 - 北區干擾偵測</div>
+                                <p class="text-muted mb-0 small">偵測到 LoRaWAN 第 5 信道噪音值偏高，已通知網路工程師。</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot bg-success"></div>
+                            <div>
+                                <div class="fw-semibold">03/18 07:30 - 排程維護完成</div>
+                                <p class="text-muted mb-0 small">更新 120 組節點韌體版本 3.2.1，成功率 100%。</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot bg-info"></div>
+                            <div>
+                                <div class="fw-semibold">03/18 07:05 - 預測性分析</div>
+                                <p class="text-muted mb-0 small">AI 模型預測南區 15% 節點將於一週內需要電池更換。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 維護排程 -->
+        <div class="col-xl-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-calendar-check me-2 text-success"></i>維護排程甘特示意</h5>
+                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-plus me-1"></i>新增排程</button>
+                </div>
+                <div class="card-body">
+                    <div class="gantt-placeholder">
+                        <div class="gantt-row">
+                            <span class="gantt-label">北區 - 頻段調整</span>
+                            <div class="gantt-bar bg-primary" style="width: 45%; left: 15%">3/18 - 3/19</div>
+                        </div>
+                        <div class="gantt-row">
+                            <span class="gantt-label">中區 - 韌體更新</span>
+                            <div class="gantt-bar bg-success" style="width: 35%; left: 40%">3/20 - 3/21</div>
+                        </div>
+                        <div class="gantt-row">
+                            <span class="gantt-label">南區 - 電池汰換</span>
+                            <div class="gantt-bar bg-warning text-dark" style="width: 55%; left: 10%">3/18 - 3/22</div>
+                        </div>
+                        <div class="gantt-row">
+                            <span class="gantt-label">東區 - 新增節點</span>
+                            <div class="gantt-bar bg-info text-dark" style="width: 30%; left: 60%">3/23 - 3/24</div>
+                        </div>
+                    </div>
+                    <small class="text-muted">甘特圖為概念示意，實際專案可串接 PM 工具或自訂元件。</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-xl-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-chart-pie me-2 text-info"></i>節點分佈概況</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="distribution-chart mx-auto mb-3"></div>
+                    <ul class="list-unstyled small mb-0">
+                        <li><span class="legend-dot bg-primary"></span> 北區：640 節點</li>
+                        <li><span class="legend-dot bg-success"></span> 中區：480 節點</li>
+                        <li><span class="legend-dot bg-warning"></span> 南區：520 節點</li>
+                        <li><span class="legend-dot bg-info"></span> 東區：210 節點</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-tools me-2 text-warning"></i>維運清單</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            設備巡檢任務
+                            <span class="badge bg-light text-secondary">本週 24 件</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            韌體升級
+                            <span class="badge bg-light text-secondary">待確認 8 件</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            AI 預警回覆
+                            <span class="badge bg-light text-secondary">已完成 5 件</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            新增設備申請
+                            <span class="badge bg-light text-secondary">審核中 3 件</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-clipboard-list me-2 text-secondary"></i>版本更新紀錄</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr class="text-muted">
+                                <th>日期</th>
+                                <th>版本</th>
+                                <th>重點</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>03/17</td>
+                                <td>v3.2.1</td>
+                                <td>AI 預測模組優化</td>
+                            </tr>
+                            <tr>
+                                <td>03/10</td>
+                                <td>v3.1.5</td>
+                                <td>新增跨區排程</td>
+                            </tr>
+                            <tr>
+                                <td>03/02</td>
+                                <td>v3.1.0</td>
+                                <td>支援多頻段策略</td>
+                            </tr>
+                            <tr>
+                                <td>02/20</td>
+                                <td>v3.0.0</td>
+                                <td>全新儀表介面上線</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .lora-v2 {
+            background: linear-gradient(180deg, #f0f4ff 0%, #ffffff 18%);
+            padding-bottom: 2rem;
+        }
+
+        .lora-v2 .icon-stack {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+
+        .lora-v2 .bg-gradient {
+            background: linear-gradient(135deg, #5b7cfa, #4351d7);
+        }
+
+        .lora-v2 .floating-badge {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.5rem;
+        }
+
+        .timeline {
+            border-left: 2px solid #e9ecef;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .timeline-dot {
+            width: 0.9rem;
+            height: 0.9rem;
+            border-radius: 50%;
+            position: absolute;
+            left: -1.9rem;
+            top: 0.25rem;
+        }
+
+        .gantt-placeholder {
+            border: 1px dashed #ced4da;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+        }
+
+        .gantt-row {
+            position: relative;
+            height: 2.75rem;
+            margin-bottom: 1rem;
+            padding-left: 7.5rem;
+            font-size: 0.9rem;
+        }
+
+        .gantt-label {
+            position: absolute;
+            left: 0;
+            top: 0.35rem;
+            width: 7rem;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .gantt-bar {
+            position: absolute;
+            top: 0.5rem;
+            height: 1.75rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .distribution-chart {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: conic-gradient(#4e73df 0 36%, #1cc88a 36% 68%, #f6c23e 68% 100%, #36b9cc 0);
+            box-shadow: inset 0 0 0 18px #fff;
+        }
+
+        .legend-dot {
+            display: inline-block;
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+    </style>
+}
