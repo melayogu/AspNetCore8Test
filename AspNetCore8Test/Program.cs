@@ -19,6 +19,7 @@ builder.Services.AddSwaggerGen();
 // 註冊服務
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ApprovalService>();
+builder.Services.AddScoped<LibraryService>();
 
 // 註冊地政士系統服務
 builder.Services.AddScoped<AspNetCore8Test.Services.LandSurveyorServices.ICustomerService, 

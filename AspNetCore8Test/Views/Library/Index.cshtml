@@ -1,0 +1,509 @@
+@model AspNetCore8Test.Models.LibraryViewModel
+@{
+    ViewData["Title"] = "圖書館";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .library-hero {
+            background: linear-gradient(135deg, #2c5aa0 0%, #1e3f73 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .library-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,100 1000,0 1000,100"/></svg>') no-repeat bottom;
+            background-size: cover;
+        }
+        
+        .library-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .library-hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .library-stats {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: -50px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .stat-item h4 {
+            color: #2c5aa0;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .stat-item .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1e3f73;
+        }
+        
+        .event-banner {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            color: white;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .event-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="white" opacity="0.1"><rect x="0" y="0" width="50" height="50"/><rect x="50" y="50" width="50" height="50"/></svg>') repeat;
+            animation: float 20s linear infinite;
+        }
+        
+        @@keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .event-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .event-banner h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .news-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+        }
+        
+        .news-item {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2c5aa0;
+            transition: all 0.3s ease;
+        }
+        
+        .news-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .news-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .news-title {
+            color: #2c5aa0;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .news-title:hover {
+            color: #1e3f73;
+            text-decoration: underline;
+        }
+        
+        .book-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .book-cover {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .book-info {
+            padding: 20px;
+        }
+        
+        .book-title {
+            font-weight: 600;
+            color: #2c5aa0;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .book-author {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .book-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-available {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-limited {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c5aa0;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #2c5aa0, #4ecdc4);
+            border-radius: 2px;
+        }
+        
+        .footer-services {
+            background: #2c5aa0;
+            color: white;
+            padding: 50px 0;
+            margin-top: 60px;
+        }
+        
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .service-item {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .service-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-5px);
+        }
+        
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #4ecdc4;
+        }
+        
+        .service-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .service-desc {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+    </style>
+}
+
+<!-- 圖書館主標題區 -->
+<div class="library-hero">
+    <div class="container">
+        <h1><i class="fas fa-book-open me-3"></i>圖書館</h1>
+        <p class="lead">Library</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- 開館時間與借閱統計 -->
+    <div class="library-stats">
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <h4><i class="fas fa-clock me-2"></i>本日營業時間</h4>
+                    <div class="stat-value">@Model.BorrowingStats.TodayHours</div>
+                    <small class="text-muted">@Model.LibraryHours.Day @Model.LibraryHours.SpecialNote</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <h4><i class="fas fa-newspaper me-2"></i>17樓期刊室</h4>
+                    <div class="stat-value">@Model.BorrowingStats.JournalRoomHours</div>
+                    <small class="text-muted">17樓特殊收藏/@Model.BorrowingStats.SpecialCollections</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <h4><i class="fas fa-book-reader me-2"></i>3樓閱覽</h4>
+                    <div class="stat-value">@Model.BorrowingStats.ThirdFloorReading/20</div>
+                    <small class="text-muted">3樓閱覽/@Model.BorrowingStats.TodayBorrowingNote</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <h4><i class="fas fa-search me-2"></i>快速搜尋</h4>
+                    <form asp-action="Search" method="get" class="d-flex">
+                        <input type="text" name="query" class="form-control form-control-sm" placeholder="搜尋書籍...">
+                        <button type="submit" class="btn btn-primary btn-sm ms-2">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 當前活動橫幅 -->
+    @if (Model.CurrentEvent != null)
+    {
+        <div class="event-banner">
+            <div class="event-content">
+                <h3><i class="fas fa-gamepad me-3"></i>@Model.CurrentEvent.Title</h3>
+                <p class="mb-0">@Model.CurrentEvent.Description</p>
+                @if (!string.IsNullOrEmpty(Model.CurrentEvent.Link))
+                {
+                    <a href="@Model.CurrentEvent.Link" class="btn btn-light btn-lg mt-3">
+                        <i class="fas fa-arrow-right me-2"></i>參與活動
+                    </a>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <!-- 最新消息 -->
+        <div class="col-lg-8">
+            <h2 class="section-title">最新消息</h2>
+            <div class="news-section">
+                @foreach (var news in Model.LatestNews)
+                {
+                    <div class="news-item">
+                        <div class="news-date">@news.PublishDate.ToString("yyyy-MM-dd")</div>
+                        <a href="@(news.Link ?? "#")" class="news-title">@news.Title</a>
+                        @if (news.IsPinned)
+                        {
+                            <span class="badge bg-warning ms-2">置頂</span>
+                        }
+                    </div>
+                }
+                <div class="text-center mt-4">
+                    <a href="#" class="btn btn-outline-primary">查看更多消息</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新到館資料/熱門借閱 -->
+        <div class="col-lg-4">
+            <h3 class="section-title" style="font-size: 1.5rem;">新到館資料/熱門借閱</h3>
+            @foreach (var book in Model.NewArrivals.Take(2))
+            {
+                <div class="book-card mb-3">
+                    <div class="book-cover">
+                        @book.Title
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">@book.Title</div>
+                        <div class="book-author">@book.Author</div>
+                        <span class="book-status @(book.AvailableCopies > 0 ? "status-available" : "status-limited")">
+                            @if (book.AvailableCopies > 0)
+                            {
+                                <text>可借閱 @book.AvailableCopies 本</text>
+                            }
+                            else
+                            {
+                                <text>已借完</text>
+                            }
+                        </span>
+                    </div>
+                </div>
+            }
+            <div class="text-center">
+                <a href="#" class="btn btn-outline-info btn-sm">
+                    <i class="fas fa-list me-1"></i>查看完整清單
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 精選/新進館藏 -->
+    <div class="mt-5">
+        <h2 class="section-title">精選/新進館藏</h2>
+        <div class="row">
+            @foreach (var book in Model.FeaturedBooks)
+            {
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                    <div class="book-card">
+                        <div class="book-cover">
+                            @book.Title
+                        </div>
+                        <div class="book-info text-center">
+                            <div class="book-title">@book.Title</div>
+                            <div class="book-author">@book.Author</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="text-center mt-4">
+            <a href="#" class="btn btn-primary btn-lg">
+                <i class="fas fa-book me-2"></i>瀏覽更多館藏
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- 圖書館服務 -->
+<div class="footer-services">
+    <div class="container">
+        <h2 class="text-center mb-4">圖書館服務</h2>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="service-item">
+                    <div class="service-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="service-title">圖書查詢</div>
+                    <div class="service-desc">線上圖書目錄檢索系統</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="service-item">
+                    <div class="service-icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <div class="service-title">數位資源</div>
+                    <div class="service-desc">電子書籍與學術資料庫</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="service-item">
+                    <div class="service-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="service-title">學習支援</div>
+                    <div class="service-desc">研究諮詢與學習輔導</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="service-item">
+                    <div class="service-icon">
+                        <i class="fas fa-archive"></i>
+                    </div>
+                    <div class="service-title">特藏資料</div>
+                    <div class="service-desc">校史文獻與珍貴典藏</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 頁尾服務連結 -->
+        <div class="row mt-5 pt-4 border-top border-secondary">
+            <div class="col-lg-3">
+                <h5>圖書查詢</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light">館藏目錄查詢</a></li>
+                    <li><a href="#" class="text-light">新書通報</a></li>
+                    <li><a href="#" class="text-light">借閱排行榜</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3">
+                <h5>電子資源</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light">電子資料庫</a></li>
+                    <li><a href="#" class="text-light">電子期刊</a></li>
+                    <li><a href="#" class="text-light">電子書</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3">
+                <h5>服務項目</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light">館際合作</a></li>
+                    <li><a href="#" class="text-light">文獻傳遞</a></li>
+                    <li><a href="#" class="text-light">參考諮詢</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3">
+                <h5>關於圖書館</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light">開館時間</a></li>
+                    <li><a href="#" class="text-light">樓層介紹</a></li>
+                    <li><a href="#" class="text-light">聯絡我們</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
