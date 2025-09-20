@@ -2,6 +2,7 @@ using FluentValidation;
 using AspNetCore8Test.Models.DTOs;
 using AspNetCore8Test.Validators;
 using AspNetCore8Test.Services;
+using AspNetCore8Test.Services.LoRaServices;
 using AspNetCore8Test.Services.ParkServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ApprovalService>();
 builder.Services.AddScoped<LibraryService>();
+builder.Services.AddScoped<ILoRaSystemService, LoRaSystemService>();
 
 // 註冊地政士系統服務
 builder.Services.AddScoped<AspNetCore8Test.Services.LandSurveyorServices.ICustomerService, 
