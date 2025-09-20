@@ -1,7 +1,10 @@
 using FluentValidation;
 using AspNetCore8Test.Models.DTOs;
+using AspNetCore8Test.Models.DTOs.LoRaDTOs;
 using AspNetCore8Test.Validators;
+using AspNetCore8Test.Validators.LoRaValidators;
 using AspNetCore8Test.Services;
+using AspNetCore8Test.Services.LoRaServices;
 using AspNetCore8Test.Services.ParkServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +54,23 @@ builder.Services.AddScoped<AspNetCore8Test.Services.GasServices.IPipelineService
 // 註冊天然氣公司相關驗證器
 builder.Services.AddScoped<IValidator<AspNetCore8Test.Models.DTOs.GasDTOs.CreateCustomerDto>, AspNetCore8Test.Validators.GasValidators.CreateCustomerDtoValidator>();
 builder.Services.AddScoped<IValidator<AspNetCore8Test.Models.DTOs.GasDTOs.UpdateCustomerDto>, AspNetCore8Test.Validators.GasValidators.UpdateCustomerDtoValidator>();
+
+// 註冊 LoRa 無線抄表系統服務
+builder.Services.AddScoped<ILoRaDeviceService, LoRaDeviceService>();
+builder.Services.AddScoped<ILoRaGatewayService, LoRaGatewayService>();
+builder.Services.AddScoped<IMeterReadingService, MeterReadingService>();
+builder.Services.AddScoped<ILoRaAlertService, LoRaAlertService>();
+
+// 註冊 LoRa 無線抄表系統驗證器
+builder.Services.AddScoped<IValidator<CreateLoRaDeviceDto>, CreateLoRaDeviceDtoValidator>();
+builder.Services.AddScoped<IValidator<UpdateLoRaDeviceDto>, UpdateLoRaDeviceDtoValidator>();
+builder.Services.AddScoped<IValidator<UpdateLoRaDeviceStatusDto>, UpdateLoRaDeviceStatusDtoValidator>();
+builder.Services.AddScoped<IValidator<CreateLoRaGatewayDto>, CreateLoRaGatewayDtoValidator>();
+builder.Services.AddScoped<IValidator<UpdateLoRaGatewayDto>, UpdateLoRaGatewayDtoValidator>();
+builder.Services.AddScoped<IValidator<UpdateLoRaGatewayStatusDto>, UpdateLoRaGatewayStatusDtoValidator>();
+builder.Services.AddScoped<IValidator<CreateMeterReadingDto>, CreateMeterReadingDtoValidator>();
+builder.Services.AddScoped<IValidator<CreateLoRaAlertDto>, CreateLoRaAlertDtoValidator>();
+builder.Services.AddScoped<IValidator<AcknowledgeLoRaAlertDto>, AcknowledgeLoRaAlertDtoValidator>();
 
 var app = builder.Build();
 
