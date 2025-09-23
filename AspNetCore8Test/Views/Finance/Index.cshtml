@@ -1,0 +1,276 @@
+@{
+    ViewData["Title"] = "融資租賃管理系統";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-hand-holding-usd text-primary me-2"></i>融資租賃管理系統
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index">首頁</a>
+                    </li>
+                    <li class="breadcrumb-item active">融資租賃管理</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 系統概況卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                總放款金額
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 156,800,000</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                活躍客戶數
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">168</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                本月新增案件
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">25</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                逾期案件
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 業務功能選單 -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-th-large me-2"></i>業務功能模組
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- 車輛分期 -->
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-car fa-3x text-primary mb-3"></i>
+                                    <h5 class="card-title">車輛分期</h5>
+                                    <p class="card-text small">重車、遊覽車、小客車等車輛分期服務</p>
+                                    <a asp-action="VehicleFinance" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>查看
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 營建機具 -->
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-hard-hat fa-3x text-warning mb-3"></i>
+                                    <h5 class="card-title">營建機具分期</h5>
+                                    <p class="card-text small">挖土機、推土機等營建設備融資</p>
+                                    <a asp-action="ConstructionEquipment" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-eye me-1"></i>查看
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 產業機具 -->
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-industry fa-3x text-info mb-3"></i>
+                                    <h5 class="card-title">產業機具分期</h5>
+                                    <p class="card-text small">製造業、農業等專業設備融資</p>
+                                    <a asp-action="IndustrialEquipment" class="btn btn-info btn-sm">
+                                        <i class="fas fa-eye me-1"></i>查看
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 綠能融資 -->
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                                    <h5 class="card-title">綠能融資</h5>
+                                    <p class="card-text small">太陽能、風力發電等綠能專案</p>
+                                    <a asp-action="GreenEnergy" class="btn btn-success btn-sm">
+                                        <i class="fas fa-eye me-1"></i>查看
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 應收帳款 -->
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-file-invoice-dollar fa-3x text-secondary mb-3"></i>
+                                    <h5 class="card-title">應收帳款受讓</h5>
+                                    <p class="card-text small">應收帳款保理業務服務</p>
+                                    <a asp-action="AccountsReceivable" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>查看
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 不動產租賃 -->
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-building fa-3x text-dark mb-3"></i>
+                                    <h5 class="card-title">不動產租賃</h5>
+                                    <p class="card-text small">商業大樓、工業廠房租賃服務</p>
+                                    <a asp-action="RealEstate" class="btn btn-dark btn-sm">
+                                        <i class="fas fa-eye me-1"></i>查看
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- 客戶管理 -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-users me-2"></i>客戶管理
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="fas fa-users fa-4x text-primary mb-3"></i>
+                        <p>管理客戶資料、信用評估、風險評級</p>
+                        <a asp-action="Customers" class="btn btn-primary">
+                            <i class="fas fa-user-cog me-1"></i>客戶管理
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 風險控管 -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-danger">
+                        <i class="fas fa-shield-alt me-2"></i>風險控管
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="fas fa-shield-alt fa-4x text-danger mb-3"></i>
+                        <p>信用風險評估、擔保品管理、逾期控管</p>
+                        <a asp-action="RiskManagement" class="btn btn-danger">
+                            <i class="fas fa-chart-line me-1"></i>風險分析
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 財務報表 -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-chart-bar me-2"></i>財務報表
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="fas fa-chart-bar fa-4x text-success mb-3"></i>
+                        <p>財務分析、成本效益、獲利報告</p>
+                        <a asp-action="FinancialReports" class="btn btn-success">
+                            <i class="fas fa-file-excel me-1"></i>查看報表
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .bg-light:hover {
+        background-color: #f8f9fc !important;
+    }
+</style>
