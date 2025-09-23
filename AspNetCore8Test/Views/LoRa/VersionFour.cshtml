@@ -1,0 +1,264 @@
+@{
+    ViewData["Title"] = "LoRa管理系統(四)";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="background: linear-gradient(120deg, #0d6efd, #d63384);">
+                <div class="card-body text-white">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h1 class="fw-bold mb-2"><i class="fas fa-atom me-2"></i>LoRa 管理系統 (四)</h1>
+                            <p class="mb-0">第四代平台邁向自動化營運（AIOps）與數位孿生治理，強調跨域整合、永續指標與即時決策。</p>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                            <span class="badge bg-dark text-white fs-6">NextGen 智慧物聯</span>
+                            <div class="text-white-50">Digital Twin Cluster：5 組 • AIOps 模型：16 套 • ESG 指標：24 項</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-4 col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="text-uppercase text-muted mb-0">自動化營運狀態</h6>
+                        <span class="badge bg-success-subtle text-success">Level 4</span>
+                    </div>
+                    <h2 class="fw-bold mt-3">AIOps Autonomy</h2>
+                    <p class="text-muted small">事件自動化比率 78%，關鍵任務平均復原時間 11 分鐘。</p>
+                    <div class="d-flex gap-3 mt-3">
+                        <div>
+                            <span class="text-muted small">閉環流程</span>
+                            <h5 class="mb-0">214</h5>
+                        </div>
+                        <div>
+                            <span class="text-muted small">自動修復</span>
+                            <h5 class="mb-0 text-success">168</h5>
+                        </div>
+                        <div>
+                            <span class="text-muted small">人工介入</span>
+                            <h5 class="mb-0 text-warning">46</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="text-uppercase text-muted mb-0">數位孿生指標</h6>
+                        <span class="badge bg-info-subtle text-info">Twin Sync</span>
+                    </div>
+                    <h2 class="fw-bold mt-3">同步率 99.1%</h2>
+                    <p class="text-muted small">涵蓋智慧城市、港口、能源與軌道交通四大場域，模型更新周期 5 分鐘。</p>
+                    <div class="mt-3">
+                        <div class="progress mb-2" style="height: 6px;">
+                            <div class="progress-bar bg-info" style="width: 99.1%"></div>
+                        </div>
+                        <small class="text-muted">場域一致性閾值：97%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-12">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="text-uppercase text-muted mb-0">永續指標績效</h6>
+                        <span class="badge bg-warning-subtle text-warning">ESG Insights</span>
+                    </div>
+                    <h2 class="fw-bold mt-3">節碳量 1,482 tCO₂e</h2>
+                    <p class="text-muted small">透過智慧照明、用電優化與運輸效率提升，較去年成長 18%。</p>
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-2"><i class="fas fa-leaf text-success me-2"></i>智慧路燈省電率 43%</li>
+                        <li class="mb-2"><i class="fas fa-water text-primary me-2"></i>智慧水務漏損降低 21%</li>
+                        <li><i class="fas fa-truck text-warning me-2"></i>冷鏈物流碳排降低 16%</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0"><i class="fas fa-vials text-danger me-2"></i>數位孿生模擬實驗室</h5>
+                <small class="text-muted">第四代平台允許在虛擬場域測試策略並自動回推至現場設定。</small>
+            </div>
+            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-flask me-1"></i>啟動新模擬</button>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-xl-4">
+                    <div class="border rounded-3 p-3 h-100 bg-light">
+                        <h6 class="fw-semibold">場域擬真</h6>
+                        <p class="text-muted small">同步感測、GIS 與歷史資料建立虛擬場景，支援瞬時變化與極端事件模擬。</p>
+                        <div class="simulation-step">
+                            <span class="simulation-index bg-primary text-white">1</span>
+                            <div>
+                                <strong>資料驅動建模</strong>
+                                <p class="text-muted small mb-0">自動建構 3D 場域 + LoRa 裝置拓樸，5 分鐘完成。</p>
+                            </div>
+                        </div>
+                        <div class="simulation-step">
+                            <span class="simulation-index bg-primary text-white">2</span>
+                            <div>
+                                <strong>情境配置</strong>
+                                <p class="text-muted small mb-0">套用交通、能源、環境等模組，支援多場景疊加。</p>
+                            </div>
+                        </div>
+                        <div class="simulation-step">
+                            <span class="simulation-index bg-primary text-white">3</span>
+                            <div>
+                                <strong>實驗執行</strong>
+                                <p class="text-muted small mb-0">採用 Container-Based Sandbox，動態調整頻譜策略。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="border rounded-3 p-3 h-100 bg-light">
+                        <h6 class="fw-semibold">策略結果分析</h6>
+                        <p class="text-muted small">AI 協助比較實驗組與對照組差異，輸出最佳化建議與風險評估。</p>
+                        <ul class="list-unstyled small mb-0">
+                            <li class="mb-2"><i class="fas fa-chart-bar text-primary me-2"></i>網路吞吐量提升 18%</li>
+                            <li class="mb-2"><i class="fas fa-bolt text-warning me-2"></i>能源消耗降低 12%</li>
+                            <li class="mb-2"><i class="fas fa-shield-virus text-danger me-2"></i>潛在干擾事件下降 36%</li>
+                            <li><i class="fas fa-seedling text-success me-2"></i>永續指標達成率提高 9%</li>
+                        </ul>
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <i class="fas fa-lightbulb me-2"></i>策略評分 4.7 / 5，建議於北區試點部署。
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="border rounded-3 p-3 h-100 bg-light">
+                        <h6 class="fw-semibold">回推與持續學習</h6>
+                        <p class="text-muted small">將模擬結果推送至現場，並透過 AIOps 模型持續優化。</p>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item bg-transparent px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>自動部署策略</strong>
+                                        <div class="text-muted small">含頻道計畫、功率設定與閘道調度</div>
+                                    </div>
+                                    <span class="badge bg-success">完成</span>
+                                </div>
+                            </div>
+                            <div class="list-group-item bg-transparent px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>持續監測迴路</strong>
+                                        <div class="text-muted small">蒐集 KPI 回饋至 AI 模型訓練</div>
+                                    </div>
+                                    <span class="badge bg-info text-dark">進行中</span>
+                                </div>
+                            </div>
+                            <div class="list-group-item bg-transparent px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>風險預警門檻</strong>
+                                        <div class="text-muted small">自動調整告警敏感度，降低噪音 28%</div>
+                                    </div>
+                                    <span class="badge bg-warning text-dark">調整中</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary mt-3"><i class="fas fa-sync-alt me-1"></i>檢視同步紀錄</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0"><i class="fas fa-stream text-secondary me-2"></i>AIOps 管線總覽</h5>
+                <small class="text-muted">第四代平台提供從資料擷取到自動化修復的端到端流程視覺化。</small>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-cog me-1"></i>設定管線</button>
+        </div>
+        <div class="card-body">
+            <div class="row g-4 align-items-stretch">
+                <div class="col-lg-3">
+                    <div class="pipeline-stage h-100">
+                        <div class="pipeline-icon bg-primary-subtle text-primary"><i class="fas fa-database"></i></div>
+                        <h6 class="fw-semibold mt-3">資料擷取層</h6>
+                        <p class="text-muted small mb-0">整合 LoRa Gateways、邊緣節點與第三方資料源，支援 Stream 與 Batch。</p>
+                        <span class="badge bg-primary mt-3">Data Fabric</span>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="pipeline-stage h-100">
+                        <div class="pipeline-icon bg-info-subtle text-info"><i class="fas fa-brain"></i></div>
+                        <h6 class="fw-semibold mt-3">智能分析層</h6>
+                        <p class="text-muted small mb-0">AutoML 模型、圖形分析、頻譜策略推薦，提供決策支援。</p>
+                        <span class="badge bg-info mt-3">AI Insights</span>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="pipeline-stage h-100">
+                        <div class="pipeline-icon bg-warning-subtle text-warning"><i class="fas fa-code-branch"></i></div>
+                        <h6 class="fw-semibold mt-3">自動化流程層</h6>
+                        <p class="text-muted small mb-0">Workflow Orchestrator + GitOps，同步策略並執行跨雲部署。</p>
+                        <span class="badge bg-warning text-dark mt-3">Orchestration</span>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="pipeline-stage h-100">
+                        <div class="pipeline-icon bg-success-subtle text-success"><i class="fas fa-shield-check"></i></div>
+                        <h6 class="fw-semibold mt-3">閉環防護層</h6>
+                        <p class="text-muted small mb-0">合規檢核、SRE 評分與持續優化，確保服務水準。</p>
+                        <span class="badge bg-success mt-3">Self-Heal</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .simulation-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .simulation-index {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        font-weight: 600;
+    }
+
+    .pipeline-stage {
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        background-color: #f8f9fa;
+        text-align: center;
+    }
+
+    .pipeline-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+</style>

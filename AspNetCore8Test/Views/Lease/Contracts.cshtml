@@ -1,0 +1,453 @@
+@model IEnumerable<AspNetCore8Test.Models.FinanceModels.LeaseContract>
+@{
+    ViewData["Title"] = "合約管理";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-file-contract text-info me-2"></i>租賃合約管理系統
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index">首頁</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Lease" asp-action="Index">租賃業務</a>
+                    </li>
+                    <li class="breadcrumb-item active">合約管理</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 合約統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                總合約數
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">356</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-contract fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                執行中合約
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">287</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-handshake fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                即將到期
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">23</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                合約總價值
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 485M</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 合約清單 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">租賃合約清單</h6>
+            <div>
+                <button class="btn btn-primary btn-sm me-2">
+                    <i class="fas fa-plus me-1"></i>建立合約
+                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-filter me-1"></i>篩選條件
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" onclick="filterByStatus('all')">全部合約</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('active')">執行中</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('pending')">待簽署</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('expired')">已到期</button></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item" onclick="filterByType('vehicle')">車輛租賃</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('equipment')">設備租賃</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('property')">不動產租賃</button></li>
+                    </ul>
+                </div>
+                <button class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel me-1"></i>匯出報表
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>合約編號</th>
+                            <th>承租人資訊</th>
+                            <th>租賃標的</th>
+                            <th>租賃期間</th>
+                            <th>月租金</th>
+                            <th>保證金</th>
+                            <th>狀態</th>
+                            <th>簽約日期</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@item.ContractNumber</strong></td>
+                                <td>
+                                    <div><strong>@item.LesseeName</strong></div>
+                                    <div><small class="text-muted">狀態: @item.Status</small></div>
+                                </td>
+                                <td>
+                                    <div><strong>@item.AssetDescription</strong></div>
+                                    <div><small class="text-muted">類型: @item.AssetType</small></div>
+                                    <div><small class="text-muted">價值: NT$ @item.LeaseAmount.ToString("N0")</small></div>
+                                </td>
+                                <td>
+                                    <div><strong>@item.StartDate.ToString("yyyy/MM/dd")</strong></div>
+                                    <div><small class="text-muted">至 @item.EndDate.ToString("yyyy/MM/dd")</small></div>
+                                    <div><small class="text-primary">@item.LeasePeriod 個月</small></div>
+                                </td>
+                                <td class="text-end">
+                                    <strong>NT$ @item.MonthlyPayment.ToString("N0")</strong>
+                                </td>
+                                <td class="text-end">
+                                    NT$ @item.LeaseAmount.ToString("N0")
+                                </td>
+                                <td>
+                                    @if (item.Status == "執行中")
+                                    {
+                                        <span class="badge bg-success">@item.Status</span>
+                                    }
+                                    else if (item.Status == "待簽署")
+                                    {
+                                        <span class="badge bg-warning text-dark">@item.Status</span>
+                                    }
+                                    else if (item.Status == "已到期")
+                                    {
+                                        <span class="badge bg-secondary">@item.Status</span>
+                                    }
+                                    else if (item.Status == "已終止")
+                                    {
+                                        <span class="badge bg-danger">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">@item.Status</span>
+                                    }
+                                </td>
+                                <td>@item.SignDate.ToString("yyyy/MM/dd")</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                onclick="viewContract('@item.ContractNumber')" title="查看合約">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                onclick="downloadContract('@item.ContractNumber')" title="下載PDF">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        @if (item.Status == "執行中")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-success" 
+                                                    onclick="amendContract('@item.ContractNumber')" title="修改合約">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                    onclick="renewContract('@item.ContractNumber')" title="續約">
+                                                <i class="fas fa-redo"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    onclick="terminateContract('@item.ContractNumber')" title="終止合約">
+                                                <i class="fas fa-times-circle"></i>
+                                            </button>
+                                        }
+                                        @if (item.Status == "待簽署")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-success" 
+                                                    onclick="signContract('@item.ContractNumber')" title="簽署確認">
+                                                <i class="fas fa-signature"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 合約分析圖表 -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">合約簽署趨勢</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="contractTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">合約類型分布</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="contractTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 即將到期合約與提醒 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-exclamation-triangle me-1"></i>即將到期合約
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>LC-2024-001</strong> - 張志明
+                                <br><small class="text-muted">車輛租賃 - Toyota Altis</small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">5天</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>LC-2024-015</strong> - 台灣建設股份有限公司
+                                <br><small class="text-muted">設備租賃 - 挖土機</small>
+                            </div>
+                            <span class="badge bg-warning text-dark rounded-pill">12天</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>LC-2024-028</strong> - 李小華
+                                <br><small class="text-muted">機車租賃 - 山葉 SMAX</small>
+                            </div>
+                            <span class="badge bg-info rounded-pill">20天</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="fas fa-tasks me-1"></i>待處理事項
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>合約簽署</strong> - LC-2024-050
+                                <br><small class="text-muted">王大明 - 車輛租賃合約</small>
+                            </div>
+                            <span class="badge bg-warning text-dark rounded-pill">待辦</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>保證金退還</strong> - LC-2023-089
+                                <br><small class="text-muted">陳小美 - 已到期合約</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">進行中</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>合約修訂</strong> - LC-2024-033
+                                <br><small class="text-muted">綠能科技有限公司 - 設備租賃</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">審核中</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 合約範本管理 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-file-alt me-1"></i>合約範本管理
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-4 mb-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <i class="fas fa-car fa-3x text-primary mb-3"></i>
+                            <h5>車輛租賃合約</h5>
+                            <p class="card-text">標準汽車租賃合約範本</p>
+                            <div class="btn-group">
+                                <button class="btn btn-outline-primary btn-sm">編輯</button>
+                                <button class="btn btn-outline-success btn-sm">預覽</button>
+                                <button class="btn btn-outline-info btn-sm">下載</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <i class="fas fa-motorcycle fa-3x text-warning mb-3"></i>
+                            <h5>機車租賃合約</h5>
+                            <p class="card-text">機車租賃專用合約範本</p>
+                            <div class="btn-group">
+                                <button class="btn btn-outline-primary btn-sm">編輯</button>
+                                <button class="btn btn-outline-success btn-sm">預覽</button>
+                                <button class="btn btn-outline-info btn-sm">下載</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tools fa-3x text-success mb-3"></i>
+                            <h5>設備租賃合約</h5>
+                            <p class="card-text">機械設備租賃合約範本</p>
+                            <div class="btn-group">
+                                <button class="btn btn-outline-primary btn-sm">編輯</button>
+                                <button class="btn btn-outline-success btn-sm">預覽</button>
+                                <button class="btn btn-outline-info btn-sm">下載</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+    .border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+    .border-left-info { border-left: 0.25rem solid #36b9cc !important; }
+    .border-left-warning { border-left: 0.25rem solid #f6c23e !important; }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 合約簽署趨勢圖表
+        const trendCtx = document.getElementById('contractTrendChart').getContext('2d');
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                datasets: [{
+                    label: '新簽合約',
+                    data: [28, 35, 42, 38, 45, 52],
+                    borderColor: '#4e73df',
+                    backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: '到期合約',
+                    data: [15, 18, 22, 25, 20, 23],
+                    borderColor: '#e74a3b',
+                    backgroundColor: 'rgba(231, 74, 59, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 合約類型分布圖表
+        const typeCtx = document.getElementById('contractTypeChart').getContext('2d');
+        const typeChart = new Chart(typeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['車輛租賃', '機車租賃', '設備租賃', '不動產租賃'],
+                datasets: [{
+                    data: [180, 85, 65, 26],
+                    backgroundColor: ['#4e73df', '#f6c23e', '#1cc88a', '#36b9cc']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // 功能按鈕事件
+        function viewContract(contractNumber) { alert('查看合約 - ' + contractNumber); }
+        function downloadContract(contractNumber) { alert('下載合約PDF - ' + contractNumber); }
+        function amendContract(contractNumber) { alert('修改合約 - ' + contractNumber); }
+        function renewContract(contractNumber) { alert('續約 - ' + contractNumber); }
+        function terminateContract(contractNumber) { alert('終止合約 - ' + contractNumber); }
+        function signContract(contractNumber) { alert('簽署合約 - ' + contractNumber); }
+        function filterByStatus(status) { console.log('篩選狀態:', status); }
+        function filterByType(type) { console.log('篩選類型:', type); }
+    </script>
+}

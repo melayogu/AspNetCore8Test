@@ -143,6 +143,121 @@
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
+                            <button class="btn nav-link dropdown-toggle text-dark border-0 bg-transparent" id="loRaDropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-broadcast-tower me-1"></i>LoRa 管理系統
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="loRaDropdown">
+                                <li><a class="dropdown-item" asp-controller="LoRa" asp-action="VersionOne">
+                                    <i class="fas fa-circle-dot me-2"></i>LoRa管理系統(一)
+                                </a></li>
+                                <li><a class="dropdown-item" asp-controller="LoRa" asp-action="VersionTwo">
+                                    <i class="fas fa-circle me-2"></i>LoRa管理系統(二)
+                                </a></li>
+                                <li><a class="dropdown-item" asp-controller="LoRa" asp-action="VersionThree">
+                                    <i class="fas fa-ring me-2"></i>LoRa管理系統(三)
+                                </a></li>
+                                <li><a class="dropdown-item" asp-controller="LoRa" asp-action="VersionFour">
+                                    <i class="fas fa-sun me-2"></i>LoRa管理系統(四)
+                                </a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <button class="btn nav-link dropdown-toggle text-dark border-0 bg-transparent" id="financeDropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-hand-holding-usd me-1"></i>融資租賃管理
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="financeDropdown">
+                                <li><a class="dropdown-item" asp-controller="Finance" asp-action="Index">
+                                    <i class="fas fa-tachometer-alt me-2"></i>融資管理首頁
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                
+                                <!-- 融資業務子選單 -->
+                                <li class="nav-item dropend">
+                                    <button class="btn dropdown-item dropdown-toggle border-0 bg-transparent text-start w-100" id="financeBusinessDropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-hand-holding-usd me-2"></i>融資業務
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="financeBusinessDropdown">
+                                        <li><a class="dropdown-item" asp-controller="Finance" asp-action="VehicleFinance">
+                                            <i class="fas fa-car me-2"></i>車輛分期
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Finance" asp-action="ConstructionEquipment">
+                                            <i class="fas fa-hard-hat me-2"></i>營建機具分期
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Finance" asp-action="IndustrialEquipment">
+                                            <i class="fas fa-industry me-2"></i>產業機具分期
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Finance" asp-action="GreenEnergy">
+                                            <i class="fas fa-leaf me-2"></i>綠能融資
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Finance" asp-action="AccountsReceivable">
+                                            <i class="fas fa-file-invoice-dollar me-2"></i>應收帳款受讓
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Finance" asp-action="RealEstate">
+                                            <i class="fas fa-building me-2"></i>不動產租賃
+                                        </a></li>
+                                    </ul>
+                                </li>
+
+                                <!-- 租賃業務子選單 -->
+                                <li class="nav-item dropend">
+                                    <button class="btn dropdown-item dropdown-toggle border-0 bg-transparent text-start w-100" id="leaseBusinessDropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-handshake me-2"></i>租賃業務
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="leaseBusinessDropdown">
+                                        <li><a class="dropdown-item" asp-controller="Lease" asp-action="Index">
+                                            <i class="fas fa-home me-2"></i>租賃管理首頁
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Lease" asp-action="ImportLetterOfCredit">
+                                            <i class="fas fa-file-import me-2"></i>進口機具代開狀
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Lease" asp-action="MotorcycleLease">
+                                            <i class="fas fa-motorcycle me-2"></i>大型重機租賃
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Lease" asp-action="Contracts">
+                                            <i class="fas fa-file-contract me-2"></i>租賃合約管理
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Lease" asp-action="Assets">
+                                            <i class="fas fa-boxes me-2"></i>資產管理
+                                        </a></li>
+                                    </ul>
+                                </li>
+
+                                <li><hr class="dropdown-divider"></li>
+
+                                <!-- 客戶管理 -->
+                                <li><a class="dropdown-item" asp-controller="Finance" asp-action="Customers">
+                                    <i class="fas fa-users me-2"></i>客戶管理
+                                </a></li>
+
+                                <!-- 風險控管 -->
+                                <li><a class="dropdown-item" asp-controller="Finance" asp-action="RiskManagement">
+                                    <i class="fas fa-shield-alt me-2"></i>風險控管
+                                </a></li>
+
+                                <!-- 財務報表 -->
+                                <li><a class="dropdown-item" asp-controller="Finance" asp-action="FinancialReports">
+                                    <i class="fas fa-chart-bar me-2"></i>財務報表
+                                </a></li>
+
+                                <li><hr class="dropdown-divider"></li>
+
+                                <!-- 其他服務 -->
+                                <li class="nav-item dropend">
+                                    <button class="btn dropdown-item dropdown-toggle border-0 bg-transparent text-start w-100" id="otherServicesDropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-cogs me-2"></i>其他服務
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="otherServicesDropdown">
+                                        <li><a class="dropdown-item" asp-controller="Lease" asp-action="Insurance">
+                                            <i class="fas fa-shield-alt me-2"></i>保險管理
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Lease" asp-action="Maintenance">
+                                            <i class="fas fa-tools me-2"></i>維護管理
+                                        </a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
                             <button class="btn nav-link dropdown-toggle text-dark border-0 bg-transparent" id="landSurveyorDropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-map me-1"></i>地政士系統
                             </button>

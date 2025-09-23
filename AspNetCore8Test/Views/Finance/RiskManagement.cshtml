@@ -1,0 +1,392 @@
+@{
+    ViewData["Title"] = "風險管理";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-shield-alt text-danger me-2"></i>風險管理控制台
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index">首頁</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Finance" asp-action="Index">融資租賃管理</a>
+                    </li>
+                    <li class="breadcrumb-item active">風險管理</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 風險警示卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                高風險案件
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                逾期案件
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">7</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                風險敞口
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 85M</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                風險覆蓋率
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">87.5%</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 風險監控儀表板 -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">風險趨勢分析</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="riskTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">風險等級分布</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="riskLevelChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 高風險客戶清單 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-danger">
+                <i class="fas fa-exclamation-triangle me-1"></i>高風險客戶監控
+            </h6>
+            <div>
+                <button class="btn btn-outline-danger btn-sm me-2">
+                    <i class="fas fa-bell me-1"></i>設定警示
+                </button>
+                <button class="btn btn-danger btn-sm">
+                    <i class="fas fa-file-export me-1"></i>風險報告
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>客戶編號</th>
+                            <th>客戶名稱</th>
+                            <th>風險等級</th>
+                            <th>貸款餘額</th>
+                            <th>逾期天數</th>
+                            <th>信用評分</th>
+                            <th>風險因子</th>
+                            <th>最後更新</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>C001</td>
+                            <td>台灣建設股份有限公司</td>
+                            <td><span class="badge bg-danger">高風險</span></td>
+                            <td class="text-end">NT$ 25,000,000</td>
+                            <td class="text-center text-danger">45天</td>
+                            <td class="text-center">520</td>
+                            <td>
+                                <span class="badge bg-warning text-dark me-1">現金流</span>
+                                <span class="badge bg-danger">逾期</span>
+                            </td>
+                            <td>2024/01/15</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-info" title="風險詳情">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning" title="風險評估">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="處理方案">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>C002</td>
+                            <td>張志明</td>
+                            <td><span class="badge bg-danger">高風險</span></td>
+                            <td class="text-end">NT$ 5,800,000</td>
+                            <td class="text-center text-warning">30天</td>
+                            <td class="text-center">580</td>
+                            <td>
+                                <span class="badge bg-warning text-dark me-1">收入不穩</span>
+                                <span class="badge bg-info">擔保不足</span>
+                            </td>
+                            <td>2024/01/16</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-info" title="風險詳情">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning" title="風險評估">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="處理方案">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>C003</td>
+                            <td>綠能科技有限公司</td>
+                            <td><span class="badge bg-danger">高風險</span></td>
+                            <td class="text-end">NT$ 18,200,000</td>
+                            <td class="text-center text-danger">60天</td>
+                            <td class="text-center">490</td>
+                            <td>
+                                <span class="badge bg-danger me-1">財務惡化</span>
+                                <span class="badge bg-warning text-dark">市場風險</span>
+                            </td>
+                            <td>2024/01/17</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-info" title="風險詳情">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning" title="風險評估">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="處理方案">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 風險評估工具 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">風險預警系統</h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>系統警告：</strong>發現 2 個新的高風險信號
+                    </div>
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            客戶信用評分下降超過50點
+                            <span class="badge bg-danger rounded-pill">2</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            逾期超過30天未處理
+                            <span class="badge bg-warning text-dark rounded-pill">1</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            擔保品價值下跌超過20%
+                            <span class="badge bg-info rounded-pill">3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">風險處理建議</h6>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="riskManagementAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                    立即處理項目
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#riskManagementAccordion">
+                                <div class="accordion-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <i class="fas fa-circle text-danger me-2"></i>
+                                            聯繫台灣建設股份有限公司進行還款協商
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-circle text-warning me-2"></i>
+                                            重新評估綠能科技公司的擔保品價值
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-circle text-info me-2"></i>
+                                            審核張志明的收入證明文件
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                    監控觀察項目
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#riskManagementAccordion">
+                                <div class="accordion-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <i class="fas fa-circle text-primary me-2"></i>
+                                            定期檢查客戶財務報表
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-circle text-success me-2"></i>
+                                            建立月度風險評估機制
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+    .border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+    .border-left-info { border-left: 0.25rem solid #36b9cc !important; }
+    .border-left-warning { border-left: 0.25rem solid #f6c23e !important; }
+    .border-left-danger { border-left: 0.25rem solid #e74a3b !important; }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 風險趨勢圖表
+        const riskTrendCtx = document.getElementById('riskTrendChart').getContext('2d');
+        const riskTrendChart = new Chart(riskTrendCtx, {
+            type: 'line',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                datasets: [{
+                    label: '高風險案件',
+                    data: [2, 4, 3, 5, 4, 3],
+                    borderColor: '#e74a3b',
+                    backgroundColor: 'rgba(231, 74, 59, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: '中風險案件',
+                    data: [8, 12, 10, 15, 11, 7],
+                    borderColor: '#f6c23e',
+                    backgroundColor: 'rgba(246, 194, 62, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: '低風險案件',
+                    data: [45, 50, 48, 52, 55, 60],
+                    borderColor: '#1cc88a',
+                    backgroundColor: 'rgba(28, 200, 138, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 風險等級分布圖表
+        const riskLevelCtx = document.getElementById('riskLevelChart').getContext('2d');
+        const riskLevelChart = new Chart(riskLevelCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['高風險', '中風險', '低風險'],
+                datasets: [{
+                    data: [3, 7, 60],
+                    backgroundColor: ['#e74a3b', '#f6c23e', '#1cc88a']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    </script>
+}

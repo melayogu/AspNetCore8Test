@@ -1,0 +1,202 @@
+@{
+    ViewData["Title"] = "LoRa管理系統(一)";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #0d6efd, #6610f2);">
+                <div class="card-body text-white">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                        <div>
+                            <h1 class="fw-bold mb-2"><i class="fas fa-satellite-dish me-2"></i>LoRa 管理系統 (一)</h1>
+                            <p class="mb-0">第一代儀表板著重於即時監控、裝置健康指標與營運提醒，協助營運團隊快速掌握 LoRa 網路狀態。</p>
+                        </div>
+                        <div class="mt-3 mt-md-0 text-md-end">
+                            <span class="badge bg-light text-dark fs-6">核心版本：v1.12.4</span>
+                            <div class="text-white-50">資料更新時間：@DateTime.Now.ToString("yyyy/MM/dd HH:mm")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-start border-4 border-primary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-uppercase text-muted small mb-1">在線裝置</p>
+                    <h3 class="fw-bold">1,284 台</h3>
+                    <p class="mb-0 text-success"><i class="fas fa-arrow-up me-1"></i>比昨日增加 3.2%</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-start border-4 border-success shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-uppercase text-muted small mb-1">平均封包成功率</p>
+                    <h3 class="fw-bold">98.4%</h3>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-success" style="width: 98.4%"></div>
+                    </div>
+                    <p class="mb-0 text-muted mt-2">目標值：95%</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-start border-4 border-warning shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-uppercase text-muted small mb-1">正在處理的告警</p>
+                    <h3 class="fw-bold">12 件</h3>
+                    <p class="mb-0 text-warning"><i class="fas fa-bell me-1"></i>需於 4 小時內完成派工</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-start border-4 border-info shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-uppercase text-muted small mb-1">本日處理封包數</p>
+                    <h3 class="fw-bold">3,482,920</h3>
+                    <p class="mb-0 text-muted">含下行命令：182,450</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-xl-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-network-wired me-2 text-primary"></i>全域網路健康概況</h5>
+                    <span class="badge bg-primary-subtle text-primary">即時分析</span>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-7">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-signal text-success me-2"></i>平均 RSSI</span>
+                                    <strong>-102 dBm</strong>
+                                </li>
+                                <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-wave-square text-info me-2"></i>SNR 中位數</span>
+                                    <strong>9.8 dB</strong>
+                                </li>
+                                <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-broadcast-tower text-warning me-2"></i>高負載網關</span>
+                                    <strong>5 座 / 128 座</strong>
+                                </li>
+                                <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-database text-primary me-2"></i>資料延遲 (P95)</span>
+                                    <strong>1.6 秒</strong>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-5 mt-4 mt-md-0">
+                            <div class="bg-light rounded-3 p-3 text-center border">
+                                <div class="fw-semibold text-muted mb-2">熱區示意</div>
+                                <div class="position-relative" style="height: 180px;">
+                                    <div class="rounded-circle bg-primary position-absolute top-50 start-50 translate-middle" style="width: 160px; height: 160px; opacity: .12;"></div>
+                                    <div class="rounded-circle bg-danger position-absolute top-25 start-50 translate-middle" style="width: 110px; height: 110px; opacity: .18;"></div>
+                                    <div class="rounded-circle bg-success position-absolute top-75 start-40 translate-middle" style="width: 80px; height: 80px; opacity: .2;"></div>
+                                    <span class="position-absolute top-50 start-50 translate-middle fw-bold text-primary">智慧港區</span>
+                                    <span class="position-absolute top-25 start-50 translate-middle text-danger">工安專案</span>
+                                    <span class="position-absolute top-75 start-40 translate-middle text-success">校園節能</span>
+                                </div>
+                                <small class="text-muted d-block mt-2">以連線密度視覺化展示，提供第一時間的巡檢線索。</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle text-danger me-2"></i>告警即時摘要</h5>
+                    <span class="text-muted small">最近 24 小時</span>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">港區北塔 - 網關離線</h6>
+                                    <small class="text-muted">告警代碼：GW-502 • 派工中</small>
+                                </div>
+                                <span class="badge bg-danger-subtle text-danger">Critical</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">水位感測器 - 封包延遲</h6>
+                                    <small class="text-muted">區域：淡水河沿岸 • 預測趨勢轉佳</small>
+                                </div>
+                                <span class="badge bg-warning-subtle text-warning">High</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">智慧路燈 - 韌體升級</h6>
+                                    <small class="text-muted">批次：2025Q1 • 進度 72%</small>
+                                </div>
+                                <span class="badge bg-info-subtle text-info">Medium</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">校園節能專案 - 用電異常</h6>
+                                    <small class="text-muted">學校：建安國中 • 已通報能源管理單位</small>
+                                </div>
+                                <span class="badge bg-primary-subtle text-primary">Normal</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent text-end">
+                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-stream me-1"></i>檢視完整告警中心</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-layer-group text-secondary me-2"></i>LoRa 服務模組進度追蹤</h5>
+            <span class="badge bg-secondary-subtle text-secondary">維運團隊</span>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h6 class="fw-semibold">網路監測中心</h6>
+                    <p class="text-muted small">監控 LoRaWAN Gateway 與設備連結品質，提供異常排程。</p>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-primary" style="width: 86%"></div>
+                    </div>
+                    <small class="text-muted">功能完成度 86%</small>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-semibold">裝置生命週期管理</h6>
+                    <p class="text-muted small">提供啟用、配置、OTA 與退役流程管理。</p>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-success" style="width: 68%"></div>
+                    </div>
+                    <small class="text-muted">功能完成度 68%</small>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-semibold">資料可視化面板</h6>
+                    <p class="text-muted small">整合儀表圖、趨勢圖與告警追蹤，支援自訂視覺版面。</p>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-warning" style="width: 54%"></div>
+                    </div>
+                    <small class="text-muted">功能完成度 54%</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

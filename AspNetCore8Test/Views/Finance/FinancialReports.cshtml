@@ -1,0 +1,514 @@
+@{
+    ViewData["Title"] = "財務報表";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-chart-pie text-success me-2"></i>財務報表分析
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index">首頁</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Finance" asp-action="Index">融資租賃管理</a>
+                    </li>
+                    <li class="breadcrumb-item active">財務報表</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 財務指標總覽 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                總營收
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 285M</div>
+                            <div class="text-xs text-success">
+                                <i class="fas fa-arrow-up me-1"></i>12.5% vs 去年同期
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                淨利潤
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 42M</div>
+                            <div class="text-xs text-success">
+                                <i class="fas fa-arrow-up me-1"></i>8.3% vs 去年同期
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                資產總額
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 1.8B</div>
+                            <div class="text-xs text-success">
+                                <i class="fas fa-arrow-up me-1"></i>5.2% vs 去年同期
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-building fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                ROE
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">15.8%</div>
+                            <div class="text-xs text-success">
+                                <i class="fas fa-arrow-up me-1"></i>2.1% vs 去年同期
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 報表篩選與匯出 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h6 class="m-0 font-weight-bold text-primary">報表篩選</h6>
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary btn-sm" onclick="generateReport('excel')">
+                            <i class="fas fa-file-excel me-1"></i>Excel
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="generateReport('pdf')">
+                            <i class="fas fa-file-pdf me-1"></i>PDF
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="generateReport('print')">
+                            <i class="fas fa-print me-1"></i>列印
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">報表類型</label>
+                    <select class="form-select" id="reportType">
+                        <option value="income">損益表</option>
+                        <option value="balance">資產負債表</option>
+                        <option value="cashflow">現金流量表</option>
+                        <option value="ratio">財務比率分析</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">期間類型</label>
+                    <select class="form-select" id="periodType">
+                        <option value="monthly">月報</option>
+                        <option value="quarterly">季報</option>
+                        <option value="yearly">年報</option>
+                        <option value="custom">自訂期間</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">起始日期</label>
+                    <input type="date" class="form-control" id="startDate" value="2024-01-01">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">結束日期</label>
+                    <input type="date" class="form-control" id="endDate" value="2024-01-31">
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button class="btn btn-primary" onclick="loadReport()">
+                        <i class="fas fa-search me-1"></i>產生報表
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 財務圖表 -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">營收與獲利趨勢</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">營收組成結構</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueCompositionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 損益表 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-table me-1"></i>簡化損益表 (2024年1月)
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="50%">科目</th>
+                            <th width="25%" class="text-end">本期金額 (千元)</th>
+                            <th width="25%" class="text-end">上期金額 (千元)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="table-success">
+                            <td><strong>營業收入</strong></td>
+                            <td class="text-end"><strong>285,000</strong></td>
+                            <td class="text-end">253,000</td>
+                        </tr>
+                        <tr>
+                            <td style="padding-left: 30px;">車輛融資收入</td>
+                            <td class="text-end">165,000</td>
+                            <td class="text-end">150,000</td>
+                        </tr>
+                        <tr>
+                            <td style="padding-left: 30px;">設備融資收入</td>
+                            <td class="text-end">80,000</td>
+                            <td class="text-end">70,000</td>
+                        </tr>
+                        <tr>
+                            <td style="padding-left: 30px;">其他融資收入</td>
+                            <td class="text-end">40,000</td>
+                            <td class="text-end">33,000</td>
+                        </tr>
+                        <tr class="table-warning">
+                            <td><strong>營業成本</strong></td>
+                            <td class="text-end"><strong>185,000</strong></td>
+                            <td class="text-end">168,000</td>
+                        </tr>
+                        <tr>
+                            <td style="padding-left: 30px;">資金成本</td>
+                            <td class="text-end">120,000</td>
+                            <td class="text-end">110,000</td>
+                        </tr>
+                        <tr>
+                            <td style="padding-left: 30px;">呆帳損失</td>
+                            <td class="text-end">35,000</td>
+                            <td class="text-end">30,000</td>
+                        </tr>
+                        <tr>
+                            <td style="padding-left: 30px;">其他成本</td>
+                            <td class="text-end">30,000</td>
+                            <td class="text-end">28,000</td>
+                        </tr>
+                        <tr class="table-info">
+                            <td><strong>營業毛利</strong></td>
+                            <td class="text-end"><strong>100,000</strong></td>
+                            <td class="text-end">85,000</td>
+                        </tr>
+                        <tr class="table-secondary">
+                            <td><strong>營業費用</strong></td>
+                            <td class="text-end"><strong>50,000</strong></td>
+                            <td class="text-end">45,000</td>
+                        </tr>
+                        <tr>
+                            <td style="padding-left: 30px;">人事費用</td>
+                            <td class="text-end">25,000</td>
+                            <td class="text-end">23,000</td>
+                        </tr>
+                        <tr>
+                            <td style="padding-left: 30px;">管理費用</td>
+                            <td class="text-end">15,000</td>
+                            <td class="text-end">13,000</td>
+                        </tr>
+                        <tr>
+                            <td style="padding-left: 30px;">其他費用</td>
+                            <td class="text-end">10,000</td>
+                            <td class="text-end">9,000</td>
+                        </tr>
+                        <tr class="table-primary">
+                            <td><strong>營業利益</strong></td>
+                            <td class="text-end"><strong>50,000</strong></td>
+                            <td class="text-end">40,000</td>
+                        </tr>
+                        <tr>
+                            <td><strong>稅前淨利</strong></td>
+                            <td class="text-end"><strong>48,000</strong></td>
+                            <td class="text-end">38,000</td>
+                        </tr>
+                        <tr>
+                            <td>所得稅費用</td>
+                            <td class="text-end">6,000</td>
+                            <td class="text-end">5,000</td>
+                        </tr>
+                        <tr class="table-success">
+                            <td><strong>本期淨利</strong></td>
+                            <td class="text-end"><strong>42,000</strong></td>
+                            <td class="text-end">33,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 財務比率分析 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">獲利能力指標</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>指標名稱</th>
+                                    <th class="text-end">本期</th>
+                                    <th class="text-end">上期</th>
+                                    <th class="text-center">趨勢</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>營業利益率</td>
+                                    <td class="text-end">17.5%</td>
+                                    <td class="text-end">15.8%</td>
+                                    <td class="text-center">
+                                        <i class="fas fa-arrow-up text-success"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>稅前淨利率</td>
+                                    <td class="text-end">16.8%</td>
+                                    <td class="text-end">15.0%</td>
+                                    <td class="text-center">
+                                        <i class="fas fa-arrow-up text-success"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>稅後淨利率</td>
+                                    <td class="text-end">14.7%</td>
+                                    <td class="text-end">13.0%</td>
+                                    <td class="text-center">
+                                        <i class="fas fa-arrow-up text-success"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ROA</td>
+                                    <td class="text-end">2.3%</td>
+                                    <td class="text-end">2.1%</td>
+                                    <td class="text-center">
+                                        <i class="fas fa-arrow-up text-success"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ROE</td>
+                                    <td class="text-end">15.8%</td>
+                                    <td class="text-end">13.7%</td>
+                                    <td class="text-center">
+                                        <i class="fas fa-arrow-up text-success"></i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">財務結構指標</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>指標名稱</th>
+                                    <th class="text-end">本期</th>
+                                    <th class="text-end">上期</th>
+                                    <th class="text-center">趨勢</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>負債比率</td>
+                                    <td class="text-end">65.2%</td>
+                                    <td class="text-end">67.1%</td>
+                                    <td class="text-center">
+                                        <i class="fas fa-arrow-down text-success"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>權益乘數</td>
+                                    <td class="text-end">2.87</td>
+                                    <td class="text-end">3.04</td>
+                                    <td class="text-center">
+                                        <i class="fas fa-arrow-down text-success"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>利息保障倍數</td>
+                                    <td class="text-end">8.5</td>
+                                    <td class="text-end">7.2</td>
+                                    <td class="text-center">
+                                        <i class="fas fa-arrow-up text-success"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>流動比率</td>
+                                    <td class="text-end">1.35</td>
+                                    <td class="text-end">1.28</td>
+                                    <td class="text-center">
+                                        <i class="fas fa-arrow-up text-success"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>速動比率</td>
+                                    <td class="text-end">1.12</td>
+                                    <td class="text-end">1.05</td>
+                                    <td class="text-center">
+                                        <i class="fas fa-arrow-up text-success"></i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+    .border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+    .border-left-info { border-left: 0.25rem solid #36b9cc !important; }
+    .border-left-warning { border-left: 0.25rem solid #f6c23e !important; }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 營收與獲利趨勢圖表
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['2023年Q1', '2023年Q2', '2023年Q3', '2023年Q4', '2024年Q1'],
+                datasets: [{
+                    label: '營業收入',
+                    data: [220, 240, 235, 253, 285],
+                    borderColor: '#4e73df',
+                    backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: '淨利潤',
+                    data: [28, 32, 30, 33, 42],
+                    borderColor: '#1cc88a',
+                    backgroundColor: 'rgba(28, 200, 138, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 營收組成結構圖表
+        const compositionCtx = document.getElementById('revenueCompositionChart').getContext('2d');
+        const compositionChart = new Chart(compositionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['車輛融資', '設備融資', '其他融資'],
+                datasets: [{
+                    data: [165, 80, 40],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // 功能函數
+        function generateReport(type) {
+            alert('產生 ' + type.toUpperCase() + ' 格式報表');
+        }
+
+        function loadReport() {
+            const reportType = document.getElementById('reportType').value;
+            const periodType = document.getElementById('periodType').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            console.log('載入報表:', {
+                type: reportType,
+                period: periodType,
+                start: startDate,
+                end: endDate
+            });
+            
+            alert('正在產生報表...');
+        }
+    </script>
+}

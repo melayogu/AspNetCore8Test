@@ -1,0 +1,247 @@
+@{
+    ViewData["Title"] = "LoRa管理系統(二)";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="background: linear-gradient(120deg, #20c997, #0dcaf0);">
+                <div class="card-body text-white">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h1 class="fw-bold mb-2"><i class="fas fa-broadcast-tower me-2"></i>LoRa 管理系統 (二)</h1>
+                            <p class="lead mb-0">第二代平台導入 AI 預測、事件流程自動化與現場派工工具，協助跨區域營運團隊協同作業。</p>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                            <span class="badge bg-dark text-white fs-6">智慧營運 2.0</span>
+                            <div class="text-white-50">共用租戶：8 組 • 服務節點：23 座</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="text-uppercase text-muted mb-0">Edge Gateway</h6>
+                        <span class="badge bg-success-subtle text-success">穩定</span>
+                    </div>
+                    <h2 class="fw-bold mt-3">23 座</h2>
+                    <p class="text-muted small">平均 CPU 使用率 38%，備援節點啟動率 100%。</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="text-uppercase text-muted mb-0">Coverage Score</h6>
+                        <span class="badge bg-primary-subtle text-primary">98 城市</span>
+                    </div>
+                    <h2 class="fw-bold mt-3">92.6%</h2>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-primary" style="width: 92.6%"></div>
+                    </div>
+                    <p class="text-muted small mt-2">超過 KPI：8.1%</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="text-uppercase text-muted mb-0">AI 預測維護</h6>
+                        <span class="badge bg-warning-subtle text-warning">14 任務</span>
+                    </div>
+                    <h2 class="fw-bold mt-3">87% 準確度</h2>
+                    <p class="text-muted small">主要針對電池健康與閘道飽和度預測，降低緊急派工 26%。</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="text-uppercase text-muted mb-0">自動化流程</h6>
+                        <span class="badge bg-info-subtle text-info">流程引擎</span>
+                    </div>
+                    <h2 class="fw-bold mt-3">54 條</h2>
+                    <p class="text-muted small">含 OTA 更新、批次佈建與權限同步；自動完成率 93%。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-xxl-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0"><i class="fas fa-robot text-success me-2"></i>AI 預測維護任務</h5>
+                        <small class="text-muted">結合歷史資料與即時感測，提供優先等級建議。</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-success"><i class="fas fa-plus me-1"></i>建立新任務</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">專案</th>
+                                <th scope="col">設備群組</th>
+                                <th scope="col">預測事件</th>
+                                <th scope="col" class="text-center">風險</th>
+                                <th scope="col" class="text-end">建議處理時程</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>智慧水務節點</td>
+                                <td>北區 128 台</td>
+                                <td>電池容量下降</td>
+                                <td class="text-center"><span class="badge bg-danger">高</span></td>
+                                <td class="text-end">72 小時內</td>
+                            </tr>
+                            <tr>
+                                <td>智慧路燈網</td>
+                                <td>雙北 320 台</td>
+                                <td>閘道吞吐飽和</td>
+                                <td class="text-center"><span class="badge bg-warning text-dark">中</span></td>
+                                <td class="text-end">例行維護前</td>
+                            </tr>
+                            <tr>
+                                <td>校園環境感測</td>
+                                <td>教育部專案</td>
+                                <td>感測器重新校準</td>
+                                <td class="text-center"><span class="badge bg-primary">低</span></td>
+                                <td class="text-end">下週三</td>
+                            </tr>
+                            <tr>
+                                <td>物流追蹤標籤</td>
+                                <td>華東倉儲</td>
+                                <td>封包重試偏高</td>
+                                <td class="text-center"><span class="badge bg-info text-dark">資訊</span></td>
+                                <td class="text-end">監控即可</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-xxl-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-route text-info me-2"></i>跨區域事件流程</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item mb-4">
+                            <div class="timeline-dot bg-success"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">閘道韌體更新批次</h6>
+                                <p class="text-muted small mb-1">自動觸發 OTA 任務，完成率 92%，異常自動回滾。</p>
+                                <span class="badge bg-success-subtle text-success">自動完成</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item mb-4">
+                            <div class="timeline-dot bg-warning"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">智慧水務 - 傳輸延遲</h6>
+                                <p class="text-muted small mb-1">自動偵測封包超時，已派工至水務局線上值班小組。</p>
+                                <span class="badge bg-warning-subtle text-warning">派工進行中</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item mb-4">
+                            <div class="timeline-dot bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">教育租戶 - 權限同步</h6>
+                                <p class="text-muted small mb-1">完成跨租戶角色調整，教師帳號 1,200 組同步成功。</p>
+                                <span class="badge bg-primary-subtle text-primary">同步完成</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot bg-danger"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">工業安全 - 感測異常</h6>
+                                <p class="text-muted small mb-1">偵測到 CO₂ 急速上升，已通知緊急應變小組，開啟閉環流程。</p>
+                                <span class="badge bg-danger">高風險</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0"><i class="fas fa-sliders-h text-secondary me-2"></i>服務品質指標</h5>
+                <small class="text-muted">第二代儀表板強調可配置性，允許營運者切換觀測指標。</small>
+            </div>
+            <div class="btn-group" role="group" aria-label="Switch Dashboard">
+                <button class="btn btn-outline-secondary active">網路表現</button>
+                <button class="btn btn-outline-secondary">電池健康</button>
+                <button class="btn btn-outline-secondary">自動化效率</button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h6 class="fw-semibold">封包成功率</h6>
+                    <div class="progress mb-2" style="height: 6px;">
+                        <div class="progress-bar bg-success" style="width: 97%"></div>
+                    </div>
+                    <small class="text-muted">全域平均 97%，低於 92% 會觸發調整頻道指派。</small>
+                </div>
+                <div class="col-lg-4">
+                    <h6 class="fw-semibold">平均指令延遲</h6>
+                    <div class="progress mb-2" style="height: 6px;">
+                        <div class="progress-bar bg-info" style="width: 64%"></div>
+                    </div>
+                    <small class="text-muted">目前 1.4 秒，目標 1 秒內，啟動資料管線調優。</small>
+                </div>
+                <div class="col-lg-4">
+                    <h6 class="fw-semibold">電池剩餘壽命</h6>
+                    <div class="progress mb-2" style="height: 6px;">
+                        <div class="progress-bar bg-warning" style="width: 74%"></div>
+                    </div>
+                    <small class="text-muted">整體 74%，AI 建議優先處理 12 組設備。</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 1.5rem;
+        border-left: 2px solid rgba(13, 202, 240, 0.3);
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 1rem;
+    }
+
+    .timeline-dot {
+        position: absolute;
+        left: -1.16rem;
+        top: 0.35rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .timeline-content {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+</style>
