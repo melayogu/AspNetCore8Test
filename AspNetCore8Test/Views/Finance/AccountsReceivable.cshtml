@@ -1,0 +1,401 @@
+@model IEnumerable<AspNetCore8Test.Models.FinanceModels.AccountsReceivableFinance>
+@{
+    ViewData["Title"] = "應收帳款受讓業務";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-file-invoice-dollar text-secondary me-2"></i>應收帳款受讓業務管理
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index">首頁</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Finance" asp-action="Index">融資租賃管理</a>
+                    </li>
+                    <li class="breadcrumb-item active">應收帳款受讓</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-secondary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                受讓總金額
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 82,000,000</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-invoice-dollar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                已放款案件
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">1</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                審核中案件
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">1</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-hourglass-half fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                平均手續費率
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">2.65%</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 應收帳款受讓清單 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-secondary">應收帳款受讓清單</h6>
+            <div>
+                <button class="btn btn-secondary btn-sm me-2">
+                    <i class="fas fa-plus me-1"></i>新增受讓案件
+                </button>
+                <button class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel me-1"></i>匯出Excel
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>編號</th>
+                            <th>賣方公司</th>
+                            <th>買方公司</th>
+                            <th>發票號碼</th>
+                            <th>發票金額</th>
+                            <th>預付比例</th>
+                            <th>預付金額</th>
+                            <th>手續費率</th>
+                            <th>狀態</th>
+                            <th>申請日期</th>
+                            <th>到期日</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>
+                                    <strong>@item.SellerCompany</strong>
+                                    <br><small class="text-muted">賣方</small>
+                                </td>
+                                <td>
+                                    <strong>@item.BuyerCompany</strong>
+                                    <br><small class="text-muted">買方</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">@item.InvoiceNumber</span>
+                                </td>
+                                <td class="text-end">
+                                    <strong>NT$ @item.InvoiceAmount.ToString("N0")</strong>
+                                </td>
+                                <td class="text-center">
+                                    @item.AdvanceRatio%
+                                </td>
+                                <td class="text-end">
+                                    <strong class="text-success">NT$ @item.AdvanceAmount.ToString("N0")</strong>
+                                </td>
+                                <td class="text-center">
+                                    @item.FeeRate.ToString("N1")%
+                                </td>
+                                <td>
+                                    @if (item.Status == "已放款")
+                                    {
+                                        <span class="badge bg-success">@item.Status</span>
+                                    }
+                                    else if (item.Status == "審核中")
+                                    {
+                                        <span class="badge bg-warning text-dark">@item.Status</span>
+                                    }
+                                    else if (item.Status == "已到期")
+                                    {
+                                        <span class="badge bg-secondary">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">@item.Status</span>
+                                    }
+                                </td>
+                                <td>@item.ApplicationDate.ToString("yyyy/MM/dd")</td>
+                                <td>
+                                    @if (item.DueDate < DateTime.Now)
+                                    {
+                                        <span class="text-danger">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            @item.DueDate.ToString("yyyy/MM/dd")
+                                        </span>
+                                    }
+                                    else if (item.DueDate <= DateTime.Now.AddDays(7))
+                                    {
+                                        <span class="text-warning">
+                                            <i class="fas fa-clock me-1"></i>
+                                            @item.DueDate.ToString("yyyy/MM/dd")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>@item.DueDate.ToString("yyyy/MM/dd")</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                onclick="viewDetails(@item.Id)" title="查看詳細">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                onclick="viewInvoice(@item.Id)" title="發票詳情">
+                                            <i class="fas fa-file-invoice"></i>
+                                        </button>
+                                        @if (item.Status == "審核中")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                    onclick="reviewApplication(@item.Id)" title="審核">
+                                                <i class="fas fa-clipboard-check"></i>
+                                            </button>
+                                        }
+                                        else if (item.Status == "已放款")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-success" 
+                                                    onclick="trackCollection(@item.Id)" title="追蹤收款">
+                                                <i class="fas fa-search-dollar"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 風險分析與圖表 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-secondary">行業別分析</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="industryChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-secondary">月度業務量</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="volumeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 風險提醒 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-danger">
+                <i class="fas fa-shield-alt me-2"></i>風險監控與提醒
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-exclamation-triangle me-2"></i>即將到期提醒</h6>
+                        <p class="mb-1">7天內到期案件：<strong>0</strong> 件</p>
+                        <small>總金額：NT$ 0</small>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-chart-line me-2"></i>信用風險評估</h6>
+                        <p class="mb-1">高風險客戶：<strong>0</strong> 家</p>
+                        <small>建議加強追蹤</small>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-check-circle me-2"></i>回收狀況</h6>
+                        <p class="mb-1">本月回收率：<strong>98.5%</strong></p>
+                        <small>表現良好</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+    .border-left-secondary {
+        border-left: 0.25rem solid #6c757d !important;
+    }
+    
+    .table th {
+        background-color: #f8f9fc;
+        border-color: #e3e6f0;
+        color: #5a5c69;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(108, 117, 125, 0.05);
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 行業別分析圖表
+        const industryCtx = document.getElementById('industryChart').getContext('2d');
+        const industryChart = new Chart(industryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['科技製造', '傳統工業', '貿易商', '服務業'],
+                datasets: [{
+                    data: [1, 1, 0, 0],
+                    backgroundColor: [
+                        '#4e73df',
+                        '#1cc88a',
+                        '#36b9cc',
+                        '#f6c23e'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // 月度業務量圖表
+        const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+        const volumeChart = new Chart(volumeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                datasets: [{
+                    label: '受讓金額(萬元)',
+                    data: [800, 650, 720, 890, 760, 820],
+                    backgroundColor: '#6c757d',
+                    borderColor: '#545b62',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + ' 萬';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 功能按鈕事件
+        function viewDetails(id) {
+            alert('查看應收帳款詳細資料 ID: ' + id);
+        }
+
+        function viewInvoice(id) {
+            alert('查看發票詳情 ID: ' + id);
+        }
+
+        function reviewApplication(id) {
+            alert('審核申請案件 ID: ' + id);
+        }
+
+        function trackCollection(id) {
+            alert('追蹤收款狀況 ID: ' + id);
+        }
+    </script>
+}

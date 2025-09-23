@@ -1,0 +1,422 @@
+@model IEnumerable<AspNetCore8Test.Models.FinanceModels.IndustrialEquipmentFinance>
+@{
+    ViewData["Title"] = "產業機具分期業務";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-industry text-info me-2"></i>產業機具分期業務管理
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index">首頁</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Finance" asp-action="Index">融資租賃管理</a>
+                    </li>
+                    <li class="breadcrumb-item active">產業機具分期</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                產業機具總額
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 115,000,000</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-industry fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                正常繳費案件
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">1</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                審核中案件
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">1</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-hourglass-half fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                平均設備價值
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 57.5M</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calculator fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 產業機具分期清單 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-info">產業機具分期清單</h6>
+            <div>
+                <button class="btn btn-info btn-sm me-2">
+                    <i class="fas fa-plus me-1"></i>新增分期
+                </button>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-info btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-filter me-1"></i>篩選
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('all')">全部案件</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('approved')">正常繳費</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('pending')">審核中</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('overdue')">逾期</a></li>
+                    </ul>
+                </div>
+                <button class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel me-1"></i>匯出Excel
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>編號</th>
+                            <th>客戶名稱</th>
+                            <th>機具類型</th>
+                            <th>品牌/型號</th>
+                            <th>貸款金額</th>
+                            <th>月付金</th>
+                            <th>貸款期數</th>
+                            <th>狀態</th>
+                            <th>申請日期</th>
+                            <th>下次繳款日</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>
+                                    <strong>@item.CustomerName</strong>
+                                    <br><small class="text-muted">製造業客戶</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">@item.EquipmentType</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@item.Brand</strong><br>
+                                        <small class="text-muted">@item.Model</small>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <strong>NT$ @item.LoanAmount.ToString("N0")</strong>
+                                </td>
+                                <td class="text-end">
+                                    NT$ @item.MonthlyPayment.ToString("N0")
+                                </td>
+                                <td class="text-center">
+                                    @item.LoanPeriod 個月
+                                </td>
+                                <td>
+                                    @if (item.Status == "正常繳費")
+                                    {
+                                        <span class="badge bg-success">@item.Status</span>
+                                    }
+                                    else if (item.Status == "逾期")
+                                    {
+                                        <span class="badge bg-danger">@item.Status</span>
+                                    }
+                                    else if (item.Status == "審核中")
+                                    {
+                                        <span class="badge bg-warning text-dark">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@item.Status</span>
+                                    }
+                                </td>
+                                <td>@item.ApplicationDate.ToString("yyyy/MM/dd")</td>
+                                <td>
+                                    @if (item.Status == "審核中")
+                                    {
+                                        <span class="text-muted">待審核</span>
+                                    }
+                                    else if (item.NextPaymentDate < DateTime.Now)
+                                    {
+                                        <span class="text-danger">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            @item.NextPaymentDate.ToString("yyyy/MM/dd")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>@item.NextPaymentDate.ToString("yyyy/MM/dd")</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                onclick="viewDetails(@item.Id)" title="查看詳細">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        @if (item.Status == "審核中")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                    onclick="reviewApplication(@item.Id)" title="審核">
+                                                <i class="fas fa-clipboard-check"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-success" 
+                                                    onclick="makePayment(@item.Id)" title="繳款記錄">
+                                                <i class="fas fa-dollar-sign"></i>
+                                            </button>
+                                        }
+                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                onclick="viewTechnicalSpecs(@item.Id)" title="技術規格">
+                                            <i class="fas fa-cogs"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 圖表和分析 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">機具類型分析</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="equipmentTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">產業別分布</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="industryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 產業趨勢分析 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-chart-line me-2"></i>產業融資趨勢分析
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-3 text-center">
+                            <div class="border-right border-info h-100 d-flex flex-column justify-content-center">
+                                <h4 class="text-info">CNC加工</h4>
+                                <p class="mb-0">精密製造</p>
+                                <small class="text-muted">成長率 +15%</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 text-center">
+                            <div class="border-right border-warning h-100 d-flex flex-column justify-content-center">
+                                <h4 class="text-warning">射出成型</h4>
+                                <p class="mb-0">塑膠製品</p>
+                                <small class="text-muted">成長率 +8%</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 text-center">
+                            <div class="border-right border-success h-100 d-flex flex-column justify-content-center">
+                                <h4 class="text-success">自動化設備</h4>
+                                <p class="mb-0">智慧製造</p>
+                                <small class="text-muted">成長率 +25%</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 text-center">
+                            <div class="h-100 d-flex flex-column justify-content-center">
+                                <h4 class="text-primary">檢測設備</h4>
+                                <p class="mb-0">品質控制</p>
+                                <small class="text-muted">成長率 +12%</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+    
+    .border-right {
+        border-right: 1px solid #e3e6f0 !important;
+    }
+    
+    .table th {
+        background-color: #f8f9fc;
+        border-color: #e3e6f0;
+        color: #5a5c69;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(54, 185, 204, 0.05);
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 機具類型分析圖表
+        const equipmentTypeCtx = document.getElementById('equipmentTypeChart').getContext('2d');
+        const equipmentTypeChart = new Chart(equipmentTypeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['CNC加工機', '射出成型機', '印刷機械', '包裝機械'],
+                datasets: [{
+                    data: [1, 1, 0, 0],
+                    backgroundColor: [
+                        '#36b9cc',
+                        '#1cc88a',
+                        '#f6c23e',
+                        '#e74a3b'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // 產業別分布圖表
+        const industryCtx = document.getElementById('industryChart').getContext('2d');
+        const industryChart = new Chart(industryCtx, {
+            type: 'bar',
+            data: {
+                labels: ['精密機械', '塑膠工業', '電子製造', '食品加工', '紡織業'],
+                datasets: [{
+                    label: '融資案件數',
+                    data: [1, 1, 0, 0, 0],
+                    backgroundColor: '#36b9cc',
+                    borderColor: '#2c9faf',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // 功能按鈕事件
+        function viewDetails(id) {
+            alert('查看產業機具詳細資料 ID: ' + id);
+        }
+
+        function makePayment(id) {
+            alert('處理繳款記錄 ID: ' + id);
+        }
+
+        function reviewApplication(id) {
+            alert('審核申請案件 ID: ' + id);
+        }
+
+        function viewTechnicalSpecs(id) {
+            alert('查看技術規格 ID: ' + id);
+        }
+
+        function filterByStatus(status) {
+            console.log('篩選狀態:', status);
+            // 這裡可以實作篩選邏輯
+        }
+    </script>
+}

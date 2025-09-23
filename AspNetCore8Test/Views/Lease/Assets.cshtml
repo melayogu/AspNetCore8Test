@@ -1,0 +1,452 @@
+@model IEnumerable<AspNetCore8Test.Models.FinanceModels.LeaseAsset>
+@{
+    ViewData["Title"] = "資產管理";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-cubes text-success me-2"></i>租賃資產管理系統
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index">首頁</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Lease" asp-action="Index">租賃業務</a>
+                    </li>
+                    <li class="breadcrumb-item active">資產管理</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 資產統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                總資產價值
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 1.2B</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-cubes fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                租賃中資產
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">892</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-handshake fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                可租賃資產
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">156</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                維修中資產
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">28</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-wrench fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 資產清單 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">租賃資產清單</h6>
+            <div>
+                <button class="btn btn-primary btn-sm me-2">
+                    <i class="fas fa-plus me-1"></i>新增資產
+                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-filter me-1"></i>資產類型
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" onclick="filterByType('all')">全部資產</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('vehicle')">車輛</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('motorcycle')">機車</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('equipment')">設備</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('property')">不動產</button></li>
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-success btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-info-circle me-1"></i>狀態篩選
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" onclick="filterByStatus('all')">全部狀態</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('leased')">租賃中</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('available')">可租賃</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('maintenance')">維修中</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('retired')">已除役</button></li>
+                    </ul>
+                </div>
+                <button class="btn btn-info btn-sm">
+                    <i class="fas fa-file-excel me-1"></i>匯出清單
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>資產編號</th>
+                            <th>資產資訊</th>
+                            <th>資產類型</th>
+                            <th>購入日期</th>
+                            <th>原始價值</th>
+                            <th>淨值</th>
+                            <th>狀態</th>
+                            <th>承租人</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@item.AssetNumber</strong></td>
+                                <td>
+                                    <div><strong>@item.Brand @item.Model</strong></div>
+                                    <div><small class="text-muted">類型: @item.AssetType</small></div>
+                                    <div><small class="text-muted">狀況: @item.Condition</small></div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@item.AssetType</span>
+                                </td>
+                                <td>@item.PurchaseDate.ToString("yyyy/MM/dd")</td>
+                                <td class="text-end">
+                                    NT$ @item.PurchasePrice.ToString("N0")
+                                </td>
+                                <td class="text-end">
+                                    <strong>NT$ @item.CurrentValue.ToString("N0")</strong>
+                                </td>
+                                <td>
+                                    @if (item.Status == "租賃中")
+                                    {
+                                        <span class="badge bg-success">@item.Status</span>
+                                    }
+                                    else if (item.Status == "可租賃")
+                                    {
+                                        <span class="badge bg-primary">@item.Status</span>
+                                    }
+                                    else if (item.Status == "維修中")
+                                    {
+                                        <span class="badge bg-warning text-dark">@item.Status</span>
+                                    }
+                                    else if (item.Status == "已除役")
+                                    {
+                                        <span class="badge bg-danger">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@item.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div><strong>@item.Location</strong></div>
+                                    <div><small class="text-muted">折舊率: @item.DepreciationRate%</small></div>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                onclick="viewAsset('@item.AssetNumber')" title="查看詳細">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                onclick="viewHistory('@item.AssetNumber')" title="使用歷史">
+                                            <i class="fas fa-history"></i>
+                                        </button>
+                                        @if (item.Status == "可租賃")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-success" 
+                                                    onclick="createLease('@item.AssetNumber')" title="建立租約">
+                                                <i class="fas fa-plus-circle"></i>
+                                            </button>
+                                        }
+                                        @if (item.Status == "租賃中" || item.Status == "可租賃")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                    onclick="scheduleInspection('@item.AssetNumber')" title="預約檢查">
+                                                <i class="fas fa-clipboard-check"></i>
+                                            </button>
+                                        }
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                onclick="editAsset('@item.AssetNumber')" title="編輯">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 資產分析圖表 -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">資產價值分布</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="assetValueChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">資產類型分布</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="assetTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 資產維護與檢查 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-tools me-1"></i>維護提醒
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>V-2024-001</strong> - Toyota Altis
+                                <br><small class="text-muted">定期保養 (5,000公里)</small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">逾期</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>M-2024-015</strong> - 山葉 SMAX 155
+                                <br><small class="text-muted">機車保養</small>
+                            </div>
+                            <span class="badge bg-warning text-dark rounded-pill">3天</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>E-2024-008</strong> - 小松挖土機
+                                <br><small class="text-muted">液壓系統檢查</small>
+                            </div>
+                            <span class="badge bg-info rounded-pill">7天</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="fas fa-chart-line me-1"></i>資產折舊分析
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>資產類型</th>
+                                    <th class="text-end">原始價值</th>
+                                    <th class="text-end">累計折舊</th>
+                                    <th class="text-end">淨值</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>車輛</td>
+                                    <td class="text-end">NT$ 850M</td>
+                                    <td class="text-end">NT$ 280M</td>
+                                    <td class="text-end">NT$ 570M</td>
+                                </tr>
+                                <tr>
+                                    <td>機車</td>
+                                    <td class="text-end">NT$ 120M</td>
+                                    <td class="text-end">NT$ 45M</td>
+                                    <td class="text-end">NT$ 75M</td>
+                                </tr>
+                                <tr>
+                                    <td>設備</td>
+                                    <td class="text-end">NT$ 450M</td>
+                                    <td class="text-end">NT$ 180M</td>
+                                    <td class="text-end">NT$ 270M</td>
+                                </tr>
+                                <tr>
+                                    <td>不動產</td>
+                                    <td class="text-end">NT$ 380M</td>
+                                    <td class="text-end">NT$ 95M</td>
+                                    <td class="text-end">NT$ 285M</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 資產地圖分布 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-map-marker-alt me-1"></i>資產地理分布
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="bg-light p-5 text-center">
+                        <i class="fas fa-map fa-5x text-muted mb-3"></i>
+                        <h5 class="text-muted">地圖顯示區域</h5>
+                        <p class="text-muted">這裡將顯示所有租賃資產的地理位置分布</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <h6 class="font-weight-bold">地區分布統計</h6>
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>台北市</span>
+                            <span class="badge bg-primary rounded-pill">285</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>新北市</span>
+                            <span class="badge bg-success rounded-pill">198</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>桃園市</span>
+                            <span class="badge bg-info rounded-pill">156</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>台中市</span>
+                            <span class="badge bg-warning text-dark rounded-pill">142</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>其他地區</span>
+                            <span class="badge bg-secondary rounded-pill">111</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+    .border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+    .border-left-info { border-left: 0.25rem solid #36b9cc !important; }
+    .border-left-warning { border-left: 0.25rem solid #f6c23e !important; }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 資產價值分布圖表
+        const valueCtx = document.getElementById('assetValueChart').getContext('2d');
+        const valueChart = new Chart(valueCtx, {
+            type: 'bar',
+            data: {
+                labels: ['車輛', '機車', '設備', '不動產'],
+                datasets: [{
+                    label: '淨值 (億元)',
+                    data: [5.7, 0.75, 2.7, 2.85],
+                    backgroundColor: ['#4e73df', '#f6c23e', '#1cc88a', '#36b9cc']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 資產類型分布圖表
+        const typeCtx = document.getElementById('assetTypeChart').getContext('2d');
+        const typeChart = new Chart(typeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['車輛', '機車', '設備', '不動產'],
+                datasets: [{
+                    data: [285, 198, 156, 142],
+                    backgroundColor: ['#4e73df', '#f6c23e', '#1cc88a', '#36b9cc']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // 功能按鈕事件
+        function viewAsset(assetNumber) { alert('查看資產詳細 - ' + assetNumber); }
+        function viewHistory(assetNumber) { alert('查看使用歷史 - ' + assetNumber); }
+        function createLease(assetNumber) { alert('建立租約 - ' + assetNumber); }
+        function scheduleInspection(assetNumber) { alert('預約檢查 - ' + assetNumber); }
+        function editAsset(assetNumber) { alert('編輯資產 - ' + assetNumber); }
+        function filterByType(type) { console.log('篩選類型:', type); }
+        function filterByStatus(status) { console.log('篩選狀態:', status); }
+    </script>
+}

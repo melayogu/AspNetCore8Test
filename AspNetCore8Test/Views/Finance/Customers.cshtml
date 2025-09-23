@@ -1,0 +1,314 @@
+@model IEnumerable<AspNetCore8Test.Models.FinanceModels.FinanceCustomer>
+@{
+    ViewData["Title"] = "客戶管理";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-users text-primary me-2"></i>客戶管理系統
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index">首頁</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Finance" asp-action="Index">融資租賃管理</a>
+                    </li>
+                    <li class="breadcrumb-item active">客戶管理</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                總客戶數
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">168</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                A級客戶
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">2</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-star fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                本月新增
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">15</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-plus fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                平均貸款額
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 4.1M</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calculator fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 客戶清單 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">客戶清單</h6>
+            <div>
+                <button class="btn btn-primary btn-sm me-2">
+                    <i class="fas fa-plus me-1"></i>新增客戶
+                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-filter me-1"></i>篩選
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" onclick="filterByRating('all')">全部客戶</button></li>
+                        <li><button class="dropdown-item" onclick="filterByRating('A+')">A+ 級客戶</button></li>
+                        <li><button class="dropdown-item" onclick="filterByRating('A')">A 級客戶</button></li>
+                        <li><button class="dropdown-item" onclick="filterByRating('B')">B 級客戶</button></li>
+                    </ul>
+                </div>
+                <button class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel me-1"></i>匯出Excel
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>編號</th>
+                            <th>客戶資訊</th>
+                            <th>聯絡方式</th>
+                            <th>地址</th>
+                            <th>信用評等</th>
+                            <th>總貸款金額</th>
+                            <th>狀態</th>
+                            <th>建檔日期</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Name))
+                                    {
+                                        <strong>@item.Name</strong>
+                                        <br><small class="text-muted">個人客戶</small>
+                                        <br><small class="text-muted">ID: @item.IdNumber</small>
+                                    }
+                                    else
+                                    {
+                                        <strong>@item.CompanyName</strong>
+                                        <br><small class="text-muted">企業客戶</small>
+                                        <br><small class="text-muted">統編: @item.IdNumber</small>
+                                    }
+                                </td>
+                                <td>
+                                    <div>
+                                        <i class="fas fa-phone me-1"></i>@item.Phone
+                                    </div>
+                                    <div>
+                                        <i class="fas fa-envelope me-1"></i>@item.Email
+                                    </div>
+                                </td>
+                                <td>
+                                    <small>@item.Address</small>
+                                </td>
+                                <td class="text-center">
+                                    @if (item.CreditRating == "A+")
+                                    {
+                                        <span class="badge bg-success">@item.CreditRating</span>
+                                    }
+                                    else if (item.CreditRating == "A")
+                                    {
+                                        <span class="badge bg-primary">@item.CreditRating</span>
+                                    }
+                                    else if (item.CreditRating == "B")
+                                    {
+                                        <span class="badge bg-warning text-dark">@item.CreditRating</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@item.CreditRating</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <strong>NT$ @item.TotalLoanAmount.ToString("N0")</strong>
+                                </td>
+                                <td>
+                                    @if (item.Status == "正常")
+                                    {
+                                        <span class="badge bg-success">@item.Status</span>
+                                    }
+                                    else if (item.Status == "注意")
+                                    {
+                                        <span class="badge bg-warning text-dark">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">@item.Status</span>
+                                    }
+                                </td>
+                                <td>@item.CreateDate.ToString("yyyy/MM/dd")</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                onclick="viewDetails(@item.Id)" title="查看詳細">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                onclick="viewCreditReport(@item.Id)" title="信用報告">
+                                            <i class="fas fa-chart-bar"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-success" 
+                                                onclick="viewContracts(@item.Id)" title="合約記錄">
+                                            <i class="fas fa-file-contract"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                onclick="editCustomer(@item.Id)" title="編輯">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 客戶分析圖表 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">信用評等分布</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="creditRatingChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">客戶類型分布</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="customerTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+    .border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+    .border-left-info { border-left: 0.25rem solid #36b9cc !important; }
+    .border-left-warning { border-left: 0.25rem solid #f6c23e !important; }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 信用評等分布圖表
+        const creditRatingCtx = document.getElementById('creditRatingChart').getContext('2d');
+        const creditRatingChart = new Chart(creditRatingCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['A+', 'A', 'B', 'C'],
+                datasets: [{
+                    data: [1, 2, 0, 0],
+                    backgroundColor: ['#1cc88a', '#4e73df', '#f6c23e', '#e74a3b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // 客戶類型分布圖表
+        const customerTypeCtx = document.getElementById('customerTypeChart').getContext('2d');
+        const customerTypeChart = new Chart(customerTypeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['個人客戶', '企業客戶'],
+                datasets: [{
+                    label: '客戶數量',
+                    data: [1, 2],
+                    backgroundColor: ['#4e73df', '#1cc88a']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 功能按鈕事件
+        function viewDetails(id) { alert('查看客戶詳細資料 ID: ' + id); }
+        function viewCreditReport(id) { alert('查看信用報告 ID: ' + id); }
+        function viewContracts(id) { alert('查看合約記錄 ID: ' + id); }
+        function editCustomer(id) { alert('編輯客戶資料 ID: ' + id); }
+        function filterByRating(rating) { console.log('篩選評等:', rating); }
+    </script>
+}

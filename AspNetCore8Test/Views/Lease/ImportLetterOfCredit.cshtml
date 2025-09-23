@@ -1,0 +1,367 @@
+@model IEnumerable<AspNetCore8Test.Models.FinanceModels.LetterOfCreditApplication>
+@{
+    ViewData["Title"] = "信用狀進口業務";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-globe-americas text-primary me-2"></i>信用狀進口業務管理
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index">首頁</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Lease" asp-action="Index">租賃業務</a>
+                    </li>
+                    <li class="breadcrumb-item active">信用狀進口業務</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 業務統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                總申請案件
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">48</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                已核准案件
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">35</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                待審核案件
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">8</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-hourglass-half fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                總授信額度
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 185M</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-credit-card fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 申請案件列表 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">信用狀申請案件</h6>
+            <div>
+                <button class="btn btn-primary btn-sm me-2">
+                    <i class="fas fa-plus me-1"></i>新增申請
+                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-filter me-1"></i>狀態篩選
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" onclick="filterByStatus('all')">全部案件</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('pending')">待審核</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('approved')">已核准</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('rejected')">已拒絕</button></li>
+                    </ul>
+                </div>
+                <button class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel me-1"></i>匯出報表
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>申請編號</th>
+                            <th>申請人資訊</th>
+                            <th>受益人資訊</th>
+                            <th>信用狀金額</th>
+                            <th>貨物描述</th>
+                            <th>開立銀行</th>
+                            <th>申請日期</th>
+                            <th>到期日</th>
+                            <th>狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@item.LcNumber</strong></td>
+                                <td>
+                                    <div><strong>@item.ApplicantName</strong></div>
+                                    <div><small class="text-muted">貨幣: @item.Currency</small></div>
+                                    <div><small>匯率: @item.ExchangeRate</small></div>
+                                </td>
+                                <td>
+                                    <div><strong>@item.BeneficiaryName</strong></div>
+                                    <div><small class="text-muted">狀態: @item.Status</small></div>
+                                </td>
+                                <td class="text-end">
+                                    <strong>@item.LcAmount.ToString("C0")</strong>
+                                    <br><small class="text-muted">@item.Currency</small>
+                                </td>
+                                <td>
+                                    <div><strong>@item.EquipmentDescription</strong></div>
+                                    <div><small class="text-muted">期限: @item.ExpiryDate.ToString("yyyy/MM/dd")</small></div>
+                                </td>
+                                <td>@item.LcNumber</td>
+                                <td>@item.ApplicationDate.ToString("yyyy/MM/dd")</td>
+                                <td>@item.ExpiryDate.ToString("yyyy/MM/dd")</td>
+                                <td>
+                                    @if (item.Status == "已核准")
+                                    {
+                                        <span class="badge bg-success">@item.Status</span>
+                                    }
+                                    else if (item.Status == "待審核")
+                                    {
+                                        <span class="badge bg-warning text-dark">@item.Status</span>
+                                    }
+                                    else if (item.Status == "已拒絕")
+                                    {
+                                        <span class="badge bg-danger">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@item.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                onclick="viewDetails('@item.LcNumber')" title="查看詳細">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                onclick="viewDocuments('@item.LcNumber')" title="相關文件">
+                                            <i class="fas fa-file-alt"></i>
+                                        </button>
+                                        @if (item.Status == "待審核")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-success" 
+                                                    onclick="approve('@item.LcNumber')" title="核准">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    onclick="reject('@item.LcNumber')" title="拒絕">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        }
+                                        @if (item.Status == "已核准")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                    onclick="printLC('@item.LcNumber')" title="列印信用狀">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 統計圖表 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">月度申請趨勢</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">申請狀態分布</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="statusDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 待辦事項 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-tasks me-1"></i>待處理事項
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>LC-2024-001</strong> - 審核申請文件
+                                <br><small class="text-muted">申請人: 台灣進出口有限公司</small>
+                            </div>
+                            <span class="badge bg-warning text-dark rounded-pill">緊急</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>LC-2024-002</strong> - 信用調查報告
+                                <br><small class="text-muted">申請人: 國際貿易股份有限公司</small>
+                            </div>
+                            <span class="badge bg-info rounded-pill">一般</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>LC-2024-003</strong> - 修改信用狀條款
+                                <br><small class="text-muted">申請人: 東亞貿易有限公司</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">低</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="fas fa-bell me-1"></i>系統提醒
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>即將到期提醒：</strong>3筆信用狀將於本週內到期
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>系統更新：</strong>信用狀管理系統將於週末進行更新維護
+                    </div>
+                    <div class="alert alert-success" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>成功通知：</strong>本月已成功開立25張信用狀
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+    .border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+    .border-left-info { border-left: 0.25rem solid #36b9cc !important; }
+    .border-left-warning { border-left: 0.25rem solid #f6c23e !important; }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 月度申請趨勢圖表
+        const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+        const monthlyChart = new Chart(monthlyCtx, {
+            type: 'line',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                datasets: [{
+                    label: '申請案件數',
+                    data: [8, 12, 6, 15, 10, 8],
+                    borderColor: '#4e73df',
+                    backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 申請狀態分布圖表
+        const statusCtx = document.getElementById('statusDistributionChart').getContext('2d');
+        const statusChart = new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['已核准', '待審核', '已拒絕', '處理中'],
+                datasets: [{
+                    data: [35, 8, 3, 2],
+                    backgroundColor: ['#1cc88a', '#f6c23e', '#e74a3b', '#36b9cc']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // 功能按鈕事件
+        function viewDetails(lcNumber) { alert('查看申請詳細 - ' + lcNumber); }
+        function viewDocuments(lcNumber) { alert('查看相關文件 - ' + lcNumber); }
+        function approve(lcNumber) { alert('核准申請 - ' + lcNumber); }
+        function reject(lcNumber) { alert('拒絕申請 - ' + lcNumber); }
+        function printLC(lcNumber) { alert('列印信用狀 - ' + lcNumber); }
+        function filterByStatus(status) { console.log('篩選狀態:', status); }
+    </script>
+}

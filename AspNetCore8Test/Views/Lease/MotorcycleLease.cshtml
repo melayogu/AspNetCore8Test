@@ -1,0 +1,459 @@
+@model IEnumerable<AspNetCore8Test.Models.FinanceModels.MotorcycleLease>
+@{
+    ViewData["Title"] = "機車租賃業務";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-motorcycle text-warning me-2"></i>機車租賃業務管理
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index">首頁</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Lease" asp-action="Index">租賃業務</a>
+                    </li>
+                    <li class="breadcrumb-item active">機車租賃業務</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 業務統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                總租賃車輛
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">1,234</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-motorcycle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                租賃中車輛
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">987</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-key fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                可租賃車輛
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">247</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                月收入
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 2.8M</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 租賃合約清單 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">機車租賃合約</h6>
+            <div>
+                <button class="btn btn-primary btn-sm me-2">
+                    <i class="fas fa-plus me-1"></i>新增租約
+                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-filter me-1"></i>狀態篩選
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" onclick="filterByStatus('all')">全部合約</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('active')">租賃中</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('pending')">待交車</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('expired')">已到期</button></li>
+                    </ul>
+                </div>
+                <button class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel me-1"></i>匯出Excel
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>合約編號</th>
+                            <th>客戶資訊</th>
+                            <th>機車資訊</th>
+                            <th>租賃期間</th>
+                            <th>月租金</th>
+                            <th>保證金</th>
+                            <th>狀態</th>
+                            <th>下次繳費</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@item.Id</strong></td>
+                                <td>
+                                    <div><strong>@item.CustomerName</strong></div>
+                                    <div><small class="text-muted">租賃類型: @item.LeaseType</small></div>
+                                    <div><small><i class="fas fa-phone me-1"></i>里程: @item.Mileage km</small></div>
+                                </td>
+                                <td>
+                                    <div><strong>@item.Brand @item.Model</strong></div>
+                                    <div><small class="text-muted">排氣量: @item.EngineCapacity cc</small></div>
+                                    <div><small class="text-muted">狀態: @item.Status</small></div>
+                                </td>
+                                <td>
+                                    <div><strong>@item.StartDate.ToString("yyyy/MM/dd")</strong></div>
+                                    <div><small class="text-muted">至 @item.EndDate.ToString("yyyy/MM/dd")</small></div>
+                                    <div><small class="text-primary">@item.LeasePeriod 個月</small></div>
+                                </td>
+                                <td class="text-end">
+                                    <strong>NT$ @item.MonthlyPayment.ToString("N0")</strong>
+                                </td>
+                                <td class="text-end">
+                                    NT$ @item.TotalAmount.ToString("N0")
+                                </td>
+                                <td>
+                                    @if (item.Status == "租賃中")
+                                    {
+                                        <span class="badge bg-success">@item.Status</span>
+                                    }
+                                    else if (item.Status == "待交車")
+                                    {
+                                        <span class="badge bg-warning text-dark">@item.Status</span>
+                                    }
+                                    else if (item.Status == "已到期")
+                                    {
+                                        <span class="badge bg-secondary">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">@item.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Status == "租賃中")
+                                    {
+                                        @item.EndDate.ToString("yyyy/MM/dd")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">--</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                onclick="viewContract('@item.Id')" title="查看合約">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                onclick="viewPayments('@item.Id')" title="繳費記錄">
+                                            <i class="fas fa-credit-card"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-success" 
+                                                onclick="vehicleInspection('@item.Id')" title="車輛檢查">
+                                            <i class="fas fa-wrench"></i>
+                                        </button>
+                                        @if (item.Status == "租賃中")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                    onclick="renewContract('@item.Id')" title="續約">
+                                                <i class="fas fa-redo"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    onclick="terminateContract('@item.Id')" title="終止合約">
+                                                <i class="fas fa-times-circle"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 統計圖表 -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">月度租金收入趨勢</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">車輛品牌分布</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="brandChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 車輛管理與提醒 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-exclamation-triangle me-1"></i>車輛維護提醒
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>ABC-1234</strong> - 定期保養到期
+                                <br><small class="text-muted">山葉 SMAX 155 (2022年)</small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">3天</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>XYZ-5678</strong> - 燃料牌照稅繳費
+                                <br><small class="text-muted">光陽 Racing S 150 (2023年)</small>
+                            </div>
+                            <span class="badge bg-warning text-dark rounded-pill">7天</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>DEF-9012</strong> - 強制險到期
+                                <br><small class="text-muted">宏佳騰 DRGBT 300 (2021年)</small>
+                            </div>
+                            <span class="badge bg-info rounded-pill">15天</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-danger">
+                        <i class="fas fa-clock me-1"></i>逾期繳費提醒
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>張志明</strong> - 1月份租金
+                                <br><small class="text-muted">合約: ML-2024-001</small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">逾期5天</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>李小華</strong> - 1月份租金
+                                <br><small class="text-muted">合約: ML-2024-015</small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">逾期3天</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>王大明</strong> - 12月份租金
+                                <br><small class="text-muted">合約: ML-2023-089</small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">逾期15天</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 庫存管理 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-warehouse me-1"></i>機車庫存管理
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-motorcycle fa-3x me-3"></i>
+                                <div>
+                                    <div class="h5 mb-0">山葉 SMAX</div>
+                                    <div>可租賃: 15 台</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-motorcycle fa-3x me-3"></i>
+                                <div>
+                                    <div class="h5 mb-0">光陽 Racing S</div>
+                                    <div>可租賃: 8 台</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-motorcycle fa-3x me-3"></i>
+                                <div>
+                                    <div class="h5 mb-0">宏佳騰 DRGBT</div>
+                                    <div>可租賃: 3 台</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-motorcycle fa-3x me-3"></i>
+                                <div>
+                                    <div class="h5 mb-0">三陽 JET SR</div>
+                                    <div>可租賃: 12 台</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+    .border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+    .border-left-info { border-left: 0.25rem solid #36b9cc !important; }
+    .border-left-warning { border-left: 0.25rem solid #f6c23e !important; }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 租金收入趨勢圖表
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                datasets: [{
+                    label: '租金收入',
+                    data: [2400000, 2550000, 2380000, 2700000, 2650000, 2800000],
+                    borderColor: '#4e73df',
+                    backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } },
+                scales: { 
+                    y: { 
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'NT$ ' + (value / 1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    } 
+                }
+            }
+        });
+
+        // 車輛品牌分布圖表
+        const brandCtx = document.getElementById('brandChart').getContext('2d');
+        const brandChart = new Chart(brandCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['山葉', '光陽', '宏佳騰', '三陽', '其他'],
+                datasets: [{
+                    data: [450, 320, 180, 200, 84],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // 功能按鈕事件
+        function viewContract(id) { alert('查看合約 - ' + id); }
+        function viewPayments(id) { alert('查看繳費記錄 - ' + id); }
+        function vehicleInspection(id) { alert('車輛檢查 - ' + id); }
+        function renewContract(id) { alert('續約 - ' + id); }
+        function terminateContract(id) { alert('終止合約 - ' + id); }
+        function filterByStatus(status) { console.log('篩選狀態:', status); }
+    </script>
+}

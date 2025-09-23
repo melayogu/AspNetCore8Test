@@ -1,0 +1,493 @@
+@{
+    ViewData["Title"] = "維護管理";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-tools text-warning me-2"></i>租賃資產維護管理
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index">首頁</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Lease" asp-action="Index">租賃業務</a>
+                    </li>
+                    <li class="breadcrumb-item active">維護管理</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 維護統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                本月維護
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">156</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-wrench fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                緊急維修
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">8</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                預防保養
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">248</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                維護費用
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 3.2M</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 維護工單清單 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">維護工單管理</h6>
+            <div>
+                <button class="btn btn-primary btn-sm me-2">
+                    <i class="fas fa-plus me-1"></i>建立工單
+                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-filter me-1"></i>工單狀態
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" onclick="filterByStatus('all')">全部工單</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('pending')">待處理</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('in-progress')">處理中</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('completed')">已完成</button></li>
+                        <li><button class="dropdown-item" onclick="filterByStatus('urgent')">緊急</button></li>
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-warning btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-cogs me-1"></i>維護類型
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" onclick="filterByType('preventive')">預防保養</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('corrective')">故障維修</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('inspection')">定期檢查</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('upgrade')">設備升級</button></li>
+                    </ul>
+                </div>
+                <button class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel me-1"></i>匯出報告
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>工單編號</th>
+                            <th>資產資訊</th>
+                            <th>維護類型</th>
+                            <th>問題描述</th>
+                            <th>負責技師</th>
+                            <th>預計費用</th>
+                            <th>建立日期</th>
+                            <th>預計完成</th>
+                            <th>狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>WO-2024-001</strong></td>
+                            <td>
+                                <div><strong>Toyota Altis</strong></div>
+                                <div><small class="text-muted">車牌: ABC-1234</small></div>
+                                <div><small class="text-muted">資產編號: V-2024-001</small></div>
+                            </td>
+                            <td><span class="badge bg-success">預防保養</span></td>
+                            <td>5,000公里定期保養</td>
+                            <td>李師傅</td>
+                            <td class="text-end">NT$ 3,500</td>
+                            <td>2024/01/15</td>
+                            <td>2024/01/16</td>
+                            <td><span class="badge bg-warning text-dark">處理中</span></td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                            onclick="viewWorkOrder('WO-2024-001')" title="查看工單">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                            onclick="updateStatus('WO-2024-001')" title="更新狀態">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                            onclick="printWorkOrder('WO-2024-001')" title="列印工單">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>WO-2024-002</strong></td>
+                            <td>
+                                <div><strong>小松挖土機</strong></div>
+                                <div><small class="text-muted">型號: PC200-8</small></div>
+                                <div><small class="text-muted">資產編號: E-2024-008</small></div>
+                            </td>
+                            <td><span class="badge bg-danger">緊急維修</span></td>
+                            <td>液壓系統漏油</td>
+                            <td>張師傅</td>
+                            <td class="text-end">NT$ 45,000</td>
+                            <td>2024/01/16</td>
+                            <td>2024/01/17</td>
+                            <td><span class="badge bg-danger">緊急</span></td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                            onclick="viewWorkOrder('WO-2024-002')" title="查看工單">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                            onclick="updateStatus('WO-2024-002')" title="更新狀態">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                            onclick="printWorkOrder('WO-2024-002')" title="列印工單">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>WO-2024-003</strong></td>
+                            <td>
+                                <div><strong>山葉 SMAX 155</strong></div>
+                                <div><small class="text-muted">車牌: XYZ-5678</small></div>
+                                <div><small class="text-muted">資產編號: M-2024-015</small></div>
+                            </td>
+                            <td><span class="badge bg-info">定期檢查</span></td>
+                            <td>年度安全檢查</td>
+                            <td>王師傅</td>
+                            <td class="text-end">NT$ 800</td>
+                            <td>2024/01/14</td>
+                            <td>2024/01/15</td>
+                            <td><span class="badge bg-success">已完成</span></td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                            onclick="viewWorkOrder('WO-2024-003')" title="查看工單">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                            onclick="viewReport('WO-2024-003')" title="檢查報告">
+                                        <i class="fas fa-file-alt"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                            onclick="printWorkOrder('WO-2024-003')" title="列印工單">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 維護統計圖表 -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">月度維護費用趨勢</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="maintenanceCostChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">維護類型分布</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="maintenanceTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 技師管理與庫存 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-user-cog me-1"></i>技師工作狀況
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>技師姓名</th>
+                                    <th>專長領域</th>
+                                    <th>進行中工單</th>
+                                    <th>本月完成</th>
+                                    <th>狀態</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>李師傅</strong></td>
+                                    <td>汽車維修</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center">28</td>
+                                    <td><span class="badge bg-success">可用</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>張師傅</strong></td>
+                                    <td>重機械</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center">15</td>
+                                    <td><span class="badge bg-warning text-dark">忙碌</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>王師傅</strong></td>
+                                    <td>機車維修</td>
+                                    <td class="text-center">1</td>
+                                    <td class="text-center">35</td>
+                                    <td><span class="badge bg-success">可用</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>陳師傅</strong></td>
+                                    <td>電子系統</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center">22</td>
+                                    <td><span class="badge bg-danger">滿載</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="fas fa-boxes me-1"></i>零件庫存狀況
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>機油濾芯</strong>
+                                <br><small class="text-muted">適用: 汽車保養</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">庫存充足</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>煞車皮</strong>
+                                <br><small class="text-muted">適用: 汽車/機車</small>
+                            </div>
+                            <span class="badge bg-warning text-dark rounded-pill">庫存不足</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>液壓油封</strong>
+                                <br><small class="text-muted">適用: 重機械</small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">急需補貨</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>火星塞</strong>
+                                <br><small class="text-muted">適用: 機車保養</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">已訂購</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 維護排程日曆 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-calendar-alt me-1"></i>維護排程日曆
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="bg-light p-5 text-center">
+                        <i class="fas fa-calendar-alt fa-5x text-muted mb-3"></i>
+                        <h5 class="text-muted">月曆檢視</h5>
+                        <p class="text-muted">這裡將顯示維護排程的月曆檢視</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <h6 class="font-weight-bold">今日排程</h6>
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <strong>09:00</strong>
+                                <span class="badge bg-success">預防保養</span>
+                            </div>
+                            <small>Toyota Altis - 李師傅</small>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <strong>14:00</strong>
+                                <span class="badge bg-danger">緊急維修</span>
+                            </div>
+                            <small>小松挖土機 - 張師傅</small>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <strong>16:00</strong>
+                                <span class="badge bg-info">定期檢查</span>
+                            </div>
+                            <small>山葉 SMAX - 王師傅</small>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-plus me-1"></i>新增排程
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+    .border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+    .border-left-info { border-left: 0.25rem solid #36b9cc !important; }
+    .border-left-warning { border-left: 0.25rem solid #f6c23e !important; }
+    .border-left-danger { border-left: 0.25rem solid #e74a3b !important; }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 維護費用趨勢圖表
+        const costCtx = document.getElementById('maintenanceCostChart').getContext('2d');
+        const costChart = new Chart(costCtx, {
+            type: 'line',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                datasets: [{
+                    label: '維護費用 (萬元)',
+                    data: [280, 320, 250, 380, 340, 400],
+                    borderColor: '#f6c23e',
+                    backgroundColor: 'rgba(246, 194, 62, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: '預防保養費用 (萬元)',
+                    data: [150, 180, 140, 200, 180, 220],
+                    borderColor: '#1cc88a',
+                    backgroundColor: 'rgba(28, 200, 138, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 維護類型分布圖表
+        const typeCtx = document.getElementById('maintenanceTypeChart').getContext('2d');
+        const typeChart = new Chart(typeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['預防保養', '故障維修', '定期檢查', '設備升級'],
+                datasets: [{
+                    data: [248, 156, 85, 32],
+                    backgroundColor: ['#1cc88a', '#e74a3b', '#36b9cc', '#f6c23e']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // 功能按鈕事件
+        function viewWorkOrder(workOrderNumber) { alert('查看工單 - ' + workOrderNumber); }
+        function updateStatus(workOrderNumber) { alert('更新狀態 - ' + workOrderNumber); }
+        function printWorkOrder(workOrderNumber) { alert('列印工單 - ' + workOrderNumber); }
+        function viewReport(workOrderNumber) { alert('查看檢查報告 - ' + workOrderNumber); }
+        function filterByStatus(status) { console.log('篩選狀態:', status); }
+        function filterByType(type) { console.log('篩選類型:', type); }
+    </script>
+}

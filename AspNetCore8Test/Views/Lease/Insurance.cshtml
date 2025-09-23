@@ -1,0 +1,521 @@
+@{
+    ViewData["Title"] = "保險管理";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-shield-alt text-info me-2"></i>租賃保險管理系統
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index">首頁</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Lease" asp-action="Index">租賃業務</a>
+                    </li>
+                    <li class="breadcrumb-item active">保險管理</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 保險統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                有效保單
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">1,234</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shield-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                保險覆蓋率
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">98.5%</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                即將到期
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">45</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                年保費支出
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">NT$ 85M</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 保險清單 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">保險保單清單</h6>
+            <div>
+                <button class="btn btn-primary btn-sm me-2">
+                    <i class="fas fa-plus me-1"></i>新增保單
+                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-filter me-1"></i>保險類型
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" onclick="filterByType('all')">全部保險</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('vehicle')">車險</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('property')">財產險</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('liability')">責任險</button></li>
+                        <li><button class="dropdown-item" onclick="filterByType('comprehensive')">綜合險</button></li>
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-warning btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-clock me-1"></i>到期提醒
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" onclick="filterByExpiry('30days')">30天內到期</button></li>
+                        <li><button class="dropdown-item" onclick="filterByExpiry('60days')">60天內到期</button></li>
+                        <li><button class="dropdown-item" onclick="filterByExpiry('expired')">已過期</button></li>
+                    </ul>
+                </div>
+                <button class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel me-1"></i>匯出報表
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>保單編號</th>
+                            <th>被保險資產</th>
+                            <th>保險公司</th>
+                            <th>保險類型</th>
+                            <th>保險金額</th>
+                            <th>年保費</th>
+                            <th>生效日期</th>
+                            <th>到期日期</th>
+                            <th>狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>INS-2024-001</strong></td>
+                            <td>
+                                <div><strong>Toyota Altis</strong></div>
+                                <div><small class="text-muted">車牌: ABC-1234</small></div>
+                                <div><small class="text-muted">資產編號: V-2024-001</small></div>
+                            </td>
+                            <td>富邦產險</td>
+                            <td><span class="badge bg-primary">車險</span></td>
+                            <td class="text-end">NT$ 1,200,000</td>
+                            <td class="text-end">NT$ 18,500</td>
+                            <td>2024/01/15</td>
+                            <td>2025/01/14</td>
+                            <td><span class="badge bg-success">有效</span></td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                            onclick="viewPolicy('INS-2024-001')" title="查看保單">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                            onclick="downloadPolicy('INS-2024-001')" title="下載保單">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                            onclick="renewPolicy('INS-2024-001')" title="續保">
+                                        <i class="fas fa-redo"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-warning" 
+                                            onclick="claimPolicy('INS-2024-001')" title="理賠">
+                                        <i class="fas fa-file-medical"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>INS-2024-002</strong></td>
+                            <td>
+                                <div><strong>山葉 SMAX 155</strong></div>
+                                <div><small class="text-muted">車牌: XYZ-5678</small></div>
+                                <div><small class="text-muted">資產編號: M-2024-015</small></div>
+                            </td>
+                            <td>國泰產險</td>
+                            <td><span class="badge bg-warning text-dark">強制險</span></td>
+                            <td class="text-end">NT$ 300,000</td>
+                            <td class="text-end">NT$ 1,230</td>
+                            <td>2024/02/01</td>
+                            <td>2025/01/31</td>
+                            <td><span class="badge bg-success">有效</span></td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                            onclick="viewPolicy('INS-2024-002')" title="查看保單">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                            onclick="downloadPolicy('INS-2024-002')" title="下載保單">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                            onclick="renewPolicy('INS-2024-002')" title="續保">
+                                        <i class="fas fa-redo"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-warning" 
+                                            onclick="claimPolicy('INS-2024-002')" title="理賠">
+                                        <i class="fas fa-file-medical"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>INS-2024-003</strong></td>
+                            <td>
+                                <div><strong>小松挖土機</strong></div>
+                                <div><small class="text-muted">型號: PC200-8</small></div>
+                                <div><small class="text-muted">資產編號: E-2024-008</small></div>
+                            </td>
+                            <td>新光產險</td>
+                            <td><span class="badge bg-info">設備險</span></td>
+                            <td class="text-end">NT$ 5,500,000</td>
+                            <td class="text-end">NT$ 85,000</td>
+                            <td>2023/12/15</td>
+                            <td>
+                                <span class="text-danger">2024/12/14</span>
+                                <br><small class="text-danger">還有 15 天到期</small>
+                            </td>
+                            <td><span class="badge bg-warning text-dark">即將到期</span></td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                            onclick="viewPolicy('INS-2024-003')" title="查看保單">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                            onclick="downloadPolicy('INS-2024-003')" title="下載保單">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                            onclick="renewPolicy('INS-2024-003')" title="續保">
+                                        <i class="fas fa-redo"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-warning" 
+                                            onclick="claimPolicy('INS-2024-003')" title="理賠">
+                                        <i class="fas fa-file-medical"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 保險統計圖表 -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">月度保費支出趨勢</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="premiumChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">保險類型分布</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="insuranceTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 理賠管理與提醒 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-danger">
+                        <i class="fas fa-file-medical me-1"></i>理賠案件管理
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>理賠編號</th>
+                                    <th>保單編號</th>
+                                    <th>理賠金額</th>
+                                    <th>狀態</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>CL-2024-001</td>
+                                    <td>INS-2024-001</td>
+                                    <td class="text-end">NT$ 45,000</td>
+                                    <td><span class="badge bg-success">已結案</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>CL-2024-002</td>
+                                    <td>INS-2024-003</td>
+                                    <td class="text-end">NT$ 180,000</td>
+                                    <td><span class="badge bg-warning text-dark">審核中</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>CL-2024-003</td>
+                                    <td>INS-2024-002</td>
+                                    <td class="text-end">NT$ 25,000</td>
+                                    <td><span class="badge bg-primary">申請中</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-plus me-1"></i>新增理賠案件
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-bell me-1"></i>保險提醒事項
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>續保提醒</strong>
+                                <br><small class="text-muted">小松挖土機 - 15天後到期</small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">緊急</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>保費繳納</strong>
+                                <br><small class="text-muted">3月份保費待繳納</small>
+                            </div>
+                            <span class="badge bg-warning text-dark rounded-pill">待辦</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>保單檢查</strong>
+                                <br><small class="text-muted">季度保單審查</small>
+                            </div>
+                            <span class="badge bg-info rounded-pill">例行</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 保險公司合作狀況 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-handshake me-1"></i>保險公司合作狀況
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-building fa-3x me-3"></i>
+                                <div>
+                                    <div class="h5 mb-0">富邦產險</div>
+                                    <div>保單數: 458</div>
+                                    <div>年保費: NT$ 28M</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-building fa-3x me-3"></i>
+                                <div>
+                                    <div class="h5 mb-0">國泰產險</div>
+                                    <div>保單數: 385</div>
+                                    <div>年保費: NT$ 22M</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-building fa-3x me-3"></i>
+                                <div>
+                                    <div class="h5 mb-0">新光產險</div>
+                                    <div>保單數: 285</div>
+                                    <div>年保費: NT$ 18M</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-building fa-3x me-3"></i>
+                                <div>
+                                    <div class="h5 mb-0">明台產險</div>
+                                    <div>保單數: 106</div>
+                                    <div>年保費: NT$ 17M</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+    .border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+    .border-left-info { border-left: 0.25rem solid #36b9cc !important; }
+    .border-left-warning { border-left: 0.25rem solid #f6c23e !important; }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 保費支出趨勢圖表
+        const premiumCtx = document.getElementById('premiumChart').getContext('2d');
+        const premiumChart = new Chart(premiumCtx, {
+            type: 'line',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                datasets: [{
+                    label: '保費支出 (萬元)',
+                    data: [680, 720, 650, 750, 700, 800],
+                    borderColor: '#4e73df',
+                    backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 保險類型分布圖表
+        const typeCtx = document.getElementById('insuranceTypeChart').getContext('2d');
+        const typeChart = new Chart(typeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['車險', '設備險', '財產險', '責任險', '其他'],
+                datasets: [{
+                    data: [458, 285, 180, 156, 155],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // 功能按鈕事件
+        function viewPolicy(policyNumber) { alert('查看保單 - ' + policyNumber); }
+        function downloadPolicy(policyNumber) { alert('下載保單 - ' + policyNumber); }
+        function renewPolicy(policyNumber) { alert('續保 - ' + policyNumber); }
+        function claimPolicy(policyNumber) { alert('申請理賠 - ' + policyNumber); }
+        function filterByType(type) { console.log('篩選類型:', type); }
+        function filterByExpiry(period) { console.log('篩選到期:', period); }
+    </script>
+}
